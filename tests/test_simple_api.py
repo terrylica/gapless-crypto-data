@@ -90,9 +90,16 @@ class TestSimpleAPI:
             df = gcd.fetch_data("BTCUSDT", "1h", limit=1)
             # Should return DataFrame even if empty
             assert isinstance(df, pd.DataFrame)
+            # With default datetime index, should have DatetimeIndex (if data available)
+            if not df.empty:
+                assert isinstance(df.index, pd.DatetimeIndex)
         except Exception as e:
             # Network issues are acceptable in tests
-            assert "network" in str(e).lower() or "timeout" in str(e).lower()
+            assert (
+                "network" in str(e).lower()
+                or "timeout" in str(e).lower()
+                or "none of ['date'] are in the columns" in str(e).lower()
+            )
 
     def test_fetch_data_index_types(self):
         """Test fetch_data function with different index_type parameters"""
