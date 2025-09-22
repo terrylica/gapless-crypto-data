@@ -18,3 +18,7 @@ test-env/
 # macOS system files
 .DS_Store
 */.DS_Store
+
+# .Sessions folder - never delete
+.sessions/
+!.sessions/.gitignore
