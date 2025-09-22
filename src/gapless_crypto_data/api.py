@@ -195,7 +195,12 @@ def fetch_data(
 
         # Set index based on user preference
         if index_type in ("datetime", "auto"):
-            df = df.set_index("date", drop=False)  # Keep date column AND set as index
+            if "date" in df.columns:
+                df = df.set_index("date", drop=False)  # Keep date column AND set as index
+            else:
+                # Handle case where date column is missing (filtered empty DataFrame)
+                # Just return the DataFrame as-is to avoid KeyError
+                pass
         # For 'range', keep current behavior (no changes)
 
         return df
@@ -214,7 +219,11 @@ def fetch_data(
             "taker_buy_base_asset_volume",
             "taker_buy_quote_asset_volume",
         ]
-        return pd.DataFrame(columns=columns)
+        df_empty = pd.DataFrame(columns=columns)
+
+        # For empty DataFrame, ensure consistent structure but don't set index
+        # (empty date column can't be converted to DatetimeIndex meaningfully)
+        return df_empty
 
 
 def download(
