@@ -101,9 +101,10 @@ def fetch_data(
         - taker_buy_quote_asset_volume: Taker buy quote volume
 
     Examples:
-        # Fetch recent 1000 hourly bars (DatetimeIndex by default)
+        # Fetch recent 1000 hourly bars (DatetimeIndex by default, date column preserved)
         df = fetch_data("BTCUSDT", "1h", limit=1000)
         returns = df['close'].pct_change()  # Ready for time series analysis
+        # df['date'] still available for backward compatibility
 
         # Fetch specific date range
         df = fetch_data("ETHUSDT", "4h", start="2024-01-01", end="2024-06-30")
@@ -113,7 +114,7 @@ def fetch_data(
 
         # Legacy RangeIndex for data processing workflows
         df = fetch_data("BTCUSDT", "1h", limit=1000, index_type="range")
-        df = df.set_index('date')  # Manual index setting
+        # Same columns, but with RangeIndex instead of DatetimeIndex
 
         # Legacy interval parameter (deprecated)
         df = fetch_data("BTCUSDT", interval="1h", limit=1000)
@@ -194,7 +195,7 @@ def fetch_data(
 
         # Set index based on user preference
         if index_type in ("datetime", "auto"):
-            df = df.set_index("date")
+            df = df.set_index("date", drop=False)  # Keep date column AND set as index
         # For 'range', keep current behavior (no changes)
 
         return df

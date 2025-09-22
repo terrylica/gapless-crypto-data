@@ -95,11 +95,7 @@ class TestSimpleAPI:
                 assert isinstance(df.index, pd.DatetimeIndex)
         except Exception as e:
             # Network issues are acceptable in tests
-            assert (
-                "network" in str(e).lower()
-                or "timeout" in str(e).lower()
-                or "none of ['date'] are in the columns" in str(e).lower()
-            )
+            assert "network" in str(e).lower() or "timeout" in str(e).lower()
 
     def test_fetch_data_index_types(self):
         """Test fetch_data function with different index_type parameters"""
@@ -140,8 +136,8 @@ class TestSimpleAPI:
             assert isinstance(df, pd.DataFrame)
             if not df.empty:
                 assert isinstance(df.index, pd.DatetimeIndex)
-                # Should NOT have 'date' column when using datetime index
-                assert "date" not in df.columns
+                # Should STILL have 'date' column for backward compatibility
+                assert "date" in df.columns
                 # Should have expected OHLCV columns
                 expected_cols = ["open", "high", "low", "close", "volume"]
                 for col in expected_cols:
@@ -212,12 +208,13 @@ class TestSimpleAPI:
     def test_expected_dataframe_columns(self):
         """Test that returned DataFrames have expected microstructure columns"""
         try:
-            # Test with datetime index (default) - 'date' becomes the index
+            # Test with datetime index (default) - 'date' column still present
             df_datetime = gcd.fetch_data("BTCUSDT", "1d", start="2024-01-01", end="2024-01-02")
 
             if not df_datetime.empty:
-                # Expected columns when using datetime index (no 'date' column)
+                # Expected columns when using datetime index (includes 'date' column for compatibility)
                 expected_datetime_columns = [
+                    "date",
                     "open",
                     "high",
                     "low",
@@ -235,16 +232,17 @@ class TestSimpleAPI:
 
                 # Check index is datetime and data types
                 assert isinstance(df_datetime.index, pd.DatetimeIndex)
+                assert pd.api.types.is_datetime64_any_dtype(df_datetime["date"])
                 assert pd.api.types.is_numeric_dtype(df_datetime["open"])
                 assert pd.api.types.is_numeric_dtype(df_datetime["volume"])
 
-            # Test with range index (legacy) - includes 'date' column
+            # Test with range index (legacy) - same columns but RangeIndex
             df_range = gcd.fetch_data(
                 "BTCUSDT", "1d", start="2024-01-01", end="2024-01-02", index_type="range"
             )
 
             if not df_range.empty:
-                # Expected columns when using range index (includes 'date' column)
+                # Expected columns when using range index (same as datetime)
                 expected_range_columns = [
                     "date",
                     "open",
@@ -330,8 +328,8 @@ class TestSimpleAPI:
                 assert isinstance(df_function_datetime, pd.DataFrame)
                 if not df_function_datetime.empty:
                     assert isinstance(df_function_datetime.index, pd.DatetimeIndex)
-                    # Should have one less column (date becomes index)
-                    assert len(df_function_datetime.columns) == len(df_class.columns) - 1
+                    # Should have same columns (date column preserved for compatibility)
+                    assert len(df_function_datetime.columns) == len(df_class.columns)
 
         except Exception as e:
             # Network issues are acceptable in tests
@@ -385,9 +383,9 @@ class TestAPIUsagePatterns:
             assert isinstance(df, pd.DataFrame)
 
             if not df.empty:
-                # With default datetime index, date becomes index
+                # With default datetime index, index is datetime but date column preserved
                 assert isinstance(df.index, pd.DatetimeIndex)
-                assert "date" not in df.columns
+                assert "date" in df.columns
 
             # Test with legacy range index
             df_range = gcd.fetch_data(
