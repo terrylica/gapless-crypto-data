@@ -5,6 +5,9 @@ Convenience API functions for gapless-crypto-data
 Provides function-based API following financial data library conventions.
 Intuitive and familiar patterns for data collection and analysis.
 
+Enhanced with GaplessDataFrame for domain-specific time series operations.
+Exception-only failure principles - all errors raise exceptions.
+
 Examples:
     import gapless_crypto_data as gcd
 
@@ -26,6 +29,7 @@ from typing import List, Optional, Union
 import pandas as pd
 
 from .collectors.binance_public_data_collector import BinancePublicDataCollector
+from .dataframes import GaplessDataFrame, _deprecation_warning_index_type
 from .gap_filling.universal_gap_filler import UniversalGapFiller
 
 
@@ -70,11 +74,15 @@ def fetch_data(
     start: Optional[str] = None,
     end: Optional[str] = None,
     output_dir: Optional[Union[str, Path]] = None,
-    index_type: str = "datetime",
+    index_type: Optional[str] = None,  # Deprecated parameter
     *,
     interval: Optional[str] = None,
-) -> pd.DataFrame:
-    """Fetch cryptocurrency data with simple function-based API.
+) -> GaplessDataFrame:
+    """Fetch cryptocurrency data with enhanced GaplessDataFrame.
+
+    Returns GaplessDataFrame with domain-specific methods for time series analysis.
+    Use .timeseries property for DatetimeIndex operations or direct methods like
+    .returns(), .resample_ohlcv(), .volatility() for common analysis tasks.
 
     Args:
         symbol: Trading pair symbol (e.g., "BTCUSDT", "ETHUSDT")
@@ -83,14 +91,11 @@ def fetch_data(
         start: Start date in YYYY-MM-DD format (optional)
         end: End date in YYYY-MM-DD format (optional)
         output_dir: Directory to save CSV files (optional)
-        index_type: Index format for returned DataFrame
-            - 'datetime' (default): DatetimeIndex using 'date' column for time series analysis
-            - 'range': RangeIndex (legacy behavior) for data processing workflows
-            - 'auto': Smart detection (same as 'datetime')
+        index_type: DEPRECATED - Use df.timeseries property instead
         interval: Legacy parameter name for timeframe (deprecated, use timeframe)
 
     Returns:
-        pandas.DataFrame with OHLCV data and microstructure columns:
+        GaplessDataFrame with OHLCV data and microstructure columns:
         - date: Timestamp (open time)
         - open, high, low, close: Price data
         - volume: Base asset volume
@@ -101,10 +106,15 @@ def fetch_data(
         - taker_buy_quote_asset_volume: Taker buy quote volume
 
     Examples:
-        # Fetch recent 1000 hourly bars (DatetimeIndex by default, date column preserved)
+        # Enhanced GaplessDataFrame with domain-specific methods
         df = fetch_data("BTCUSDT", "1h", limit=1000)
-        returns = df['close'].pct_change()  # Ready for time series analysis
-        # df['date'] still available for backward compatibility
+        returns = df.returns()                    # Built-in returns calculation
+        volatility = df.volatility(window=20)     # Built-in volatility
+        hourly = df.resample_ohlcv('1H')         # Built-in OHLCV resampling
+
+        # Time series operations via .timeseries property
+        ts_df = df.timeseries                     # DatetimeIndex for pandas ops
+        manual_returns = ts_df['close'].pct_change()
 
         # Fetch specific date range
         df = fetch_data("ETHUSDT", "4h", start="2024-01-01", end="2024-06-30")
@@ -112,9 +122,8 @@ def fetch_data(
         # Save to custom directory
         df = fetch_data("SOLUSDT", "1h", limit=500, output_dir="./crypto_data")
 
-        # Legacy RangeIndex for data processing workflows
-        df = fetch_data("BTCUSDT", "1h", limit=1000, index_type="range")
-        # Same columns, but with RangeIndex instead of DatetimeIndex
+        # Data validation
+        df.validate_ohlcv()  # Raises exception if data is invalid
 
         # Legacy interval parameter (deprecated)
         df = fetch_data("BTCUSDT", interval="1h", limit=1000)
@@ -135,13 +144,16 @@ def fetch_data(
     # Use timeframe if provided, otherwise use interval (legacy)
     period = timeframe if timeframe is not None else interval
 
-    # Validate index_type parameter
-    valid_index_types = {"datetime", "range", "auto"}
-    if index_type not in valid_index_types:
-        raise ValueError(
-            f"Invalid index_type '{index_type}'. "
-            f"Must be one of: {', '.join(sorted(valid_index_types))}"
-        )
+    # Handle deprecated index_type parameter
+    if index_type is not None:
+        _deprecation_warning_index_type()
+        # Validate deprecated parameter for backward compatibility
+        valid_index_types = {"datetime", "range", "auto"}
+        if index_type not in valid_index_types:
+            raise ValueError(
+                f"Invalid index_type '{index_type}'. "
+                f"Must be one of: {', '.join(sorted(valid_index_types))}"
+            )
 
     # Handle limit by calculating date range
     if limit and not start and not end:
@@ -193,17 +205,24 @@ def fetch_data(
         if limit and len(df) > limit:
             df = df.tail(limit).reset_index(drop=True)
 
-        # Set index based on user preference
-        if index_type in ("datetime", "auto"):
-            if "date" in df.columns:
-                df = df.set_index("date", drop=False)  # Keep date column AND set as index
-            else:
-                # Handle case where date column is missing (filtered empty DataFrame)
-                # Just return the DataFrame as-is to avoid KeyError
-                pass
-        # For 'range', keep current behavior (no changes)
+        # Convert to GaplessDataFrame
+        gapless_df = GaplessDataFrame(df)
 
-        return df
+        # Handle deprecated index_type parameter for backward compatibility
+        if index_type in ("datetime", "auto"):
+            if "date" in gapless_df.columns:
+                # For deprecated datetime mode, return DataFrame with DatetimeIndex
+                return GaplessDataFrame(gapless_df.set_index("date", drop=False))
+            else:
+                # Handle edge case where date column is missing
+                return gapless_df
+        elif index_type == "range":
+            # For deprecated range mode, return DataFrame with RangeIndex (default)
+            return gapless_df
+        else:
+            # Default behavior: return GaplessDataFrame with RangeIndex
+            # Users can call .timeseries property for DatetimeIndex operations
+            return gapless_df
     else:
         # Return empty DataFrame with expected columns
         columns = [
@@ -219,7 +238,7 @@ def fetch_data(
             "taker_buy_base_asset_volume",
             "taker_buy_quote_asset_volume",
         ]
-        df_empty = pd.DataFrame(columns=columns)
+        df_empty = GaplessDataFrame(columns=columns)
 
         # For empty DataFrame, ensure consistent structure but don't set index
         # (empty date column can't be converted to DatetimeIndex meaningfully)
@@ -232,10 +251,10 @@ def download(
     start: Optional[str] = None,
     end: Optional[str] = None,
     output_dir: Optional[Union[str, Path]] = None,
-    index_type: str = "datetime",
+    index_type: Optional[str] = None,  # Deprecated parameter
     *,
     interval: Optional[str] = None,
-) -> pd.DataFrame:
+) -> GaplessDataFrame:
     """Download cryptocurrency data (alias for fetch_data).
 
     Provides familiar API patterns for intuitive data collection.
@@ -246,11 +265,11 @@ def download(
         start: Start date in YYYY-MM-DD format
         end: End date in YYYY-MM-DD format
         output_dir: Directory to save CSV files
-        index_type: Index format ('datetime', 'range', or 'auto') - defaults to 'datetime'
+        index_type: DEPRECATED - Use returned GaplessDataFrame methods instead
         interval: Legacy parameter name for timeframe (deprecated)
 
     Returns:
-        pandas.DataFrame with complete OHLCV and microstructure data
+        GaplessDataFrame with complete OHLCV and microstructure data
 
     Examples:
         # Simple data download
