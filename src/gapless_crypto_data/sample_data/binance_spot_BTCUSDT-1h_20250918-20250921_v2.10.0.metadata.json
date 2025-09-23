@@ -1,38 +1,38 @@
 {
   "version": "v2.10.0",
   "generator": "BinancePublicDataCollector",
-  "generation_timestamp": "2025-09-23T01:14:14.802471+00:00Z",
+  "generation_timestamp": "2025-09-23T00:40:15.886502+00:00Z",
   "data_source": "Binance Public Data Repository",
   "data_source_url": "https://data.binance.vision/data/spot/monthly/klines",
   "market_type": "spot",
   "symbol": "BTCUSDT",
-  "timeframe": "1d",
+  "timeframe": "1h",
   "collection_method": "direct_download",
   "target_period": {
-    "start": "2025-09-21T00:00:00",
+    "start": "2025-09-18T00:00:00",
     "end": "2025-09-22T23:59:59",
-    "total_days": 1
+    "total_days": 4
   },
-  "actual_bars": 1,
+  "actual_bars": 96,
   "date_range": {
-    "start": "2025-09-21 00:00:00",
-    "end": "2025-09-21 00:00:00"
+    "start": "2025-09-18 00:00:00",
+    "end": "2025-09-21 23:00:00"
   },
   "statistics": {
-    "price_min": 115188.0,
-    "price_max": 115819.06,
-    "volume_total": 4511.52219,
-    "volume_mean": 4511.52219
+    "price_min": 115100.0,
+    "price_max": 117900.0,
+    "volume_total": 29835.77401,
+    "volume_mean": 310.7893126041667
   },
   "collection_performance": {
     "method": "direct_download",
     "duration": 0.0,
     "bars_per_second": 0,
-    "total_bars": 1
+    "total_bars": 96
   },
   "data_integrity": {
     "chronological_order": true,
-    "data_hash": "95592bdb9353accc2b148ad7d3dcdbe081fc62ac40a90810041570615a651083",
+    "data_hash": "8c8cbf051d5bb1807480f40c53e830f143da0fb75c8148fed5bc53b232028f60",
     "corruption_detected": false,
     "corrupted_rows_count": 0,
     "corruption_details": [],
@@ -43,9 +43,9 @@
     }
   },
   "timestamp_format_analysis": {
-    "total_rows_analyzed": 21,
+    "total_rows_analyzed": 504,
     "formats_detected": {
-      "microseconds": 21
+      "microseconds": 504
     },
     "transitions_detected": 0,
     "transition_details": [],
@@ -78,9 +78,15 @@
     "gaps_filled": 0,
     "gaps_remaining": 0,
     "gap_details": [],
+    "total_missing_bars": 0,
     "gap_filling_method": "authentic_binance_api",
     "data_completeness_score": 1.0,
-    "note": "Insufficient data for gap analysis (< 2 rows)"
+    "analysis_timestamp": "2025-09-23T00:40:15.886453+00:00Z",
+    "analysis_parameters": {
+      "timeframe": "1h",
+      "expected_interval_minutes": 60,
+      "tolerance_factor": 1.5
+    }
   },
   "compliance": {
     "zero_magic_numbers": true,

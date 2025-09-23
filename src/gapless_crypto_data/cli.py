@@ -228,13 +228,11 @@ def collect_data(command_line_args: Any) -> int:
 
         # Update symbols list based on resume plan
         symbols_to_process = resume_plan["remaining_symbols"]
-        symbols_in_progress = resume_plan.get("symbols_in_progress", {})
 
         # Save collection parameters to checkpoint
         checkpoint_manager.save_checkpoint({"collection_parameters": collection_params})
     else:
         symbols_to_process = requested_symbols
-        symbols_in_progress = {}
         print("🚀 Gapless Crypto Data Collection")
 
     print(f"Symbols: {requested_symbols}")
@@ -300,7 +298,7 @@ def collect_data(command_line_args: Any) -> int:
         except Exception as e:
             failed_symbols.append(symbol)
             logger = get_standard_logger("cli")
-            error_msg = handle_operation_error(
+            handle_operation_error(
                 operation_name=f"Data collection for {symbol}",
                 exception=e,
                 context={"symbol": symbol, "timeframes": command_line_args.timeframes},

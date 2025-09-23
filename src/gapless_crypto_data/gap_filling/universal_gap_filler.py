@@ -306,7 +306,6 @@ class UniversalGapFiller:
         timestamp_gap_info: Dict,
         csv_path: Path,
         trading_timeframe: str,
-        metadata_path: Path = None,
     ) -> bool:
         """Fill a single gap with authentic Binance data using API-first validation protocol"""
         logger.info(
@@ -343,10 +342,8 @@ class UniversalGapFiller:
 
         if is_enhanced_format:
             logger.info("   🚀 Enhanced 11-column format detected")
-            format_type = "enhanced"
         elif is_legacy_format:
             logger.info("   📊 Legacy 6-column format detected")
-            format_type = "legacy"
         else:
             logger.error(f"   ❌ Unknown CSV format. Columns: {list(existing_ohlcv_data.columns)}")
             return False

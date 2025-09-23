@@ -3,9 +3,8 @@
 Convenience API functions for gapless-crypto-data
 
 Provides function-based API following financial data library conventions.
-Intuitive and familiar patterns for data collection and analysis.
+Simple and intuitive data collection returning standard pandas DataFrames.
 
-Enhanced with GaplessDataFrame for domain-specific time series operations.
 Exception-only failure principles - all errors raise exceptions.
 
 Examples:
@@ -24,12 +23,11 @@ Examples:
 
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Literal, Optional, Union
 
 import pandas as pd
 
 from .collectors.binance_public_data_collector import BinancePublicDataCollector
-from .dataframes import GaplessDataFrame, _deprecation_warning_index_type
 from .gap_filling.universal_gap_filler import UniversalGapFiller
 
 
@@ -67,22 +65,48 @@ def get_supported_timeframes() -> List[str]:
     return collector.available_timeframes
 
 
+# Type aliases for better discoverability and coding agent support
+SupportedSymbol = Literal[
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT",
+    "ADAUSDT",
+    "DOTUSDT",
+    "LINKUSDT",
+    "MATICUSDT",
+    "AVAXUSDT",
+    "ATOMUSDT",
+    "NEARUSDT",
+    "FTMUSDT",
+    "SANDUSDT",
+    "MANAUSDT",
+    "BNBUSDT",
+    "XRPUSDT",
+    "LTCUSDT",
+    "BCHUSDT",
+    "EOSUSDT",
+]
+
+SupportedTimeframe = Literal[
+    "1s", "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d"
+]
+
+
 def fetch_data(
-    symbol: str,
-    timeframe: Optional[str] = None,
+    symbol: Union[str, SupportedSymbol],
+    timeframe: Optional[Union[str, SupportedTimeframe]] = None,
     limit: Optional[int] = None,
     start: Optional[str] = None,
     end: Optional[str] = None,
     output_dir: Optional[Union[str, Path]] = None,
-    index_type: Optional[str] = None,  # Deprecated parameter
+    index_type: Optional[Literal["datetime", "range", "auto"]] = None,  # Deprecated parameter
     *,
-    interval: Optional[str] = None,
-) -> GaplessDataFrame:
-    """Fetch cryptocurrency data with enhanced GaplessDataFrame.
+    interval: Optional[Union[str, SupportedTimeframe]] = None,
+) -> pd.DataFrame:
+    """Fetch cryptocurrency data as standard pandas DataFrame.
 
-    Returns GaplessDataFrame with domain-specific methods for time series analysis.
-    Use .timeseries property for DatetimeIndex operations or direct methods like
-    .returns(), .resample_ohlcv(), .volatility() for common analysis tasks.
+    Returns pandas DataFrame with complete OHLCV and microstructure data.
+    All analysis and calculations can be performed using standard pandas operations.
 
     Args:
         symbol: Trading pair symbol (e.g., "BTCUSDT", "ETHUSDT")
@@ -91,11 +115,11 @@ def fetch_data(
         start: Start date in YYYY-MM-DD format (optional)
         end: End date in YYYY-MM-DD format (optional)
         output_dir: Directory to save CSV files (optional)
-        index_type: DEPRECATED - Use df.timeseries property instead
+        index_type: DEPRECATED - Use pandas operations directly
         interval: Legacy parameter name for timeframe (deprecated, use timeframe)
 
     Returns:
-        GaplessDataFrame with OHLCV data and microstructure columns:
+        pd.DataFrame with OHLCV data and microstructure columns:
         - date: Timestamp (open time)
         - open, high, low, close: Price data
         - volume: Base asset volume
@@ -106,24 +130,22 @@ def fetch_data(
         - taker_buy_quote_asset_volume: Taker buy quote volume
 
     Examples:
-        # Enhanced GaplessDataFrame with domain-specific methods
+        # Simple data fetching
         df = fetch_data("BTCUSDT", "1h", limit=1000)
-        returns = df.returns()                    # Built-in returns calculation
-        volatility = df.volatility(window=20)     # Built-in volatility
-        hourly = df.resample_ohlcv('1H')         # Built-in OHLCV resampling
 
-        # Time series operations via .timeseries property
-        ts_df = df.timeseries                     # DatetimeIndex for pandas ops
-        manual_returns = ts_df['close'].pct_change()
+        # Standard pandas operations for analysis
+        returns = df['close'].pct_change()                    # Returns calculation
+        rolling_vol = df['close'].rolling(20).std()           # Rolling volatility
+        df_resampled = df.set_index('date').resample('4H').agg({
+            'open': 'first', 'high': 'max', 'low': 'min',
+            'close': 'last', 'volume': 'sum'
+        })  # OHLCV resampling
 
         # Fetch specific date range
         df = fetch_data("ETHUSDT", "4h", start="2024-01-01", end="2024-06-30")
 
         # Save to custom directory
         df = fetch_data("SOLUSDT", "1h", limit=500, output_dir="./crypto_data")
-
-        # Data validation
-        df.validate_ohlcv()  # Raises exception if data is invalid
 
         # Legacy interval parameter (deprecated)
         df = fetch_data("BTCUSDT", interval="1h", limit=1000)
@@ -146,7 +168,14 @@ def fetch_data(
 
     # Handle deprecated index_type parameter
     if index_type is not None:
-        _deprecation_warning_index_type()
+        import warnings
+
+        warnings.warn(
+            "The 'index_type' parameter is deprecated and will be removed in v3.0.0. "
+            "Use standard pandas operations on the returned DataFrame instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         # Validate deprecated parameter for backward compatibility
         valid_index_types = {"datetime", "range", "auto"}
         if index_type not in valid_index_types:
@@ -205,24 +234,21 @@ def fetch_data(
         if limit and len(df) > limit:
             df = df.tail(limit).reset_index(drop=True)
 
-        # Convert to GaplessDataFrame
-        gapless_df = GaplessDataFrame(df)
-
         # Handle deprecated index_type parameter for backward compatibility
         if index_type in ("datetime", "auto"):
-            if "date" in gapless_df.columns:
+            if "date" in df.columns:
                 # For deprecated datetime mode, return DataFrame with DatetimeIndex
-                return GaplessDataFrame(gapless_df.set_index("date", drop=False))
+                return df.set_index("date", drop=False)
             else:
                 # Handle edge case where date column is missing
-                return gapless_df
+                return df
         elif index_type == "range":
             # For deprecated range mode, return DataFrame with RangeIndex (default)
-            return gapless_df
+            return df
         else:
-            # Default behavior: return GaplessDataFrame with RangeIndex
-            # Users can call .timeseries property for DatetimeIndex operations
-            return gapless_df
+            # Default behavior: return standard pandas DataFrame with RangeIndex
+            # Users can use df.set_index('date') for DatetimeIndex operations
+            return df
     else:
         # Return empty DataFrame with expected columns
         columns = [
@@ -238,7 +264,7 @@ def fetch_data(
             "taker_buy_base_asset_volume",
             "taker_buy_quote_asset_volume",
         ]
-        df_empty = GaplessDataFrame(columns=columns)
+        df_empty = pd.DataFrame(columns=columns)
 
         # For empty DataFrame, ensure consistent structure but don't set index
         # (empty date column can't be converted to DatetimeIndex meaningfully)
@@ -246,15 +272,15 @@ def fetch_data(
 
 
 def download(
-    symbol: str,
-    timeframe: Optional[str] = None,
+    symbol: Union[str, SupportedSymbol],
+    timeframe: Optional[Union[str, SupportedTimeframe]] = None,
     start: Optional[str] = None,
     end: Optional[str] = None,
     output_dir: Optional[Union[str, Path]] = None,
-    index_type: Optional[str] = None,  # Deprecated parameter
+    index_type: Optional[Literal["datetime", "range", "auto"]] = None,  # Deprecated parameter
     *,
-    interval: Optional[str] = None,
-) -> GaplessDataFrame:
+    interval: Optional[Union[str, SupportedTimeframe]] = None,
+) -> pd.DataFrame:
     """Download cryptocurrency data (alias for fetch_data).
 
     Provides familiar API patterns for intuitive data collection.
@@ -265,11 +291,11 @@ def download(
         start: Start date in YYYY-MM-DD format
         end: End date in YYYY-MM-DD format
         output_dir: Directory to save CSV files
-        index_type: DEPRECATED - Use returned GaplessDataFrame methods instead
+        index_type: DEPRECATED - Use standard pandas operations instead
         interval: Legacy parameter name for timeframe (deprecated)
 
     Returns:
-        GaplessDataFrame with complete OHLCV and microstructure data
+        pd.DataFrame with complete OHLCV and microstructure data
 
     Examples:
         # Simple data download

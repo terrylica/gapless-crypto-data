@@ -29,21 +29,19 @@ Usage:
     # Function-based API
     import gapless_crypto_data as gcd
 
-    # Fetch recent data with enhanced GaplessDataFrame
+    # Fetch recent data as standard pandas DataFrame
     df = gcd.fetch_data("BTCUSDT", timeframe="1h", limit=1000)
 
-    # Domain-specific methods for time series analysis
-    returns = df.returns('close')                    # Built-in returns calculation
-    volatility = df.volatility('close', window=20)   # Built-in volatility
-    hourly = df.resample_ohlcv('1h')                 # Built-in OHLCV resampling
-    drawdown = df.drawdown('close')                  # Maximum drawdown analysis
+    # Standard pandas operations for analysis
+    returns = df['close'].pct_change()                     # Returns calculation
+    rolling_vol = df['close'].rolling(20).std()            # Rolling volatility
+    max_drawdown = (df['close'] / df['close'].cummax() - 1).min()  # Drawdown
 
-    # Time series operations via .timeseries property
-    ts_df = df.timeseries                            # DatetimeIndex for pandas ops
-    manual_returns = ts_df['close'].pct_change()
-
-    # Data validation
-    df.validate_ohlcv()  # Raises exception if data is invalid
+    # Resampling with pandas
+    df_resampled = df.set_index('date').resample('4H').agg({
+        'open': 'first', 'high': 'max', 'low': 'min',
+        'close': 'last', 'volume': 'sum'
+    })
 
     # Backward compatibility (legacy interval parameter)
     df = gcd.fetch_data("BTCUSDT", interval="1h", limit=1000)  # DeprecationWarning
@@ -75,7 +73,7 @@ Supported Symbols (USDT Spot Only):
     AVAXUSDT, ATOMUSDT, NEARUSDT, FTMUSDT, SANDUSDT, MANAUSDT, etc.
 """
 
-__version__ = "2.12.0"
+__version__ = "2.14.0"
 __author__ = "Eon Labs"
 __email__ = "terry@eonlabs.com"
 
@@ -94,7 +92,6 @@ from .api import (
     save_parquet,
 )
 from .collectors.binance_public_data_collector import BinancePublicDataCollector
-from .dataframes import GaplessDataFrame
 from .gap_filling.safe_file_operations import AtomicCSVOperations, SafeCSVMerger
 from .gap_filling.universal_gap_filler import UniversalGapFiller
 
@@ -109,8 +106,6 @@ __all__ = [
     "get_info",
     "save_parquet",
     "load_parquet",
-    # Enhanced DataFrame for domain-specific operations
-    "GaplessDataFrame",
     # Advanced class-based API (for complex workflows)
     "BinancePublicDataCollector",
     "UniversalGapFiller",

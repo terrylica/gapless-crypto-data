@@ -15,7 +15,6 @@ import json
 import logging
 import shutil
 import tempfile
-import urllib.parse
 import urllib.request
 import warnings
 import zipfile
@@ -1225,9 +1224,7 @@ class BinancePublicDataCollector:
         for i, timeframe in enumerate(timeframes):
             print(f"Processing {timeframe} ({i + 1}/{len(timeframes)})...")
 
-            tf_start = datetime.now()
             result = self.collect_timeframe_data(timeframe)
-            tf_duration = (datetime.now() - tf_start).total_seconds()
 
             if result and result.get("filepath"):
                 filepath = result["filepath"]
@@ -1454,9 +1451,7 @@ class BinancePublicDataCollector:
                 for i, timeframe in enumerate(timeframes):
                     print(f"\n📊 Processing {timeframe} ({i + 1}/{len(timeframes)})...")
 
-                    tf_start = datetime.now()
                     result = await self.collect_timeframe_data_concurrent(timeframe)
-                    tf_duration = (datetime.now() - tf_start).total_seconds()
 
                     if result and result.get("filepath"):
                         filepath = result["filepath"]
