@@ -82,7 +82,7 @@ class TestBinancePublicDataCollector:
 
         # Test with a very small date range to minimize download time
         try:
-            result = collector.collect_timeframe_data("1h")
+            collector.collect_timeframe_data("1h")
 
             # Check that files were created in the collector's output directory
             csv_files = list(Path(collector.output_dir).glob("*.csv"))

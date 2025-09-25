@@ -191,8 +191,6 @@ class ProbeAPI:
         if task_graph is None:
             task_graph = self.get_task_graph()
 
-        commands = []
-
         # Phase 0: Parallel discovery
         phase_0_commands = []
         for node_id in task_graph["execution_plan"]["phase_0"]:

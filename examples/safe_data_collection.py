@@ -23,13 +23,9 @@ def safe_data_collection_example():
     print("🛡️  Safe Data Collection Example")
     print("=" * 50)
 
-    # Known symbols with their listing dates
-    safe_symbols = {
-        "BTCUSDT": "2017-08-17",
-        "ETHUSDT": "2017-08-17",
-        "SOLUSDT": "2020-08-11",
-        "ADAUSDT": "2018-04-17",
-    }
+    # Known symbols with their listing dates (for reference)
+    # BTCUSDT: 2017-08-17, ETHUSDT: 2017-08-17
+    # SOLUSDT: 2020-08-11, ADAUSDT: 2018-04-17
 
     # Calculate safe date range (1 week of recent historical data)
     today = datetime.now().date()
@@ -90,9 +86,9 @@ def demonstrate_date_validation():
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
 
-            future_collector = BinancePublicDataCollector(
+            BinancePublicDataCollector(
                 symbol="BTCUSDT",
-                start_date="2030-01-01",  # Future date
+                start_date="2030-01-01",  # Future date - demonstrates warning
                 end_date="2030-01-31",
             )
 
@@ -110,8 +106,8 @@ def demonstrate_date_validation():
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
 
-            early_collector = BinancePublicDataCollector(
-                symbol="SOLUSDT",  # Listed 2020-08-11
+            BinancePublicDataCollector(
+                symbol="SOLUSDT",  # Listed 2020-08-11 - demonstrates validation
                 start_date="2019-01-01",  # Before listing
                 end_date="2019-01-31",
             )

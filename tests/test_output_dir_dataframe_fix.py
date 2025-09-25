@@ -29,7 +29,7 @@ def test_output_dir_bug_fix():
         assert len(files_before) == 0
 
         # Collect data
-        result = collector.collect_timeframe_data("1h")
+        collector.collect_timeframe_data("1h")
 
         # After collection - files should exist
         files_after = list(test_output_dir.glob("*.csv"))

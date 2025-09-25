@@ -175,7 +175,7 @@ class Test1sGapFilling:
 
         try:
             # This should make an API call for 1s interval
-            result = gap_filler.fill_gap(test_gap, temp_file, "1s")
+            gap_filler.fill_gap(test_gap, temp_file, "1s")
 
             # Verify API was called with correct parameters
             mock_get.assert_called_once()
@@ -416,7 +416,7 @@ class Test1dGapFilling:
 
         try:
             # This should make an API call for 1d interval
-            result = gap_filler.fill_gap(test_gap, temp_file, "1d")
+            gap_filler.fill_gap(test_gap, temp_file, "1d")
 
             # Verify API was called with correct parameters
             mock_get.assert_called_once()

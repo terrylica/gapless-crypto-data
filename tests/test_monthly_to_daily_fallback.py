@@ -55,7 +55,7 @@ class TestMonthlyToDailyFallback:
             mock_download.return_value = [["mock", "data"]]
 
             # Test fallback parsing
-            result = collector._fallback_to_daily_files("BTCUSDT-1d-2025-09.zip")
+            collector._fallback_to_daily_files("BTCUSDT-1d-2025-09.zip")
 
             # Verify parsing worked correctly
             mock_gen_urls.assert_called_once_with("BTCUSDT", "1d", "2025", "09")
