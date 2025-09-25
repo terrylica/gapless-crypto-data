@@ -67,9 +67,8 @@ test = [
 ]
 
 [build-system]
-requires = ["tomli>=1.2.0;python_version<'3.11'"]
-build-backend = "uv_build"
-backend-path = ["."]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.ruff]
 target-version = "py39"
