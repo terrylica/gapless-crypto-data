@@ -140,6 +140,22 @@ class UVBuilder:
                 dest_package_dir = dest_dir / package_name
                 shutil.copytree(package_dir, dest_package_dir)
 
+    def _create_console_scripts(self, metadata_dir: Path) -> None:
+        """Create entry_points.txt for console scripts from project.scripts configuration."""
+        config = self._load_pyproject()
+        scripts = config.get("project", {}).get("scripts", {})
+
+        if not scripts:
+            return
+
+        # Create entry_points.txt for pip/uv compatibility
+        entry_points_file = metadata_dir / "entry_points.txt"
+        with open(entry_points_file, "w", encoding="utf-8") as f:
+            f.write("[console_scripts]\n")
+            for script_name, entry_point in scripts.items():
+                f.write(f"{script_name} = {entry_point}\n")
+            f.write("\n")
+
     def build_wheel(
         self,
         wheel_directory: str,
@@ -166,6 +182,9 @@ class UVBuilder:
 
             # Generate metadata
             self._create_wheel_metadata(metadata_dir)
+
+            # Create console scripts entry points
+            self._create_console_scripts(metadata_dir)
 
             # Collect all files first
             record_entries = []
