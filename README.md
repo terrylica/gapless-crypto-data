@@ -278,6 +278,22 @@ for gap in gaps:
 result = gap_filler.process_file("BTCUSDT_1h.csv", "1h")
 ```
 
+## AI Agent Integration
+
+This package includes probe hooks (`gapless_crypto_data.__probe__`) that enable AI coding agents to discover functionality programmatically.
+
+### For AI Coding Agent Users
+
+To have your AI coding agent analyze this package, use this prompt:
+
+```
+Analyze gapless-crypto-data using: import gapless_crypto_data; probe = gapless_crypto_data.__probe__
+
+Execute: probe.discover_api(), probe.get_capabilities(), probe.get_task_graph()
+
+Provide insights about cryptocurrency data collection capabilities and usage patterns.
+```
+
 ## 🛠️ Development
 
 ### Prerequisites

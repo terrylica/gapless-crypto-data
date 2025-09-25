@@ -73,13 +73,15 @@ Supported Symbols (USDT Spot Only):
     AVAXUSDT, ATOMUSDT, NEARUSDT, FTMUSDT, SANDUSDT, MANAUSDT, etc.
 """
 
-__version__ = "2.14.0"
+__version__ = "2.15.0"
 __author__ = "Eon Labs"
 __email__ = "terry@eonlabs.com"
 
 # Core classes (advanced/power-user API)
 # Enhanced DataFrame for domain-specific operations
 # Convenience functions (simple/intuitive API)
+# API-only probe hooks for AI coding agents
+from . import __probe__
 from .api import (
     download,
     fetch_data,
@@ -111,4 +113,6 @@ __all__ = [
     "UniversalGapFiller",
     "AtomicCSVOperations",
     "SafeCSVMerger",
+    # AI agent probe hooks
+    "__probe__",
 ]

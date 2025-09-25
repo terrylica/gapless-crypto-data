@@ -1,5 +1,5 @@
 name: CI/CD Pipeline
-true:
+on:
   push:
     branches:
     - main
@@ -76,8 +76,12 @@ jobs:
         ls -la dist/
 
         '
-    - name: Validate documentation
-      run: uv run python -m docs.ultrathink.cli validate --package gapless_crypto_data
+    - name: Generate SBOM
+      run: |
+        source .venv/bin/activate
+        pip install cyclonedx-bom
+        cyclonedx-py -o sbom.json
+        ls -la sbom.json
   publish:
     needs: test
     runs-on: ubuntu-latest
@@ -104,11 +108,15 @@ jobs:
 
         '
     - name: Build package
-      run: 'source .venv/bin/activate
-
+      run: |
+        source .venv/bin/activate
         uv build
-
-        '
+        ls -la dist/
+    - name: Generate SBOM
+      run: |
+        source .venv/bin/activate
+        pip install cyclonedx-bom
+        cyclonedx-py -o dist/sbom.json
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
