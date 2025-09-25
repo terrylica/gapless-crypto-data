@@ -213,6 +213,47 @@ class UVBuilder:
 
         return wheel_filename
 
+    def _create_pkg_info(self, pkg_info_path: Path) -> None:
+        """Create PKG-INFO file for sdist."""
+        metadata = self._get_project_metadata()
+
+        pkg_info_content = []
+        pkg_info_content.append("Metadata-Version: 2.3")
+        pkg_info_content.append(f"Name: {metadata.get('name', 'unknown')}")
+        pkg_info_content.append(f"Version: {metadata.get('version', '0.0.0')}")
+
+        if summary := metadata.get("description"):
+            pkg_info_content.append(f"Summary: {summary}")
+
+        if authors := metadata.get("authors"):
+            for author in authors:
+                if name := author.get("name"):
+                    email = author.get("email", "")
+                    if email:
+                        pkg_info_content.append(f"Author-email: {name} <{email}>")
+                    else:
+                        pkg_info_content.append(f"Author: {name}")
+
+        if requires_python := metadata.get("requires-python"):
+            pkg_info_content.append(f"Requires-Python: {requires_python}")
+
+        if dependencies := metadata.get("dependencies"):
+            for dep in dependencies:
+                pkg_info_content.append(f"Requires-Dist: {dep}")
+
+        if classifiers := metadata.get("classifiers"):
+            for classifier in classifiers:
+                pkg_info_content.append(f"Classifier: {classifier}")
+
+        # Add home-page if URLs exist
+        config = self._load_pyproject()
+        if urls := config.get("project", {}).get("urls"):
+            if homepage := urls.get("Homepage"):
+                pkg_info_content.append(f"Home-page: {homepage}")
+
+        with open(pkg_info_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(pkg_info_content) + "\n")
+
     def build_sdist(
         self, sdist_directory: str, config_settings: Optional[Dict[str, Any]] = None
     ) -> str:
@@ -224,23 +265,38 @@ class UVBuilder:
         sdist_filename = f"{name}-{version}.tar.gz"
         sdist_path = Path(sdist_directory) / sdist_filename
 
-        # Files to include in sdist
-        include_patterns = [
-            "src/**/*",
-            "tests/**/*",
-            "pyproject.toml",
-            "README.md",
-            "LICENSE*",
-            "CHANGELOG*",
-            "*.py",  # Include uv_build.py itself
-        ]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            package_dir = temp_path / f"{name}-{version}"
+            package_dir.mkdir(parents=True)
 
-        with tarfile.open(sdist_path, "w:gz") as tar:
+            # Create PKG-INFO file
+            pkg_info_path = package_dir / "PKG-INFO"
+            self._create_pkg_info(pkg_info_path)
+
+            # Files to include in sdist
+            include_patterns = [
+                "src/**/*",
+                "tests/**/*",
+                "pyproject.toml",
+                "README.md",
+                "LICENSE*",
+                "CHANGELOG*",
+                "*.py",  # Include uv_build.py itself
+            ]
+
+            # Copy files to package directory
             for pattern in include_patterns:
                 for file_path in self.source_dir.glob(pattern):
                     if file_path.is_file() and not file_path.name.startswith("."):
-                        arcname = f"{name}-{version}/{file_path.relative_to(self.source_dir)}"
-                        tar.add(file_path, arcname=arcname)
+                        rel_path = file_path.relative_to(self.source_dir)
+                        dest_path = package_dir / rel_path
+                        dest_path.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(file_path, dest_path)
+
+            # Create the tarball
+            with tarfile.open(sdist_path, "w:gz") as tar:
+                tar.add(package_dir, arcname=f"{name}-{version}")
 
         return sdist_filename
 
