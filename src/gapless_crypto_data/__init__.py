@@ -1,5 +1,5 @@
 """
-Gapless Crypto Data - USDT spot market data collection with zero gaps guarantee
+Gapless Crypto Data v2.15.0 - USDT spot market data collection with zero gaps guarantee
 
 Market Compatibility:
 - USDT SPOT PAIRS ONLY (BTCUSDT, ETHUSDT, SOLUSDT, etc.)
