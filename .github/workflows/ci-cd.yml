@@ -15,19 +15,12 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version:
-        - '3.9'
-        - '3.10'
-        - '3.11'
-        - '3.12'
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python 3.12
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.12'
     - name: Install UV
       run: curl -LsSf https://astral.sh/uv/install.sh | sh
     - name: Add UV to PATH
@@ -80,7 +73,7 @@ jobs:
       run: |
         source .venv/bin/activate
         pip install cyclonedx-bom
-        cyclonedx-py -o sbom.json
+        cyclonedx-py environment -o sbom.json
         ls -la sbom.json
   publish:
     needs: test
@@ -116,7 +109,7 @@ jobs:
       run: |
         source .venv/bin/activate
         pip install cyclonedx-bom
-        cyclonedx-py -o dist/sbom.json
+        cyclonedx-py environment -o dist/sbom.json
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
