@@ -149,4 +149,13 @@ dev = [
     "ruff>=0.13.0",
     "types-requests>=2.32.4.20250913",
     "yamllint>=1.37.1",
+    "commitizen>=4.9.1",
 ]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "semver"
+version_provider = "pep621"
+major_version_zero = false
+bump_message = "chore(release): bump version $current_version → $new_version [skip ci]"

@@ -1,12 +1,12 @@
 repos:
-- repo: local
+- repo: https://github.com/commitizen-tools/commitizen
+  rev: v4.9.1
   hooks:
-  - id: validate-version
-    name: SOTA PyPI Version Validation
-    entry: python3 .pre-commit-hooks/validate-version.py
-    language: system
-    files: ^(pyproject\.toml|src/.*/.*__init__\.py)$
-    pass_filenames: false
+  - id: commitizen
+    stages: [commit-msg]
+  - id: commitizen-branch
+    stages: [pre-push]
+    args: [--rev-range, origin/main..HEAD]
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.4.0
   hooks:
