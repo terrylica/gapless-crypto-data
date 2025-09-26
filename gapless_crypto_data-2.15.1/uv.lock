@@ -262,7 +262,7 @@ wheels = [
 
 [[package]]
 name = "gapless-crypto-data"
-version = "2.15.1"
+version = "2.15.0"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },
