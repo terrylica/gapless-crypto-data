@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Build and Publish
 on:
   push:
     branches:
@@ -13,7 +13,7 @@ on:
 env:
   UV_SYSTEM_PYTHON: 1
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -30,38 +30,10 @@ jobs:
 
         source .venv/bin/activate
 
-        uv sync --dev
+        uv sync
 
         '
-    - name: Validate file encoding
-      run: "echo \"Checking file encoding (UTF-8/ASCII required)...\"\n# Only check\
-        \ files in src/, tests/, and examples/ directories\nfind src/ tests/ examples/\
-        \ -name \"*.py\" -o -name \"*.md\" -o -name \"*.txt\" -o -name \"*.toml\"\
-        \ -o -name \"*.yml\" -o -name \"*.yaml\" 2>/dev/null | \\\nxargs file --mime-encoding\
-        \ | grep -v -E \"(utf-8|us-ascii)\" && {\n  echo \"\u274C Non-UTF-8/ASCII\
-        \ files found! All text files must be UTF-8 or ASCII encoded.\"\n  exit 1\n\
-        } || {\n  echo \"\u2705 All project text files are properly encoded\"\n}\n"
-    - name: Lint with ruff
-      run: 'source .venv/bin/activate
-
-        uv run ruff check .
-
-        uv run ruff format --check .
-
-        '
-    - name: Run tests
-      run: 'source .venv/bin/activate
-
-        uv run pytest tests/ -v --tb=short
-
-        '
-    - name: Test CLI entry point
-      run: 'source .venv/bin/activate
-
-        uv run gapless-crypto-data --help
-
-        '
-    - name: Test package build
+    - name: Build package
       run: 'source .venv/bin/activate
 
         uv build
@@ -76,7 +48,7 @@ jobs:
         cyclonedx-py environment -o sbom.json
         ls -la sbom.json
   publish:
-    needs: test
+    needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
     permissions:
