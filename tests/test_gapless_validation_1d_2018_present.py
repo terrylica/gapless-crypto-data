@@ -191,7 +191,6 @@ class TestGaplessValidation1d2018Present:
 
         # Validate daily intervals
         date_diffs = date_series.diff().dropna()
-        expected_interval = pd.Timedelta(days=1)
 
         # Allow for weekend gaps in daily data (crypto markets run 24/7 but data may have weekend patterns)
         valid_intervals = [

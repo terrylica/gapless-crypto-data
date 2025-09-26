@@ -179,6 +179,6 @@ def test_no_missing_dependencies():
                 if f"from {forbidden} import" in content or f"import {forbidden}" in content:
                     pytest.fail(f"Found forbidden import '{forbidden}' in {py_file}")
 
-        except Exception as e:
+        except Exception:
             # Skip files that can't be read
             pass

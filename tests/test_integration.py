@@ -226,7 +226,7 @@ class TestEndToEndIntegration:
                 try:
                     gaps = gap_filler.detect_all_gaps(csv_file, "1h")
                     results.append(gaps)
-                except Exception as e:
+                except Exception:
                     # Should handle concurrent access gracefully
                     results.append(None)
 

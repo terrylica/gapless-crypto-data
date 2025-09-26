@@ -502,14 +502,6 @@ class Test1dGapFilling:
 
             gap = gaps[0]
             # Weekend gap: Sep 21 and Sep 22 (2024, not 2025)
-            expected_start = datetime(2024, 9, 21)  # Saturday
-            expected_end = datetime(2024, 9, 22)  # Sunday
-
-            # Convert to timestamps for comparison
-            gap_start_ts = gap["start_time"].timestamp()
-            gap_end_ts = gap["end_time"].timestamp()
-            expected_start_ts = expected_start.timestamp()
-            expected_end_ts = expected_end.timestamp()
 
             # Calculate missing bars from duration and expected interval
             missing_bars = int(
@@ -575,7 +567,6 @@ class TestDataIntegrityFor1sAnd1d:
         """Test that 1s data maintains authentic 11-column structure."""
         # This would test that 1s gap-filled data maintains the same structure
         # as original Binance data
-        gap_filler = UniversalGapFiller()
 
         # Test data structure expectations
         expected_columns = [
@@ -616,8 +607,6 @@ class TestDataIntegrityFor1sAnd1d:
 
     def test_1d_data_authenticity_structure(self):
         """Test that 1d data maintains authentic 11-column structure."""
-        gap_filler = UniversalGapFiller()
-
         expected_columns = [
             "date",
             "open",

@@ -1,6 +1,5 @@
 """Test Binance Public Data Collector functionality."""
 
-import tempfile
 from pathlib import Path
 from unittest.mock import Mock, patch
 
@@ -35,18 +34,13 @@ class TestBinancePublicDataCollector:
         mock_response.iter_content.return_value = [b"test data chunk"]
         mock_get.return_value = mock_response
 
-        collector = BinancePublicDataCollector()
-
-        with tempfile.NamedTemporaryFile() as temp_file:
-            # Test the download functionality
-            # Note: This would require accessing private methods,
-            # so we'll test via the public interface instead
-            pass
+        # Test the download functionality
+        # Note: This would require accessing private methods,
+        # so we'll test via the public interface instead
+        pass
 
     def test_validate_symbol(self):
         """Test symbol validation."""
-        collector = BinancePublicDataCollector()
-
         # Valid symbols
         valid_symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
         for symbol in valid_symbols:
@@ -56,8 +50,6 @@ class TestBinancePublicDataCollector:
 
     def test_validate_timeframes(self):
         """Test timeframe validation."""
-        collector = BinancePublicDataCollector()
-
         valid_timeframes = ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h"]
         for tf in valid_timeframes:
             assert isinstance(tf, str)
@@ -65,8 +57,6 @@ class TestBinancePublicDataCollector:
 
     def test_date_range_validation(self):
         """Test date range validation."""
-        collector = BinancePublicDataCollector()
-
         # Test date format validation
         valid_dates = ["2023-01-01", "2024-12-31"]
         for date_str in valid_dates:
@@ -116,8 +106,6 @@ class TestBinancePublicDataCollector:
 
     def test_output_filename_format(self):
         """Test output filename format."""
-        collector = BinancePublicDataCollector()
-
         # Test filename components
         symbol = "BTCUSDT"
         timeframe = "1h"

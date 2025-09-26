@@ -257,8 +257,6 @@ class TestUniversalGapFiller:
             }
         )
 
-        gap_filler = UniversalGapFiller()
-
         # The actual timeframe detection would depend on implementation
         # This is a placeholder test for the concept
         assert len(hourly_data) == 24
@@ -290,8 +288,6 @@ class TestUniversalGapFiller:
 
             csv_file = Path(temp_dir) / "gapped_data.csv"
             gapped_data.to_csv(csv_file, index=False)
-
-            original_length = len(gapped_data)
 
             try:
                 gap_filler = UniversalGapFiller()
