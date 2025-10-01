@@ -142,8 +142,7 @@ class BinancePublicDataCollector:
         # Whitelist validation - only alphanumeric characters
         if not re.match(r"^[A-Z0-9]+$", symbol):
             raise ValueError(
-                f"Symbol must be alphanumeric: {symbol}\n"
-                f"Valid examples: BTCUSDT, ETHUSDT, SOLUSDT"
+                f"Symbol must be alphanumeric: {symbol}\nValid examples: BTCUSDT, ETHUSDT, SOLUSDT"
             )
 
         return symbol
