@@ -84,6 +84,70 @@ class BinancePublicDataCollector:
         It does not support futures, perpetuals, or non-USDT pairs.
     """
 
+    def _validate_symbol(self, symbol: str) -> str:
+        """
+        Validate and sanitize symbol input for security.
+
+        This method prevents path traversal attacks and ensures symbol format integrity
+        by rejecting invalid characters and malformed inputs.
+
+        Args:
+            symbol: Trading pair symbol to validate (e.g., "BTCUSDT", "SOLUSDT")
+
+        Returns:
+            Validated and normalized symbol string (uppercase, stripped)
+
+        Raises:
+            ValueError: If symbol is None, empty, or contains invalid characters
+
+        Security:
+            - Prevents path traversal attacks (CWE-22)
+            - Blocks directory navigation characters (/, \\, ., ..)
+            - Enforces alphanumeric-only input
+            - Protects file operations using symbol in paths
+
+        Examples:
+            >>> collector._validate_symbol("btcusdt")
+            'BTCUSDT'
+
+            >>> collector._validate_symbol("BTC/../etc/passwd")
+            ValueError: Symbol contains invalid characters...
+
+            >>> collector._validate_symbol("")
+            ValueError: Symbol cannot be empty
+
+            >>> collector._validate_symbol(None)
+            ValueError: Symbol cannot be None
+        """
+        # SEC-03: None value validation
+        if symbol is None:
+            raise ValueError("Symbol cannot be None")
+
+        # SEC-02: Empty string validation
+        if not symbol or not symbol.strip():
+            raise ValueError("Symbol cannot be empty")
+
+        # SEC-01: Path traversal prevention
+        import re
+
+        if re.search(r"[./\\]", symbol):
+            raise ValueError(
+                f"Symbol contains invalid characters: {symbol}\n"
+                f"Symbol must be alphanumeric (e.g., BTCUSDT, SOLUSDT)"
+            )
+
+        # Normalize to uppercase and strip whitespace
+        symbol = symbol.upper().strip()
+
+        # Whitelist validation - only alphanumeric characters
+        if not re.match(r"^[A-Z0-9]+$", symbol):
+            raise ValueError(
+                f"Symbol must be alphanumeric: {symbol}\n"
+                f"Valid examples: BTCUSDT, ETHUSDT, SOLUSDT"
+            )
+
+        return symbol
+
     def __init__(
         self,
         symbol: str = "SOLUSDT",
@@ -96,13 +160,17 @@ class BinancePublicDataCollector:
 
         Args:
             symbol (str, optional): Trading pair symbol in USDT format.
-                Must be a valid USDT spot pair available on Binance.
+                Must be alphanumeric (A-Z, 0-9) only. Path characters (/, \\, .)
+                and special characters are rejected for security.
+                Symbol is normalized to uppercase.
                 Defaults to "SOLUSDT".
             start_date (str, optional): Start date in YYYY-MM-DD format.
                 Data collection begins from this date (inclusive).
+                Must be on or before end_date.
                 Defaults to "2020-08-15".
             end_date (str, optional): End date in YYYY-MM-DD format.
                 Data collection ends on this date (inclusive, 23:59:59).
+                Must be on or after start_date.
                 Defaults to "2025-03-20".
             output_dir (str or Path, optional): Directory to save files.
                 If None, saves to package's sample_data directory.
@@ -112,8 +180,19 @@ class BinancePublicDataCollector:
                 Defaults to "csv".
 
         Raises:
-            ValueError: If symbol format is invalid or dates are malformed.
+            ValueError: If symbol is None, empty, or contains invalid characters
+                (path traversal, special characters, non-alphanumeric).
+            ValueError: If date format is incorrect (not YYYY-MM-DD).
+            ValueError: If end_date is before start_date.
+            ValueError: If output_format is not 'csv' or 'parquet'.
             FileNotFoundError: If output_dir path is invalid.
+
+        Security:
+            Input validation prevents path traversal attacks (CWE-22) by:
+            - Rejecting symbols with path characters (/, \\, ., ..)
+            - Enforcing alphanumeric-only symbols
+            - Validating date range logic
+            - Normalizing inputs to uppercase
 
         Examples:
             >>> # Default configuration (SOLUSDT, 4+ years of data)
@@ -133,12 +212,25 @@ class BinancePublicDataCollector:
             ...     output_format="parquet"
             ... )
         """
-        self.symbol = symbol
-        self.start_date = datetime.strptime(start_date, "%Y-%m-%d")
-        # Make end_date inclusive of the full day (23:59:59)
-        self.end_date = datetime.strptime(end_date, "%Y-%m-%d").replace(
-            hour=23, minute=59, second=59
-        )
+        # Validate and assign symbol (SEC-01, SEC-02, SEC-03)
+        self.symbol = self._validate_symbol(symbol)
+
+        # Parse and assign dates with validation
+        try:
+            self.start_date = datetime.strptime(start_date, "%Y-%m-%d")
+            # Make end_date inclusive of the full day (23:59:59)
+            self.end_date = datetime.strptime(end_date, "%Y-%m-%d").replace(
+                hour=23, minute=59, second=59
+            )
+        except ValueError as e:
+            raise ValueError(f"Invalid date format. Use YYYY-MM-DD format. Error: {e}") from e
+
+        # SEC-04: Validate date range logic
+        if self.end_date < self.start_date:
+            raise ValueError(
+                f"Invalid date range: end_date ({self.end_date.strftime('%Y-%m-%d')}) "
+                f"is before start_date ({self.start_date.strftime('%Y-%m-%d')})"
+            )
         self.base_url = "https://data.binance.vision/data/spot/monthly/klines"
 
         # Validate and store output format

