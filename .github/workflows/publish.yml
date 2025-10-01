@@ -91,7 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-      contents: read
+      contents: write  # Required to attach signatures to GitHub release
     steps:
     - name: Download all the dists
       uses: actions/download-artifact@v4
