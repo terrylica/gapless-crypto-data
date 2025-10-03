@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+### ✨ Features
+
+- **api**: Deliver zero gaps guarantee by default with auto-fill Implement automatic gap detection and filling in download() and fetch_data() to fulfill the package's core promise of "zero gaps guarantee". Previous Behavior (BROKEN): - Package name: gapless-crypto-data - Promise: "zero gaps guarantee" in README - Reality: download() returned data with gaps from Binance Vision - User complaint: False advertising - had to manually discover and call fill_gaps() New Behavior (FIXED): - auto_fill_gaps=True by default in download() and fetch_data() - Automatically detects gaps using UniversalGapFiller - Fills gaps with authentic Binance API data - Logs gap-filling activity for transparency - Opt-out available: auto_fill_gaps=False for raw Vision data Implementation Details: - Added auto_fill_gaps parameter to both download() and fetch_data() - Integrated UniversalGapFiller.process_file() into data collection flow - Automatic DataFrame reload after gap filling - Clear logging: "✅ Auto-filled N/M gap(s)" or warning if fill fails - Enhanced docstrings with "zero gaps guarantee" language Testing: - Added 4 comprehensive test cases in test_simple_api.py: * test_auto_fill_gaps_enabled_by_default() * test_auto_fill_gaps_can_be_disabled() * test_fetch_data_auto_fill_parameter() * test_download_delivers_zero_gaps_guarantee() - March 24, 2023 gap scenario validation Addresses user complaint: /tmp/github_issue_gapless_crypto_data.md - Gap-filling capability existed but wasn't integrated by default - Users discovered gaps in production after trusting package name - Had to manually diagnose, call fill_gaps(), and reload data BREAKING CHANGE: download() and fetch_data() now automatically fill gaps by default, which may result in additional API calls for data with gaps. Users can disable with auto_fill_gaps=False to maintain previous behavior.
+
+
+### 🔧 CI/CD Improvements
+
+- **ci**: Add contents:write permission for Sigstore artifact signing Allows Sigstore action to attach signed artifacts to GitHub releases
+
+
 ### ♻️ Refactoring
 
 - Split CI/CD into industry-standard workflows - Create dedicated ci.yml for testing (PRs/pushes) - Update publish.yml to trigger only on releases - Remove combined ci-cd.yml workflow - Align with PyPI trusted publisher configuration (publish.yml) - Follow SOTA CI/CD separation of concerns
@@ -14,6 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### ✨ Features
 
 - Implement SOTA pre-flight version validation with Commitizen - Replace custom validation hook with industry-standard Commitizen - Add mandatory version bump enforcement via pre-commit hooks - Configure conventional commits with commit-msg validation - Add pre-push branch validation with origin/main comparison - Remove legacy custom validation hook in favor of elegant solution This implements unanimous 8/8 research agent consensus for pre-commit version control.
+
+
+### 💅 Code Style
+
+- Auto-format code with ruff Apply ruff formatting to binance_public_data_collector.py
 
 
 ### 🔒 Security Fixes
@@ -256,4 +271,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🚀 Initial release: Gapless Crypto Data v1.0.0 Ultra-fast cryptocurrency data collection with zero gaps guarantee. Features: - ⚡ 22x faster data collection via Binance public repository - 🔒 Zero gaps guarantee with multi-exchange fallback - 🛡️ Production-grade reliability with atomic operations - 📊 Multi-timeframe support (1m-4h intervals) - 🔧 Complete CLI and Python API - 🧪 Comprehensive test suite (26 tests) - 📝 Full documentation and examples Package includes: - Core data collection and gap filling functionality - UV-first modern Python packaging - GitHub Actions CI/CD pipeline - Type checking with mypy - Code quality with ruff - Comprehensive examples and documentation Ready for production use and PyPI publishing.
 
 - ✨ Final polish: Code quality improvements and validation Quality improvements: - ✅ Fixed all ruff linting issues and updated configuration - ✅ Resolved mutable default arguments in collectors - ✅ Updated ruff config to use new lint section format - ✅ Added comprehensive .gitignore patterns for venv directories - ✅ Improved import organization and removed unused variables Testing validation: - ✅ All 26 tests passing with 1 network-dependent skip - ✅ Type checking with mypy configured for gradual adoption - ✅ Code linting passing with modern ruff configuration - ✅ Package builds successfully (wheel + source distribution) - ✅ Installation from wheel tested and functional - ✅ CLI working correctly from installed package Production ready: - 🚀 Ultra-fast crypto data collection (22x faster) - 🔒 Zero gaps guarantee with multi-exchange fallback - 🛡️ Production-grade reliability and error handling - 📊 Complete documentation and examples - 🧪 Comprehensive test coverage Ready for PyPI publishing and public distribution.
-
