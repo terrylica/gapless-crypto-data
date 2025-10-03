@@ -100,13 +100,17 @@ def fetch_data(
     end: Optional[str] = None,
     output_dir: Optional[Union[str, Path]] = None,
     index_type: Optional[Literal["datetime", "range", "auto"]] = None,  # Deprecated parameter
+    auto_fill_gaps: bool = True,
     *,
     interval: Optional[Union[str, SupportedTimeframe]] = None,
 ) -> pd.DataFrame:
-    """Fetch cryptocurrency data as standard pandas DataFrame.
+    """Fetch cryptocurrency data as standard pandas DataFrame with zero gaps guarantee.
 
     Returns pandas DataFrame with complete OHLCV and microstructure data.
     All analysis and calculations can be performed using standard pandas operations.
+
+    By default, automatically detects and fills gaps using authentic Binance API data
+    to deliver on the "zero gaps guarantee" promise.
 
     Args:
         symbol: Trading pair symbol (e.g., "BTCUSDT", "ETHUSDT")
@@ -116,6 +120,7 @@ def fetch_data(
         end: End date in YYYY-MM-DD format (optional)
         output_dir: Directory to save CSV files (optional)
         index_type: DEPRECATED - Use pandas operations directly
+        auto_fill_gaps: Automatically fill detected gaps with authentic Binance API data (default: True)
         interval: Legacy parameter name for timeframe (deprecated, use timeframe)
 
     Returns:
@@ -230,6 +235,32 @@ def fetch_data(
     if result and "dataframe" in result:
         df = result["dataframe"]
 
+        # Auto-fill gaps if enabled (delivers "zero gaps guarantee")
+        if auto_fill_gaps and result.get("filepath"):
+            import logging
+
+            logger = logging.getLogger(__name__)
+
+            csv_file = Path(result["filepath"])
+            gap_filler = UniversalGapFiller()
+
+            # Detect and fill gaps
+            gap_result = gap_filler.process_file(csv_file, period)
+
+            if gap_result["gaps_detected"] > 0:
+                if gap_result["gaps_filled"] > 0:
+                    logger.info(
+                        f"✅ Auto-filled {gap_result['gaps_filled']}/{gap_result['gaps_detected']} "
+                        f"gap(s) with authentic Binance API data"
+                    )
+                    # Reload DataFrame with filled gaps
+                    df = pd.read_csv(csv_file, comment="#")
+                else:
+                    logger.warning(
+                        f"⚠️  Detected {gap_result['gaps_detected']} gap(s) but could not fill them. "
+                        f"Data may not be complete."
+                    )
+
         # Apply limit if specified
         if limit and len(df) > limit:
             df = df.tail(limit).reset_index(drop=True)
@@ -278,12 +309,15 @@ def download(
     end: Optional[str] = None,
     output_dir: Optional[Union[str, Path]] = None,
     index_type: Optional[Literal["datetime", "range", "auto"]] = None,  # Deprecated parameter
+    auto_fill_gaps: bool = True,
     *,
     interval: Optional[Union[str, SupportedTimeframe]] = None,
 ) -> pd.DataFrame:
-    """Download cryptocurrency data (alias for fetch_data).
+    """Download cryptocurrency data with zero gaps guarantee.
 
     Provides familiar API patterns for intuitive data collection.
+    By default, automatically detects and fills gaps using authentic Binance API data
+    to deliver on the package's core promise of zero gaps.
 
     Args:
         symbol: Trading pair symbol (e.g., "BTCUSDT")
@@ -292,17 +326,18 @@ def download(
         end: End date in YYYY-MM-DD format
         output_dir: Directory to save CSV files
         index_type: DEPRECATED - Use standard pandas operations instead
+        auto_fill_gaps: Automatically fill detected gaps with authentic Binance API data (default: True)
         interval: Legacy parameter name for timeframe (deprecated)
 
     Returns:
-        pd.DataFrame with complete OHLCV and microstructure data
+        pd.DataFrame with complete OHLCV and microstructure data (gapless by default)
 
     Examples:
-        # Simple data download
+        # Simple data download (automatically fills gaps)
         df = download("BTCUSDT", "1h", start="2024-01-01", end="2024-06-30")
 
-        # Simple recent data
-        df = download("ETHUSDT", "4h")
+        # Disable auto-fill if you want raw Vision archive data
+        df = download("ETHUSDT", "4h", auto_fill_gaps=False)
 
         # Legacy interval parameter
         df = download("BTCUSDT", interval="1h")
@@ -318,6 +353,7 @@ def download(
         end=end,
         output_dir=output_dir,
         index_type=index_type,
+        auto_fill_gaps=auto_fill_gaps,
         interval=interval,
     )
 

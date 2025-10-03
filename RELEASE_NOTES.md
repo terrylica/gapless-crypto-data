@@ -1,20 +1,18 @@
 
-## 2.15.3 - 2025-09-26
+## 2.16.0 - 2025-10-01
 
 
 ### ✨ New Features
 
-- Remove all testing from GitHub Actions workflow - Eliminates pytest test execution - Removes file encoding validation - Removes ruff linting checks - Removes CLI entry point testing - Keeps only essential build and SBOM generation - Streamlines workflow to build + publish only (by @terrylica)
-
-- Implement SOTA pre-flight version validation system - Add PEP 691 JSON API version checking with HTML fallback - Implement version consistency validation across pyproject.toml and __init__.py - Create intelligent pre-commit hook with <2 second execution time - Add graceful degradation on network failures - Provide clear error messages with actionable remediation steps Consensus from 8 research agents: - Pre-commit + CI/CD integration points (8/8 unanimous) - PyPI API pre-flight validation (8/8 unanimous) - Performance-optimized tooling with UV ecosystem (8/8 unanimous) - PEP 691 JSON API with HTML fallback (7/8 strong majority) - Security-first publishing approach (8/8 unanimous) Prevents PyPI 'already exists' errors through proactive validation Implements modern Python packaging best practices from 2024-2025 (by @terrylica)
+- Implement SOTA pre-flight version validation with Commitizen - Replace custom validation hook with industry-standard Commitizen - Add mandatory version bump enforcement via pre-commit hooks - Configure conventional commits with commit-msg validation - Add pre-push branch validation with origin/main comparison - Remove legacy custom validation hook in favor of elegant solution This implements unanimous 8/8 research agent consensus for pre-commit version control. (by @terrylica)
 
 
 
-### 🐛 Bug Fixes & Improvements
+### 🔒 Security Fixes
 
-- Simplify CI/CD pipeline and fix SBOM generation - Reduce Python version matrix from 4 versions to single Python 3.12 - Fix cyclonedx-py command syntax: add 'environment' subcommand - Maintain all quality checks with reduced CI execution time - Keep essential testing while removing unnecessary version matrix complexity Impact: Faster CI/CD pipeline with single Python version testing Classification: workflow optimization and command syntax fix (by @terrylica)
+- Prevent path traversal attacks in BinancePublicDataCollector Implement comprehensive input validation to address security vulnerabilities reported by ML Feature Experiments Team (SEC-01 through SEC-04): - SEC-01 (HIGH): Prevent path traversal via symbol parameter (CWE-22) * Reject directory navigation characters (/, \, ., ..) * Enforce alphanumeric-only symbols with regex validation * CVSS 7.5 vulnerability now mitigated - SEC-02 (MEDIUM): Reject empty symbol strings * Validate non-empty and non-whitespace inputs * Clear error messages for users - SEC-03 (MEDIUM): Reject None symbol values * Explicit None checks prevent AttributeError downstream * Early validation with clear error messages - SEC-04 (LOW): Validate date range logic * Ensure end_date >= start_date * Enhanced date format error handling Security improvements: - Added _validate_symbol() method with whitelist validation - Symbol normalization to uppercase - Comprehensive docstring updates with security notes - 17 new security-focused unit tests (100% pass rate) - Backwards compatible with all valid usage Testing: - 42 tests passed, 1 skipped - All ruff checks passed - No regressions in existing functionality Addresses security audit findings from ml-feature-experiments team (by @terrylica)
 
 
 
 ---
-**Full Changelog**: https://github.com/Eon-Labs/rangebar/compare/v2.15.1...v2.15.3
+**Full Changelog**: https://github.com/Eon-Labs/rangebar/compare/v2.15.3...v2.16.0
