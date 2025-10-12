@@ -1,18 +1,18 @@
 
-## 2.16.0 - 2025-10-01
+## 3.0.0 - 2025-10-03
 
 
 ### ✨ New Features
 
-- Implement SOTA pre-flight version validation with Commitizen - Replace custom validation hook with industry-standard Commitizen - Add mandatory version bump enforcement via pre-commit hooks - Configure conventional commits with commit-msg validation - Add pre-push branch validation with origin/main comparison - Remove legacy custom validation hook in favor of elegant solution This implements unanimous 8/8 research agent consensus for pre-commit version control. (by @terrylica)
+- Deliver zero gaps guarantee by default with auto-fill Implement automatic gap detection and filling in download() and fetch_data() to fulfill the package's core promise of "zero gaps guarantee". Previous Behavior (BROKEN): - Package name: gapless-crypto-data - Promise: "zero gaps guarantee" in README - Reality: download() returned data with gaps from Binance Vision - User complaint: False advertising - had to manually discover and call fill_gaps() New Behavior (FIXED): - auto_fill_gaps=True by default in download() and fetch_data() - Automatically detects gaps using UniversalGapFiller - Fills gaps with authentic Binance API data - Logs gap-filling activity for transparency - Opt-out available: auto_fill_gaps=False for raw Vision data Implementation Details: - Added auto_fill_gaps parameter to both download() and fetch_data() - Integrated UniversalGapFiller.process_file() into data collection flow - Automatic DataFrame reload after gap filling - Clear logging: "✅ Auto-filled N/M gap(s)" or warning if fill fails - Enhanced docstrings with "zero gaps guarantee" language Testing: - Added 4 comprehensive test cases in test_simple_api.py: * test_auto_fill_gaps_enabled_by_default() * test_auto_fill_gaps_can_be_disabled() * test_fetch_data_auto_fill_parameter() * test_download_delivers_zero_gaps_guarantee() - March 24, 2023 gap scenario validation Addresses user complaint: /tmp/github_issue_gapless_crypto_data.md - Gap-filling capability existed but wasn't integrated by default - Users discovered gaps in production after trusting package name - Had to manually diagnose, call fill_gaps(), and reload data BREAKING CHANGE: download() and fetch_data() now automatically fill gaps by default, which may result in additional API calls for data with gaps. Users can disable with auto_fill_gaps=False to maintain previous behavior. (by @terrylica)
 
 
 
-### 🔒 Security Fixes
+### 🐛 Bug Fixes & Improvements
 
-- Prevent path traversal attacks in BinancePublicDataCollector Implement comprehensive input validation to address security vulnerabilities reported by ML Feature Experiments Team (SEC-01 through SEC-04): - SEC-01 (HIGH): Prevent path traversal via symbol parameter (CWE-22) * Reject directory navigation characters (/, \, ., ..) * Enforce alphanumeric-only symbols with regex validation * CVSS 7.5 vulnerability now mitigated - SEC-02 (MEDIUM): Reject empty symbol strings * Validate non-empty and non-whitespace inputs * Clear error messages for users - SEC-03 (MEDIUM): Reject None symbol values * Explicit None checks prevent AttributeError downstream * Early validation with clear error messages - SEC-04 (LOW): Validate date range logic * Ensure end_date >= start_date * Enhanced date format error handling Security improvements: - Added _validate_symbol() method with whitelist validation - Symbol normalization to uppercase - Comprehensive docstring updates with security notes - 17 new security-focused unit tests (100% pass rate) - Backwards compatible with all valid usage Testing: - 42 tests passed, 1 skipped - All ruff checks passed - No regressions in existing functionality Addresses security audit findings from ml-feature-experiments team (by @terrylica)
+- Add contents:write permission for Sigstore artifact signing Allows Sigstore action to attach signed artifacts to GitHub releases (by @terrylica)
 
 
 
 ---
-**Full Changelog**: https://github.com/Eon-Labs/rangebar/compare/v2.15.3...v2.16.0
+**Full Changelog**: https://github.com/Eon-Labs/rangebar/compare/v2.16.0...v3.0.0

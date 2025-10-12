@@ -8,7 +8,6 @@
 [![UV Managed](https://img.shields.io/badge/uv-managed-blue.svg)](https://github.com/astral-sh/uv)
 [![Tests](https://github.com/Eon-Labs/gapless-crypto-data/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/Eon-Labs/gapless-crypto-data/actions)
 [![AI Agent Ready](https://img.shields.io/badge/AI%20Agent-Ready-brightgreen.svg)](https://github.com/Eon-Labs/gapless-crypto-data/blob/main/PROBE_USAGE_EXAMPLE.md)
-[![Research](https://img.shields.io/badge/Research-EURUSD_Spread_Analysis-blue.svg)](docs/research/eurusd-spread-analysis/)
 
 Ultra-fast cryptocurrency data collection with zero gaps guarantee. Provides 11-column microstructure format through Binance public data repository with intelligent monthly-to-daily fallback for seamless coverage.
 
@@ -26,7 +25,6 @@ Ultra-fast cryptocurrency data collection with zero gaps guarantee. Provides 11-
 - **Multi-symbol & multi-timeframe** concurrent collection
 - **CCXT-compatible** dual parameter support (timeframe/interval)
 - **Production-grade** with comprehensive test coverage
-- **Publication-quality research** - Modal-band-excluded variance analysis ([EURUSD study →](docs/research/eurusd-spread-analysis/))
 
 ## Quick Start
 
@@ -149,17 +147,6 @@ print(f"Market impact volatility: {market_impact:.3f}")
 The package supports two data collection methods:
 - **Binance Public Repository**: Pre-generated monthly ZIP files for historical data
 - **Binance API**: Real-time data for gap filling and recent data collection
-
-## 🔬 Research
-
-**[EURUSD Spread Variance Analysis →](docs/research/eurusd-spread-analysis/)**
-
-Modal-band-excluded variance estimation of spread variants (11.1M ticks, July-Sep 2025). Standard (EURUSD) achieves Signal Quality Score 26.57, 32× superior to alternatives.
-
-**Frameworks**: Mode-truncated CV, hurdle model decomposition
-**Applications**: ML feature engineering, HFT signal extraction, regime-switching models
-
-📖 [Full Documentation →](docs/research/eurusd-spread-analysis/)
 
 ## 🏗️ Architecture
 
