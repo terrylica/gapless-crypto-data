@@ -186,28 +186,18 @@ class TestEndToEndIntegration:
                 assert isinstance(e, (ValueError, Exception))
 
     @pytest.mark.integration
-    def test_concurrent_file_operations(self):
-        """Test that file operations work correctly under concurrent access."""
+    def test_concurrent_file_operations(self, real_btcusdt_1h_sample_copy):
+        """Test that file operations work correctly under concurrent access.
+
+        Uses real BTCUSDT data from Binance to validate atomic operations
+        and concurrent access patterns with authentic market data structure.
+        """
 
         with tempfile.TemporaryDirectory() as temp_dir:
             output_dir = Path(temp_dir)
 
-            # Create a test CSV file
-            test_df = pd.DataFrame(
-                {
-                    "date": pd.date_range("2024-01-01", periods=24, freq="1h"),
-                    "open": [100.0 + i for i in range(24)],
-                    "high": [105.0 + i for i in range(24)],
-                    "low": [95.0 + i for i in range(24)],
-                    "close": [102.0 + i for i in range(24)],
-                    "volume": [1000.0 + i * 10 for i in range(24)],
-                    "close_time": [f"2024-01-01 {i:02d}:59:59" for i in range(24)],
-                    "quote_asset_volume": [10000.0 + i * 100 for i in range(24)],
-                    "number_of_trades": [50 + i for i in range(24)],
-                    "taker_buy_base_asset_volume": [500.0 + i * 5 for i in range(24)],
-                    "taker_buy_quote_asset_volume": [5000.0 + i * 50 for i in range(24)],
-                }
-            )
+            # Use real BTCUSDT data (copy for mutation safety)
+            test_df = real_btcusdt_1h_sample_copy
 
             csv_file = output_dir / "test_concurrent.csv"
 
@@ -269,41 +259,24 @@ class TestEndToEndIntegration:
             atomic_ops.cleanup_backup()
 
     @pytest.mark.integration
-    def test_data_integrity_validation_pipeline(self):
-        """Test the complete data integrity validation pipeline."""
+    def test_data_integrity_validation_pipeline(self, real_btcusdt_1h_sample_copy):
+        """Test the complete data integrity validation pipeline.
+
+        Uses real BTCUSDT data with intentionally introduced gap to validate
+        gap detection and data quality validation with authentic market data.
+        """
 
         with tempfile.TemporaryDirectory() as temp_dir:
             output_dir = Path(temp_dir)
             csv_file = output_dir / "test_validation.csv"
 
-            # Create test data with known issues for validation
-            test_data = {
-                "date": [
-                    "2024-01-01 00:00:00",
-                    "2024-01-01 01:00:00",
-                    "2024-01-01 02:00:00",
-                    "2024-01-01 04:00:00",  # Gap at 03:00:00
-                    "2024-01-01 05:00:00",
-                ],
-                "open": [100.0, 101.0, 102.0, 104.0, 105.0],
-                "high": [105.0, 106.0, 107.0, 109.0, 110.0],
-                "low": [95.0, 96.0, 97.0, 99.0, 100.0],
-                "close": [102.0, 103.0, 104.0, 106.0, 107.0],
-                "volume": [1000.0, 1100.0, 1200.0, 1400.0, 1500.0],
-                "close_time": [
-                    "2024-01-01 00:59:59",
-                    "2024-01-01 01:59:59",
-                    "2024-01-01 02:59:59",
-                    "2024-01-01 04:59:59",
-                    "2024-01-01 05:59:59",
-                ],
-                "quote_asset_volume": [10000.0, 11000.0, 12000.0, 14000.0, 15000.0],
-                "number_of_trades": [50, 55, 60, 70, 75],
-                "taker_buy_base_asset_volume": [500.0, 550.0, 600.0, 700.0, 750.0],
-                "taker_buy_quote_asset_volume": [5000.0, 5500.0, 6000.0, 7000.0, 7500.0],
-            }
+            # Use real BTCUSDT data and introduce a gap for testing
+            test_df = real_btcusdt_1h_sample_copy
 
-            test_df = pd.DataFrame(test_data)
+            # Introduce an intentional gap by removing row at index 3
+            # This creates a gap in the timestamp sequence for gap detection testing
+            if len(test_df) > 5:
+                test_df = test_df.drop(index=3).reset_index(drop=True)
 
             # Write CSV with headers
             with open(csv_file, "w") as f:
@@ -362,25 +335,19 @@ class TestEndToEndIntegration:
             print(f"   - Symbol extracted: {symbol}")
 
     @pytest.mark.integration
-    def test_large_dataset_handling(self):
-        """Test handling of larger datasets for performance validation."""
+    def test_large_dataset_handling(self, real_btcusdt_1h_sample):
+        """Test handling of larger datasets for performance validation.
 
-        # Create a larger dataset (1000 rows = ~41 days of hourly data)
-        large_df = pd.DataFrame(
-            {
-                "date": pd.date_range("2024-01-01", periods=1000, freq="1h"),
-                "open": [100.0 + i * 0.01 for i in range(1000)],
-                "high": [105.0 + i * 0.01 for i in range(1000)],
-                "low": [95.0 + i * 0.01 for i in range(1000)],
-                "close": [102.0 + i * 0.01 for i in range(1000)],
-                "volume": [1000.0 + i for i in range(1000)],
-                "close_time": ["2024-01-01 00:59:59" for _ in range(1000)],
-                "quote_asset_volume": [10000.0 + i * 10 for i in range(1000)],
-                "number_of_trades": [50 + i // 10 for i in range(1000)],
-                "taker_buy_base_asset_volume": [500.0 + i * 0.5 for i in range(1000)],
-                "taker_buy_quote_asset_volume": [5000.0 + i * 5 for i in range(1000)],
-            }
-        )
+        Extends real BTCUSDT data by concatenating multiple copies to create
+        a larger dataset (~1000 rows) while maintaining authentic data structure
+        and relationships from real market data.
+        """
+
+        # Extend real data to ~1000 rows by concatenating multiple copies
+        # This maintains real OHLCV relationships while creating larger dataset
+        copies_needed = (1000 // len(real_btcusdt_1h_sample)) + 1
+        large_df = pd.concat([real_btcusdt_1h_sample] * copies_needed, ignore_index=True)
+        large_df = large_df.head(1000)  # Trim to exactly 1000 rows
 
         with tempfile.TemporaryDirectory() as temp_dir:
             output_dir = Path(temp_dir)

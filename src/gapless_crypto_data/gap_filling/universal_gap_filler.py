@@ -20,12 +20,18 @@ Key Features:
 
 import logging
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
 import httpx
 import pandas as pd
+
+from ..utils.timeframe_constants import (
+    TIMEFRAME_TO_BINANCE_INTERVAL,
+    TIMEFRAME_TO_PYTHON_TIMEDELTA,
+    TIMEFRAME_TO_TIMEDELTA,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -102,21 +108,6 @@ class UniversalGapFiller:
 
     def __init__(self):
         self.binance_base_url = "https://api.binance.com/api/v3/klines"
-        self.timeframe_mapping = {
-            "1s": "1s",
-            "1m": "1m",
-            "3m": "3m",
-            "5m": "5m",
-            "15m": "15m",
-            "30m": "30m",
-            "1h": "1h",
-            "2h": "2h",
-            "4h": "4h",
-            "6h": "6h",
-            "8h": "8h",
-            "12h": "12h",
-            "1d": "1d",
-        }
 
     def extract_symbol_from_filename(self, csv_path) -> str:
         """Extract symbol from CSV filename
@@ -172,23 +163,8 @@ class UniversalGapFiller:
         ohlcv_dataframe["date"] = pd.to_datetime(ohlcv_dataframe["date"])
         ohlcv_dataframe = ohlcv_dataframe.sort_values("date")
 
-        # Calculate expected interval
-        interval_mapping = {
-            "1s": timedelta(seconds=1),
-            "1m": timedelta(minutes=1),
-            "3m": timedelta(minutes=3),
-            "5m": timedelta(minutes=5),
-            "15m": timedelta(minutes=15),
-            "30m": timedelta(minutes=30),
-            "1h": timedelta(hours=1),
-            "2h": timedelta(hours=2),
-            "4h": timedelta(hours=4),
-            "6h": timedelta(hours=6),
-            "8h": timedelta(hours=8),
-            "12h": timedelta(hours=12),
-            "1d": timedelta(days=1),
-        }
-        expected_interval = interval_mapping[timeframe]
+        # Calculate expected interval using centralized constants
+        expected_interval = TIMEFRAME_TO_PYTHON_TIMEDELTA[timeframe]
 
         detected_gaps = []
         for row_index in range(1, len(ohlcv_dataframe)):
@@ -221,7 +197,7 @@ class UniversalGapFiller:
         enhanced_format: bool = False,
     ) -> Optional[List[Dict]]:
         """Fetch authentic microstructure data from Binance API - NO synthetic data"""
-        binance_interval = self.timeframe_mapping[timeframe]
+        binance_interval = TIMEFRAME_TO_BINANCE_INTERVAL[timeframe]
 
         # Convert to millisecond timestamps for Binance API
         # ✅ UTC ONLY: All timestamps are UTC - no timezone conversion needed
@@ -473,9 +449,16 @@ class UniversalGapFiller:
         combined_dataframe = pd.concat([existing_ohlcv_data, filtered_api_data], ignore_index=True)
 
         # Sort by date and remove any exact timestamp duplicates (keep first occurrence)
+        pre_dedup_count = len(combined_dataframe)
         combined_dataframe = combined_dataframe.sort_values("date").drop_duplicates(
             subset=["date"], keep="first"
         )
+        duplicates_removed = pre_dedup_count - len(combined_dataframe)
+
+        if duplicates_removed > 0:
+            logger.warning(
+                f"   ⚠️ Removed {duplicates_removed} duplicate timestamp(s) during gap filling"
+            )
 
         # Validate gap was actually filled
         gap_filled_dataframe = combined_dataframe.sort_values("date").reset_index(drop=True)
@@ -485,13 +468,7 @@ class UniversalGapFiller:
         for validation_index in range(1, len(gap_filled_dataframe)):
             current_timestamp = gap_filled_dataframe.iloc[validation_index]["date"]
             previous_timestamp = gap_filled_dataframe.iloc[validation_index - 1]["date"]
-            expected_time_interval = (
-                pd.Timedelta(minutes=1)
-                if trading_timeframe == "1m"
-                else pd.Timedelta(hours=1)
-                if trading_timeframe == "1h"
-                else pd.Timedelta(minutes=int(trading_timeframe[:-1]))
-            )
+            expected_time_interval = TIMEFRAME_TO_TIMEDELTA[trading_timeframe]
             actual_time_difference = current_timestamp - previous_timestamp
 
             if actual_time_difference > expected_time_interval:

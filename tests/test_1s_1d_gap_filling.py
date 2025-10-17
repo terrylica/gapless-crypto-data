@@ -22,9 +22,10 @@ class Test1sGapFilling:
 
     def test_1s_timeframe_mapping(self):
         """Test that 1s timeframe is properly mapped in gap filler."""
-        gap_filler = UniversalGapFiller()
-        assert "1s" in gap_filler.timeframe_mapping
-        assert gap_filler.timeframe_mapping["1s"] == "1s"
+        from gapless_crypto_data.utils.timeframe_constants import TIMEFRAME_TO_BINANCE_INTERVAL
+
+        assert "1s" in TIMEFRAME_TO_BINANCE_INTERVAL
+        assert TIMEFRAME_TO_BINANCE_INTERVAL["1s"] == "1s"
 
     def test_1s_gap_detection_precision(self):
         """Test gap detection works with 1-second precision."""
@@ -259,9 +260,10 @@ class Test1dGapFilling:
 
     def test_1d_timeframe_mapping(self):
         """Test that 1d timeframe is properly mapped in gap filler."""
-        gap_filler = UniversalGapFiller()
-        assert "1d" in gap_filler.timeframe_mapping
-        assert gap_filler.timeframe_mapping["1d"] == "1d"
+        from gapless_crypto_data.utils.timeframe_constants import TIMEFRAME_TO_BINANCE_INTERVAL
+
+        assert "1d" in TIMEFRAME_TO_BINANCE_INTERVAL
+        assert TIMEFRAME_TO_BINANCE_INTERVAL["1d"] == "1d"
 
     def test_1d_gap_detection_precision(self):
         """Test gap detection works with 1-day precision."""
