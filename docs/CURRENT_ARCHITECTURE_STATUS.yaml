@@ -4,7 +4,7 @@ info:
   description: |
     Consolidated status of current system architecture, replacing outdated planning documents.
     All references should point to this canonical source for current capabilities.
-  version: "2.6.0"
+  version: "3.0.0"
 
 paths: {}
 
@@ -15,7 +15,7 @@ components:
       properties:
         current_version:
           type: string
-          example: "2.5.0"
+          example: "3.0.0"
         architecture_complete:
           type: boolean
         capabilities:
@@ -23,7 +23,7 @@ components:
 
 # CURRENT ARCHITECTURE STATUS (2025-09-17)
 x-current-status:
-  canonical_version: "v2.10.0"
+  canonical_version: "v3.0.0"
   architecture_phase: "OPTIMIZED"
 
   implemented_capabilities:
@@ -85,6 +85,17 @@ x-current-status:
         - "Environment-scoped publishing with pypi environment requirement"
         - "Automatic digital attestations and Sigstore artifact signing"
 
+    etag_based_caching:
+      status: "PRODUCTION_READY"
+      description: "HTTP ETag caching for bandwidth optimization (90%+ reduction on re-runs)"
+      technical_specs:
+        - "CloudFront ETag-based conditional requests (If-None-Match headers)"
+        - "Local ZIP file caching in XDG-compliant location ($HOME/.cache/gapless-crypto-data/)"
+        - "304 Not Modified responses eliminate redundant downloads"
+        - "Automatic cache corruption detection and recovery"
+        - "Standard library only implementation (pathlib + json)"
+        - "Full observability with cache hit/miss logging"
+
   removed_concepts:
     parallel_processing:
       removal_date: "2025-09-17"
@@ -136,28 +147,40 @@ x-current-status:
         version: "1.16.2"
         removal_reason: "Dependency of removed PyOD - not needed independently"
         removal_date: "2025-01-19"
+      plotly:
+        version: "6.3.1"
+        removal_reason: "Zero usage found in codebase audit - removed unused dependency"
+        removal_date: "2025-01-19"
+      kaleido:
+        version: "1.1.0"
+        removal_reason: "Plotly dependency - removed with plotly"
+        removal_date: "2025-01-19"
 
     integration_status: "Simplified dependency stack - 3 core dependencies only"
     performance_validation: "Confirmed through comprehensive testing"
     pruning_impact: "Reduced from 6 to 3 dependencies (50% reduction)"
 
   test_coverage:
-    total_tests: 30
+    total_tests: 71
     coverage_areas:
       - "Core collection functionality (existing)"
       - "Intelligent resume system (11 tests)"
       - "Memory streaming (8 tests)"
       - "Regression detection (11 tests)"
+      - "Timeframe constants (13 tests)"
+      - "ETag caching (17 tests)"
+      - "Gap filling edge cases (11 tests - 1s/1d timeframes)"
 
     all_tests_passing: true
     integration_verified: true
 
   documentation_status:
-    current_milestone: "docs/MILESTONE_v2.5.0.yaml"
+    current_milestone: "docs/MILESTONE_v3.0.0.yaml"
     architecture_status: "docs/CURRENT_ARCHITECTURE_STATUS.yaml"
     api_enhancement_spec: "docs/api-dual-parameter-enhancement.yaml"
     project_guide: "CLAUDE.md"
     user_documentation: "README.md"
+    implementation_plan: "docs/api/v3.0.0-stabilization-plan.yaml"
 
     outdated_references_pruned: true
     canonical_source_established: true
@@ -181,11 +204,12 @@ x-evolution-guidance:
     outdated_files:
       - "Any references to Phase 2.3 (parallel processing)"
       - "Any mentions of performance benchmarking as current feature"
-      - "Links to outdated milestone files (pre-v2.5.0)"
+      - "Links to outdated milestone files (pre-v3.0.0)"
 
     canonical_references:
       - "docs/CURRENT_ARCHITECTURE_STATUS.yaml (this file)"
-      - "docs/MILESTONE_v2.5.0.yaml (technical implementation details)"
+      - "docs/MILESTONE_v3.0.0.yaml (v3.0.0 stabilization details)"
+      - "docs/api/v3.0.0-stabilization-plan.yaml (implementation plan)"
       - "CLAUDE.md (project-specific development guidance)"
 
   maintenance_pattern:
