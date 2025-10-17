@@ -9,6 +9,7 @@ import pytest
 
 from gapless_crypto_data.collectors.binance_public_data_collector import BinancePublicDataCollector
 from gapless_crypto_data.gap_filling.universal_gap_filler import UniversalGapFiller
+from gapless_crypto_data.validation import CSVValidator
 
 
 class TestEndToEndIntegration:
@@ -285,32 +286,32 @@ class TestEndToEndIntegration:
                 test_df.to_csv(f, index=False)
 
             # Initialize components
-            collector = BinancePublicDataCollector(output_dir=output_dir)
             gap_filler = UniversalGapFiller()
+            validator = CSVValidator()
 
             # Phase 1: CSV Structure Validation
-            validation_results = collector._validate_csv_structure(test_df)
+            validation_results = validator._validate_csv_structure(test_df)
             assert isinstance(validation_results, dict)
             assert validation_results.get("status") == "VALID"  # Should have valid structure
 
             # Phase 2: Datetime Sequence Validation
-            datetime_results = collector._validate_datetime_sequence(test_df, "1h")
+            datetime_results = validator._validate_datetime_sequence(test_df, "1h")
             assert isinstance(datetime_results, dict)
             # May detect the gap we intentionally created
 
             # Phase 3: OHLCV Quality Validation
-            ohlcv_results = collector._validate_ohlcv_quality(test_df)
+            ohlcv_results = validator._validate_ohlcv_quality(test_df)
             assert isinstance(ohlcv_results, dict)
             assert ohlcv_results.get("status") == "VALID"  # OHLCV relationships should be valid
 
             # Phase 4: Coverage Validation
-            coverage_results = collector._validate_expected_coverage(test_df, "1h")
+            coverage_results = validator._validate_expected_coverage(test_df, "1h")
             assert isinstance(coverage_results, dict)
             assert "coverage_percentage" in coverage_results
             # Should detect less than 100% coverage due to gap
 
             # Phase 5: Statistical Anomaly Detection
-            anomaly_results = collector._validate_statistical_anomalies(test_df)
+            anomaly_results = validator._validate_statistical_anomalies(test_df)
             assert isinstance(anomaly_results, dict)
             assert "suspicious_patterns" in anomaly_results
             # Should have few anomalies in this regular data
@@ -371,9 +372,9 @@ class TestEndToEndIntegration:
             # Test validation on large dataset
             start_time = datetime.now()
 
-            collector = BinancePublicDataCollector()
-            validation_results = collector._validate_csv_structure(large_df)
-            ohlcv_results = collector._validate_ohlcv_quality(large_df)
+            validator = CSVValidator()
+            validation_results = validator._validate_csv_structure(large_df)
+            ohlcv_results = validator._validate_ohlcv_quality(large_df)
 
             validation_time = datetime.now() - start_time
 

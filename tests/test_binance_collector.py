@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 
 from gapless_crypto_data.collectors.binance_public_data_collector import BinancePublicDataCollector
+from gapless_crypto_data.validation import CSVValidator
 
 
 class TestBinancePublicDataCollector:
@@ -297,7 +298,7 @@ class TestBinancePublicDataCollector:
 
     def test_validate_csv_structure_valid(self):
         """Test CSV structure validation with valid DataFrame."""
-        collector = BinancePublicDataCollector()
+        validator = CSVValidator()
 
         # Create valid 11-column DataFrame
         valid_df = pd.DataFrame(
@@ -322,7 +323,7 @@ class TestBinancePublicDataCollector:
             }
         )
 
-        result = collector._validate_csv_structure(valid_df)
+        result = validator._validate_csv_structure(valid_df)
 
         assert isinstance(result, dict)
         assert result.get("status") == "VALID"
@@ -331,7 +332,7 @@ class TestBinancePublicDataCollector:
 
     def test_validate_csv_structure_missing_columns(self):
         """Test CSV structure validation with missing columns."""
-        collector = BinancePublicDataCollector()
+        validator = CSVValidator()
 
         # Create DataFrame missing required columns
         incomplete_df = pd.DataFrame(
@@ -343,7 +344,7 @@ class TestBinancePublicDataCollector:
             }
         )
 
-        result = collector._validate_csv_structure(incomplete_df)
+        result = validator._validate_csv_structure(incomplete_df)
 
         assert isinstance(result, dict)
         # Missing basic OHLCV columns should be INVALID
@@ -353,7 +354,7 @@ class TestBinancePublicDataCollector:
 
     def test_validate_datetime_sequence_valid(self):
         """Test datetime sequence validation with valid timestamps."""
-        collector = BinancePublicDataCollector()
+        validator = CSVValidator()
 
         # Create DataFrame with valid hourly sequence
         valid_df = pd.DataFrame(
@@ -367,7 +368,7 @@ class TestBinancePublicDataCollector:
             }
         )
 
-        result = collector._validate_datetime_sequence(valid_df, "1h")
+        result = validator._validate_datetime_sequence(valid_df, "1h")
 
         assert isinstance(result, dict)
         assert result.get("status") == "VALID"
@@ -375,7 +376,7 @@ class TestBinancePublicDataCollector:
 
     def test_validate_datetime_sequence_gaps(self):
         """Test datetime sequence validation with gaps."""
-        collector = BinancePublicDataCollector()
+        validator = CSVValidator()
 
         # Create DataFrame with gaps in timestamps
         timestamps = [
@@ -397,7 +398,7 @@ class TestBinancePublicDataCollector:
             }
         )
 
-        result = collector._validate_datetime_sequence(gapped_df, "1h")
+        result = validator._validate_datetime_sequence(gapped_df, "1h")
 
         assert isinstance(result, dict)
         # May be valid or invalid depending on implementation tolerance
@@ -405,7 +406,7 @@ class TestBinancePublicDataCollector:
 
     def test_validate_datetime_sequence_duplicates(self):
         """Test datetime sequence validation with duplicate timestamps."""
-        collector = BinancePublicDataCollector()
+        validator = CSVValidator()
 
         # Create DataFrame with duplicate timestamps
         timestamps = [
@@ -426,7 +427,7 @@ class TestBinancePublicDataCollector:
             }
         )
 
-        result = collector._validate_datetime_sequence(duplicate_df, "1h")
+        result = validator._validate_datetime_sequence(duplicate_df, "1h")
 
         assert isinstance(result, dict)
         # This method checks chronological order and gaps, not duplicates
@@ -436,7 +437,7 @@ class TestBinancePublicDataCollector:
 
     def test_validate_ohlcv_quality_valid(self):
         """Test OHLCV quality validation with valid data."""
-        collector = BinancePublicDataCollector()
+        validator = CSVValidator()
 
         # Create DataFrame with valid OHLCV relationships
         valid_df = pd.DataFrame(
@@ -450,7 +451,7 @@ class TestBinancePublicDataCollector:
             }
         )
 
-        result = collector._validate_ohlcv_quality(valid_df)
+        result = validator._validate_ohlcv_quality(valid_df)
 
         assert isinstance(result, dict)
         assert result.get("status") == "VALID"
@@ -458,7 +459,7 @@ class TestBinancePublicDataCollector:
 
     def test_validate_ohlcv_quality_invalid_relationships(self):
         """Test OHLCV quality validation with invalid price relationships."""
-        collector = BinancePublicDataCollector()
+        validator = CSVValidator()
 
         # Create DataFrame with invalid OHLCV relationships
         invalid_df = pd.DataFrame(
@@ -472,7 +473,7 @@ class TestBinancePublicDataCollector:
             }
         )
 
-        result = collector._validate_ohlcv_quality(invalid_df)
+        result = validator._validate_ohlcv_quality(invalid_df)
 
         assert isinstance(result, dict)
         assert result.get("status") in ["INVALID", "ERROR"]
@@ -481,7 +482,7 @@ class TestBinancePublicDataCollector:
 
     def test_validate_ohlcv_quality_missing_values(self):
         """Test OHLCV quality validation with missing values."""
-        collector = BinancePublicDataCollector()
+        validator = CSVValidator()
 
         # Create DataFrame with NaN values
         nan_df = pd.DataFrame(
@@ -495,7 +496,7 @@ class TestBinancePublicDataCollector:
             }
         )
 
-        result = collector._validate_ohlcv_quality(nan_df)
+        result = validator._validate_ohlcv_quality(nan_df)
 
         assert isinstance(result, dict)
         # OHLCV quality validation focuses on relationships and value validity
@@ -505,7 +506,7 @@ class TestBinancePublicDataCollector:
 
     def test_validate_expected_coverage_full_coverage(self):
         """Test coverage validation with full expected coverage."""
-        collector = BinancePublicDataCollector()
+        validator = CSVValidator()
 
         # Create DataFrame with full 24-hour coverage
         full_df = pd.DataFrame(
@@ -519,7 +520,7 @@ class TestBinancePublicDataCollector:
             }
         )
 
-        result = collector._validate_expected_coverage(full_df, "1h")
+        result = validator._validate_expected_coverage(full_df, "1h")
 
         assert isinstance(result, dict)
         assert "coverage_percentage" in result
@@ -527,7 +528,7 @@ class TestBinancePublicDataCollector:
 
     def test_validate_expected_coverage_partial_coverage(self):
         """Test coverage validation with partial coverage."""
-        collector = BinancePublicDataCollector()
+        validator = CSVValidator()
 
         # Create DataFrame with only 12 hours out of expected 24
         partial_df = pd.DataFrame(
@@ -541,7 +542,7 @@ class TestBinancePublicDataCollector:
             }
         )
 
-        result = collector._validate_expected_coverage(partial_df, "1h")
+        result = validator._validate_expected_coverage(partial_df, "1h")
 
         assert isinstance(result, dict)
         assert "coverage_percentage" in result
@@ -552,7 +553,7 @@ class TestBinancePublicDataCollector:
 
     def test_validate_statistical_anomalies_normal_data(self):
         """Test statistical anomaly detection with normal data."""
-        collector = BinancePublicDataCollector()
+        validator = CSVValidator()
 
         # Create DataFrame with normal price movements
         normal_df = pd.DataFrame(
@@ -566,7 +567,7 @@ class TestBinancePublicDataCollector:
             }
         )
 
-        result = collector._validate_statistical_anomalies(normal_df)
+        result = validator._validate_statistical_anomalies(normal_df)
 
         assert isinstance(result, dict)
         assert "suspicious_patterns" in result
@@ -575,7 +576,7 @@ class TestBinancePublicDataCollector:
 
     def test_validate_statistical_anomalies_extreme_data(self):
         """Test statistical anomaly detection with extreme outliers."""
-        collector = BinancePublicDataCollector()
+        validator = CSVValidator()
 
         # Create DataFrame with extreme outliers
         extreme_data = [100.0] * 98 + [10000.0, 0.01]  # Two extreme outliers
@@ -591,7 +592,7 @@ class TestBinancePublicDataCollector:
             }
         )
 
-        result = collector._validate_statistical_anomalies(extreme_df)
+        result = validator._validate_statistical_anomalies(extreme_df)
 
         assert isinstance(result, dict)
         assert "suspicious_patterns" in result or "price_outliers" in result
