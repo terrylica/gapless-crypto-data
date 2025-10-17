@@ -19,6 +19,11 @@ test-env/
 .DS_Store
 */.DS_Store
 
+# Test coverage artifacts
+.coverage
+coverage.json
+htmlcov/
+
 # .Sessions folder - never delete
 .sessions/
 !.sessions/.gitignore
