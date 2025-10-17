@@ -180,15 +180,20 @@ def list_timeframes() -> int:
     return 0
 
 
-def collect_data(command_line_args: Any) -> int:
-    """Main data collection workflow with intelligent resume capabilities"""
-    # Parse symbols and timeframes
+def _parse_collection_config(command_line_args: Any) -> tuple[list[str], list[str], dict]:
+    """Parse collection configuration from command-line arguments.
+
+    Args:
+        command_line_args: Parsed command-line arguments
+
+    Returns:
+        tuple: (requested_symbols, requested_timeframes, collection_params)
+    """
     requested_symbols = [symbol.strip() for symbol in command_line_args.symbol.split(",")]
     requested_timeframes = [
         timeframe.strip() for timeframe in command_line_args.timeframes.split(",")
     ]
 
-    # Collection parameters for checkpoint compatibility
     collection_params = {
         "start_date": command_line_args.start,
         "end_date": command_line_args.end,
@@ -196,43 +201,82 @@ def collect_data(command_line_args: Any) -> int:
         "timeframes": requested_timeframes,
     }
 
-    # Initialize checkpoint manager
+    return requested_symbols, requested_timeframes, collection_params
+
+
+def _setup_checkpoint_manager(
+    command_line_args: Any,
+    requested_symbols: list[str],
+    requested_timeframes: list[str],
+    collection_params: dict,
+) -> tuple[Optional[IntelligentCheckpointManager], list[str]]:
+    """Initialize checkpoint manager and determine symbols to process.
+
+    Args:
+        command_line_args: Parsed command-line arguments
+        requested_symbols: List of symbols to collect
+        requested_timeframes: List of timeframes to collect
+        collection_params: Collection parameters dictionary
+
+    Returns:
+        tuple: (checkpoint_manager, symbols_to_process)
+    """
     enable_resume = (
         command_line_args.resume or len(requested_symbols) > 1 or len(requested_timeframes) > 4
     )
-    checkpoint_manager = None
 
-    if enable_resume:
-        checkpoint_manager = IntelligentCheckpointManager(
-            cache_dir=command_line_args.checkpoint_dir,
-            verbose=1 if len(requested_symbols) > 3 else 0,
-        )
+    if not enable_resume:
+        return None, requested_symbols
 
-        if command_line_args.clear_checkpoints:
-            checkpoint_manager.clear_checkpoint()
-            print("🗑️  Checkpoints cleared - starting fresh")
+    checkpoint_manager = IntelligentCheckpointManager(
+        cache_dir=command_line_args.checkpoint_dir,
+        verbose=1 if len(requested_symbols) > 3 else 0,
+    )
 
-        # Get resume plan
-        resume_plan = checkpoint_manager.get_resume_plan(
-            requested_symbols, requested_timeframes, collection_params
-        )
+    if command_line_args.clear_checkpoints:
+        checkpoint_manager.clear_checkpoint()
+        print("🗑️  Checkpoints cleared - starting fresh")
 
-        print("🚀 Gapless Crypto Data Collection with Intelligent Resume")
-        print(f"📋 Checkpoint Manager: {'Enabled' if enable_resume else 'Disabled'}")
-        if resume_plan["resume_required"]:
-            print(f"🔄 Resuming from checkpoint: {resume_plan['message']}")
-            print(f"✅ Already completed: {len(resume_plan['completed_symbols'])} symbols")
-            print(f"📊 Progress: {resume_plan['total_progress']:.1f}%")
-        else:
-            print("🆕 Starting fresh collection")
+    # Get resume plan
+    resume_plan = checkpoint_manager.get_resume_plan(
+        requested_symbols, requested_timeframes, collection_params
+    )
 
-        # Update symbols list based on resume plan
-        symbols_to_process = resume_plan["remaining_symbols"]
-
-        # Save collection parameters to checkpoint
-        checkpoint_manager.save_checkpoint({"collection_parameters": collection_params})
+    print("🚀 Gapless Crypto Data Collection with Intelligent Resume")
+    print("📋 Checkpoint Manager: Enabled")
+    if resume_plan["resume_required"]:
+        print(f"🔄 Resuming from checkpoint: {resume_plan['message']}")
+        print(f"✅ Already completed: {len(resume_plan['completed_symbols'])} symbols")
+        print(f"📊 Progress: {resume_plan['total_progress']:.1f}%")
     else:
-        symbols_to_process = requested_symbols
+        print("🆕 Starting fresh collection")
+
+    # Update symbols list based on resume plan
+    symbols_to_process = resume_plan["remaining_symbols"]
+
+    # Save collection parameters to checkpoint
+    checkpoint_manager.save_checkpoint({"collection_parameters": collection_params})
+
+    return checkpoint_manager, symbols_to_process
+
+
+def _print_collection_status(
+    command_line_args: Any,
+    requested_symbols: list[str],
+    requested_timeframes: list[str],
+    symbols_to_process: list[str],
+    enable_resume: bool,
+) -> None:
+    """Print collection status header.
+
+    Args:
+        command_line_args: Parsed command-line arguments
+        requested_symbols: Original list of requested symbols
+        requested_timeframes: List of timeframes to collect
+        symbols_to_process: Remaining symbols to process (after resume filtering)
+        enable_resume: Whether resume is enabled
+    """
+    if not enable_resume:
         print("🚀 Gapless Crypto Data Collection")
 
     print(f"Symbols: {requested_symbols}")
@@ -246,69 +290,102 @@ def collect_data(command_line_args: Any) -> int:
         print(f"Remaining symbols: {symbols_to_process}")
     print("=" * 60)
 
-    all_results = {}
-    total_datasets = 0
-    failed_symbols = []
 
-    # Streaming removed - use standard pandas processing
+def _process_single_symbol(
+    symbol: str,
+    symbol_index: int,
+    total_symbols: int,
+    command_line_args: Any,
+    requested_timeframes: list[str],
+    checkpoint_manager: Optional[IntelligentCheckpointManager],
+) -> tuple[Optional[dict], bool]:
+    """Process data collection for a single symbol.
 
-    # Process each symbol
-    for symbol_index, symbol in enumerate(symbols_to_process, 1):
-        print(f"\nProcessing {symbol} ({symbol_index}/{len(symbols_to_process)})...")
+    Args:
+        symbol: Symbol to process
+        symbol_index: 1-based index of symbol in processing list
+        total_symbols: Total number of symbols to process
+        command_line_args: Parsed command-line arguments
+        requested_timeframes: List of timeframes to collect
+        checkpoint_manager: Checkpoint manager instance (optional)
+
+    Returns:
+        tuple: (collection_results, success_flag)
+    """
+    print(f"\nProcessing {symbol} ({symbol_index}/{total_symbols})...")
+
+    if checkpoint_manager:
+        checkpoint_manager.mark_symbol_start(symbol, requested_timeframes)
+
+    try:
+        # Initialize ultra-fast collector for this symbol
+        data_collector = BinancePublicDataCollector(
+            symbol=symbol,
+            start_date=command_line_args.start,
+            end_date=command_line_args.end,
+            output_dir=command_line_args.output_dir,
+        )
+
+        # Collect data (22x faster than API)
+        collection_results = data_collector.collect_multiple_timeframes(requested_timeframes)
+
+        if collection_results:
+            # Show results for this symbol and update checkpoints
+            for trading_timeframe, csv_file_path in collection_results.items():
+                file_size_mb = csv_file_path.stat().st_size / (1024 * 1024)
+                print(f"  ✅ {trading_timeframe}: {csv_file_path.name} ({file_size_mb:.1f} MB)")
+
+                if checkpoint_manager:
+                    checkpoint_manager.mark_timeframe_complete(
+                        symbol, trading_timeframe, csv_file_path, file_size_mb
+                    )
+
+            # Mark symbol as completed
+            if checkpoint_manager:
+                checkpoint_manager.mark_symbol_complete(symbol)
+
+            return collection_results, True
+        else:
+            print(f"  ❌ Failed to collect {symbol} data")
+            if checkpoint_manager:
+                checkpoint_manager.mark_symbol_failed(symbol, "Collection returned no results")
+            return None, False
+
+    except Exception as e:
+        logger = get_standard_logger("cli")
+        handle_operation_error(
+            operation_name=f"Data collection for {symbol}",
+            exception=e,
+            context={"symbol": symbol, "timeframes": command_line_args.timeframes},
+            logger=logger,
+            reraise=False,
+        )
 
         if checkpoint_manager:
-            checkpoint_manager.mark_symbol_start(symbol, requested_timeframes)
+            checkpoint_manager.mark_symbol_failed(symbol, str(e))
 
-        try:
-            # Initialize ultra-fast collector for this symbol
-            data_collector = BinancePublicDataCollector(
-                symbol=symbol,
-                start_date=command_line_args.start,
-                end_date=command_line_args.end,
-                output_dir=command_line_args.output_dir,
-            )
+        return None, False
 
-            # Collect data (22x faster than API)
-            collection_results = data_collector.collect_multiple_timeframes(requested_timeframes)
 
-            if collection_results:
-                all_results[symbol] = collection_results
-                total_datasets += len(collection_results)
+def _print_final_summary(
+    total_datasets: int,
+    all_results: dict,
+    failed_symbols: list[str],
+    checkpoint_manager: Optional[IntelligentCheckpointManager],
+    symbols_to_process: list[str],
+) -> int:
+    """Print final collection summary and return exit code.
 
-                # Show results for this symbol and update checkpoints
-                for trading_timeframe, csv_file_path in collection_results.items():
-                    file_size_mb = csv_file_path.stat().st_size / (1024 * 1024)
-                    print(f"  ✅ {trading_timeframe}: {csv_file_path.name} ({file_size_mb:.1f} MB)")
+    Args:
+        total_datasets: Total number of datasets generated
+        all_results: Dictionary of collection results by symbol
+        failed_symbols: List of symbols that failed
+        checkpoint_manager: Checkpoint manager instance (optional)
+        symbols_to_process: List of symbols that were processed
 
-                    if checkpoint_manager:
-                        checkpoint_manager.mark_timeframe_complete(
-                            symbol, trading_timeframe, csv_file_path, file_size_mb
-                        )
-
-                # Mark symbol as completed
-                if checkpoint_manager:
-                    checkpoint_manager.mark_symbol_complete(symbol)
-            else:
-                failed_symbols.append(symbol)
-                print(f"  ❌ Failed to collect {symbol} data")
-
-                if checkpoint_manager:
-                    checkpoint_manager.mark_symbol_failed(symbol, "Collection returned no results")
-
-        except Exception as e:
-            failed_symbols.append(symbol)
-            logger = get_standard_logger("cli")
-            handle_operation_error(
-                operation_name=f"Data collection for {symbol}",
-                exception=e,
-                context={"symbol": symbol, "timeframes": command_line_args.timeframes},
-                logger=logger,
-                reraise=False,
-            )
-
-            if checkpoint_manager:
-                checkpoint_manager.mark_symbol_failed(symbol, str(e))
-
+    Returns:
+        int: Exit code (0 for success, 1 for failure)
+    """
     # Calculate total including resumed progress
     if checkpoint_manager:
         progress_summary = checkpoint_manager.get_progress_summary()
@@ -342,6 +419,55 @@ def collect_data(command_line_args: Any) -> int:
         if failed_symbols:
             print(f"Failed symbols: {', '.join(failed_symbols)}")
         return 1
+
+
+def collect_data(command_line_args: Any) -> int:
+    """Main data collection workflow with intelligent resume capabilities"""
+    # Parse configuration
+    requested_symbols, requested_timeframes, collection_params = _parse_collection_config(
+        command_line_args
+    )
+
+    # Setup checkpoint manager and get symbols to process
+    checkpoint_manager, symbols_to_process = _setup_checkpoint_manager(
+        command_line_args, requested_symbols, requested_timeframes, collection_params
+    )
+
+    # Print collection status header
+    enable_resume = checkpoint_manager is not None
+    _print_collection_status(
+        command_line_args,
+        requested_symbols,
+        requested_timeframes,
+        symbols_to_process,
+        enable_resume,
+    )
+
+    # Process each symbol
+    all_results = {}
+    total_datasets = 0
+    failed_symbols = []
+
+    for symbol_index, symbol in enumerate(symbols_to_process, 1):
+        collection_results, success = _process_single_symbol(
+            symbol,
+            symbol_index,
+            len(symbols_to_process),
+            command_line_args,
+            requested_timeframes,
+            checkpoint_manager,
+        )
+
+        if success and collection_results:
+            all_results[symbol] = collection_results
+            total_datasets += len(collection_results)
+        else:
+            failed_symbols.append(symbol)
+
+    # Print final summary and return exit code
+    return _print_final_summary(
+        total_datasets, all_results, failed_symbols, checkpoint_manager, symbols_to_process
+    )
 
 
 def fill_gaps(command_line_args: Any) -> int:
