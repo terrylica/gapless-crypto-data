@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 
 from gapless_crypto_data.collectors.binance_public_data_collector import BinancePublicDataCollector
+from gapless_crypto_data.utils.timestamp_format_analyzer import TimestampFormatAnalyzer
 from gapless_crypto_data.validation import CSVValidator
 
 
@@ -128,7 +129,7 @@ class TestBinancePublicDataCollector:
 
     def test_analyze_timestamp_format_milliseconds(self):
         """Test timestamp format analysis for millisecond timestamps."""
-        collector = BinancePublicDataCollector()
+        analyzer = TimestampFormatAnalyzer()
 
         # Test millisecond timestamps (13 digits)
         millisecond_timestamps = [
@@ -142,7 +143,7 @@ class TestBinancePublicDataCollector:
         for i, timestamp_str in enumerate(millisecond_timestamps):
             # Convert string to int as the method expects integer timestamps
             timestamp_int = int(timestamp_str)
-            result = collector._analyze_timestamp_format(timestamp_int, i)
+            result = analyzer.analyze_timestamp_format(timestamp_int, i)
 
             # Should return a tuple: (format_type, timestamp_value, metadata)
             assert isinstance(result, tuple)
@@ -154,7 +155,7 @@ class TestBinancePublicDataCollector:
 
     def test_analyze_timestamp_format_microseconds(self):
         """Test timestamp format analysis for microsecond timestamps."""
-        collector = BinancePublicDataCollector()
+        analyzer = TimestampFormatAnalyzer()
 
         # Test microsecond timestamps (16 digits)
         microsecond_timestamps = [
@@ -167,7 +168,7 @@ class TestBinancePublicDataCollector:
         for i, timestamp_str in enumerate(microsecond_timestamps):
             # Convert string to int as the method expects integer timestamps
             timestamp_int = int(timestamp_str)
-            result = collector._analyze_timestamp_format(timestamp_int, i)
+            result = analyzer.analyze_timestamp_format(timestamp_int, i)
 
             # Should return a tuple: (format_type, timestamp_value, metadata)
             assert isinstance(result, tuple)
@@ -209,7 +210,7 @@ class TestBinancePublicDataCollector:
 
     def test_analyze_timestamp_format_edge_cases(self):
         """Test timestamp format analysis with edge case values."""
-        collector = BinancePublicDataCollector()
+        analyzer = TimestampFormatAnalyzer()
 
         # Test edge case timestamps
         edge_cases = [
@@ -223,7 +224,7 @@ class TestBinancePublicDataCollector:
 
         for timestamp_str, expected_format in edge_cases:
             timestamp_int = int(timestamp_str)
-            result = collector._analyze_timestamp_format(timestamp_int, 0)
+            result = analyzer.analyze_timestamp_format(timestamp_int, 0)
 
             if result:  # If analysis succeeds
                 format_type, timestamp_value, metadata = result
@@ -238,7 +239,7 @@ class TestBinancePublicDataCollector:
 
     def test_analyze_timestamp_format_boundary_conditions(self):
         """Test timestamp format analysis at format boundaries."""
-        collector = BinancePublicDataCollector()
+        analyzer = TimestampFormatAnalyzer()
 
         # Test timestamps at the boundary between formats
         boundary_cases = [
@@ -253,7 +254,7 @@ class TestBinancePublicDataCollector:
         for timestamp_str, expected_length in boundary_cases:
             try:
                 timestamp_int = int(timestamp_str)
-                result = collector._analyze_timestamp_format(timestamp_int, 0)
+                result = analyzer.analyze_timestamp_format(timestamp_int, 0)
 
                 if result:
                     format_type, timestamp_value, metadata = result
@@ -270,14 +271,14 @@ class TestBinancePublicDataCollector:
 
     def test_timestamp_format_consistency(self):
         """Test that timestamp format analysis is consistent across multiple calls."""
-        collector = BinancePublicDataCollector()
+        analyzer = TimestampFormatAnalyzer()
 
         # Test same timestamp multiple times
         test_timestamp = 1704067200000  # Millisecond format
         results = []
 
         for i in range(5):
-            result = collector._analyze_timestamp_format(test_timestamp, i)
+            result = analyzer.analyze_timestamp_format(test_timestamp, i)
             results.append(result)
 
         # All results should be identical
@@ -289,7 +290,7 @@ class TestBinancePublicDataCollector:
         results_micro = []
 
         for i in range(5):
-            result = collector._analyze_timestamp_format(test_timestamp_micro, i)
+            result = analyzer.analyze_timestamp_format(test_timestamp_micro, i)
             results_micro.append(result)
 
         # All results should be identical
