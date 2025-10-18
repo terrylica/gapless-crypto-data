@@ -16,7 +16,7 @@ components:
           enum: [GitHub]
         repository:
           type: string
-          example: "Eon-Labs/gapless-crypto-data"
+          example: "terrylica/gapless-crypto-data"
         workflow:
           type: string
           example: "publish.yml"
@@ -62,7 +62,7 @@ paths:
 current_configuration:
   pypi_trusted_publisher:
     provider: GitHub
-    repository: Eon-Labs/gapless-crypto-data
+    repository: terrylica/gapless-crypto-data
     workflow: publish.yml
     environment: pypi
     configured_date: "2025-09-18"

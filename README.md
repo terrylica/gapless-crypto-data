@@ -1,13 +1,13 @@
 # Gapless Crypto Data
 
 [![PyPI version](https://img.shields.io/pypi/v/gapless-crypto-data.svg)](https://pypi.org/project/gapless-crypto-data/)
-[![GitHub release](https://img.shields.io/github/v/release/Eon-Labs/gapless-crypto-data.svg)](https://github.com/Eon-Labs/gapless-crypto-data/releases/latest)
+[![GitHub release](https://img.shields.io/github/v/release/terrylica/gapless-crypto-data.svg)](https://github.com/terrylica/gapless-crypto-data/releases/latest)
 [![Python Versions](https://img.shields.io/pypi/pyversions/gapless-crypto-data.svg)](https://pypi.org/project/gapless-crypto-data/)
 [![Downloads](https://img.shields.io/pypi/dm/gapless-crypto-data.svg)](https://pypi.org/project/gapless-crypto-data/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![UV Managed](https://img.shields.io/badge/uv-managed-blue.svg)](https://github.com/astral-sh/uv)
-[![Tests](https://github.com/Eon-Labs/gapless-crypto-data/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/Eon-Labs/gapless-crypto-data/actions)
-[![AI Agent Ready](https://img.shields.io/badge/AI%20Agent-Ready-brightgreen.svg)](https://github.com/Eon-Labs/gapless-crypto-data/blob/main/PROBE_USAGE_EXAMPLE.md)
+[![Tests](https://github.com/terrylica/gapless-crypto-data/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/terrylica/gapless-crypto-data/actions)
+[![AI Agent Ready](https://img.shields.io/badge/AI%20Agent-Ready-brightgreen.svg)](https://github.com/terrylica/gapless-crypto-data/blob/main/PROBE_USAGE_EXAMPLE.md)
 
 Ultra-fast cryptocurrency data collection with zero gaps guarantee. Provides 11-column microstructure format through Binance public data repository with intelligent monthly-to-daily fallback for seamless coverage.
 
@@ -312,7 +312,7 @@ Provide insights about cryptocurrency data collection capabilities and usage pat
 
 #### Step 1: Clone Repository
 ```bash
-git clone https://github.com/Eon-Labs/gapless-crypto-data.git
+git clone https://github.com/terrylica/gapless-crypto-data.git
 cd gapless-crypto-data
 ```
 
@@ -743,7 +743,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🏢 About Eon Labs
 
-Gapless Crypto Data is developed by [Eon Labs](https://github.com/Eon-Labs), specializing in quantitative trading infrastructure and machine learning for financial markets.
+Gapless Crypto Data is developed by [Eon Labs](https://github.com/terrylica), specializing in quantitative trading infrastructure and machine learning for financial markets.
 
 ---
 

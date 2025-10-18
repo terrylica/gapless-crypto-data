@@ -88,6 +88,6 @@ date, open, high, low, close, volume, close_time, quote_volume, count, taker_buy
 
 ## Links
 
-- GitHub: https://github.com/Eon-Labs/gapless-crypto-data
+- GitHub: https://github.com/terrylica/gapless-crypto-data
 - PyPI: https://pypi.org/project/gapless-crypto-data/
-- Docs: https://github.com/Eon-Labs/gapless-crypto-data#readme
+- Docs: https://github.com/terrylica/gapless-crypto-data#readme

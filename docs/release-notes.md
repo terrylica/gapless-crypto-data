@@ -194,13 +194,13 @@ uv add gapless-crypto-data
 uv run gapless-crypto-data --symbol BTCUSDT --timeframes 1h
 
 # Join the community
-# ⭐ Star the repo: https://github.com/Eon-Labs/gapless-crypto-data
-# 🐛 Report issues: https://github.com/Eon-Labs/gapless-crypto-data/issues
-# 💬 Discussions: https://github.com/Eon-Labs/gapless-crypto-data/discussions
+# ⭐ Star the repo: https://github.com/terrylica/gapless-crypto-data
+# 🐛 Report issues: https://github.com/terrylica/gapless-crypto-data/issues
+# 💬 Discussions: https://github.com/terrylica/gapless-crypto-data/discussions
 ```
 
 ---
 
 **Happy data collecting! 🚀📊**
 
-*Built with ❤️ by [Eon Labs](https://github.com/Eon-Labs) using modern Python tooling and best practices.*
+*Built with ❤️ by [Eon Labs](https://github.com/terrylica) using modern Python tooling and best practices.*

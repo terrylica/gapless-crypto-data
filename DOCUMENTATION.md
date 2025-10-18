@@ -374,7 +374,7 @@ Complete version history with technical details, hard-learned lessons, and imple
 - **API Reference**: [docs/guides/pypi-documentation.md](docs/guides/pypi-documentation.md)
 - **Examples**: [examples/README.md](examples/README.md)
 - **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md)
-- **Issues**: [GitHub Issues](https://github.com/Eon-Labs/gapless-crypto-data/issues)
+- **Issues**: [GitHub Issues](https://github.com/terrylica/gapless-crypto-data/issues)
 
 ---
 

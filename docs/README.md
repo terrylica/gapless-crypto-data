@@ -45,6 +45,6 @@ For contributors and developers:
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/Eon-Labs/gapless-crypto-data/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Eon-Labs/gapless-crypto-data/discussions)
+- **Issues**: [GitHub Issues](https://github.com/terrylica/gapless-crypto-data/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/terrylica/gapless-crypto-data/discussions)
 - **Email**: terry@eonlabs.com

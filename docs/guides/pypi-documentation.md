@@ -433,9 +433,9 @@ MIT License - see repository for full details.
 
 ## Support
 
-- **Documentation**: [GitHub Repository](https://github.com/Eon-Labs/gapless-crypto-data)
-- **Issues**: [GitHub Issues](https://github.com/Eon-Labs/gapless-crypto-data/issues)
-- **Changelog**: [Release Notes](https://github.com/Eon-Labs/gapless-crypto-data/blob/main/CHANGELOG.md)
+- **Documentation**: [GitHub Repository](https://github.com/terrylica/gapless-crypto-data)
+- **Issues**: [GitHub Issues](https://github.com/terrylica/gapless-crypto-data/issues)
+- **Changelog**: [Release Notes](https://github.com/terrylica/gapless-crypto-data/blob/main/CHANGELOG.md)
 
 ---
 

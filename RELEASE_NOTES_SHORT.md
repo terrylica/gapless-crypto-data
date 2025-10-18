@@ -15,8 +15,8 @@
 
 
 ---
-**Full Changelog**: https://github.com/Eon-Labs/rangebar/compare/v2.15.3...v2.16.0
+**Full Changelog**: https://github.com/terrylica/rangebar/compare/v2.15.3...v2.16.0
 
 
 ---
-*Full changelog: [CHANGELOG.md](https://github.com/Eon-Labs/gapless-crypto-data/blob/v3.0.0/CHANGELOG.md)*
+*Full changelog: [CHANGELOG.md](https://github.com/terrylica/gapless-crypto-data/blob/v3.0.0/CHANGELOG.md)*

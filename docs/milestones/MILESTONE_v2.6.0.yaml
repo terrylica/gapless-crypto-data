@@ -41,7 +41,7 @@ x-milestone-implementation:
       status: "IMPLEMENTED"
       pypi_publisher_config:
         provider: "GitHub"
-        repository: "Eon-Labs/gapless-crypto-data"
+        repository: "terrylica/gapless-crypto-data"
         workflow: "publish.yml"
         environment: "pypi"
 

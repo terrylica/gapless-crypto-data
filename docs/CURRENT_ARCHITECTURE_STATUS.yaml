@@ -81,7 +81,7 @@ x-current-status:
       description: "Native GitHub Actions trusted publishing with OIDC authentication"
       technical_specs:
         - "OIDC-based authentication eliminating API token dependencies"
-        - "PyPI trusted publisher configuration for Eon-Labs/gapless-crypto-data"
+        - "PyPI trusted publisher configuration for terrylica/gapless-crypto-data"
         - "Environment-scoped publishing with pypi environment requirement"
         - "Automatic digital attestations and Sigstore artifact signing"
 

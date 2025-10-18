@@ -188,7 +188,7 @@ All examples can be customized by modifying:
 
 - [Main README](../README.md) - Package overview and installation
 - [API Documentation](../docs/) - Detailed API reference
-- [GitHub Issues](https://github.com/Eon-Labs/gapless-crypto-data/issues) - Report problems or request features
+- [GitHub Issues](https://github.com/terrylica/gapless-crypto-data/issues) - Report problems or request features
 
 ## 🤝 Contributing
 

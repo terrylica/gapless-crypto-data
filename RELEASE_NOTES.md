@@ -15,4 +15,4 @@
 
 
 ---
-**Full Changelog**: https://github.com/Eon-Labs/rangebar/compare/v2.16.0...v3.0.0
+**Full Changelog**: https://github.com/terrylica/rangebar/compare/v2.16.0...v3.0.0
