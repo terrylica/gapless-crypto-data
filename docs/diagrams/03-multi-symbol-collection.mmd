@@ -95,13 +95,13 @@ flowchart TD
     note1[Example Progress:<br/>BTCUSDT: 3/8 timeframes<br/>ETHUSDT: 8/8 ✓<br/>SOLUSDT: 0/8 pending] -.-> ShowProgress
 
     %% Styling
-    classDef startNode fill:#e1f5ff,stroke:#0277bd,stroke-width:3px
-    classDef checkpointNode fill:#fff3cd,stroke:#856404,stroke-width:2px
-    classDef loopNode fill:#e7f3ff,stroke:#004085,stroke-width:2px
-    classDef successNode fill:#d4edda,stroke:#155724,stroke-width:2px
-    classDef errorNode fill:#f8d7da,stroke:#721c24,stroke-width:2px
-    classDef processNode fill:#f8f9fa,stroke:#6c757d,stroke-width:1px
-    classDef criticalNode fill:#cfe2ff,stroke:#084298,stroke-width:3px
+    classDef startNode stroke:#3b82f6,stroke-width:3px
+    classDef checkpointNode stroke:#f59e0b,stroke-width:2px
+    classDef loopNode stroke:#06b6d4,stroke-width:2px
+    classDef successNode stroke:#22c55e,stroke-width:2px
+    classDef errorNode stroke:#ef4444,stroke-width:2px
+    classDef processNode stroke:#6b7280,stroke-width:1px
+    classDef criticalNode stroke:#3b82f6,stroke-width:3px
 
     class Start,End startNode
     class InitCheckpoint,LoadCheckpoint,CalcResume,UpdateCheckpointTF,CheckpointSymbol,SaveState,CleanCheckpoint,DeleteCheckpoint,KeepCheckpoint checkpointNode
