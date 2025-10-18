@@ -123,12 +123,12 @@ flowchart TD
     ErrorVolume -.-> End
 
     %% Styling
-    classDef errorNode stroke:#ef4444,stroke-width:2px
-    classDef warnNode stroke:#f59e0b,stroke-width:2px
-    classDef passNode stroke:#22c55e,stroke-width:2px
-    classDef layerNode stroke:#3b82f6,stroke-width:3px
-    classDef decisionNode stroke:#06b6d4,stroke-width:2px
-    classDef dataNode stroke:#6b7280,stroke-width:1px
+    classDef errorNode fill:#ef4444
+    classDef warnNode fill:#f59e0b
+    classDef passNode fill:#22c55e
+    classDef layerNode fill:#3b82f6
+    classDef decisionNode fill:#06b6d4
+    classDef dataNode fill:#6b7280
 
     class ErrorFile,ErrorStructure,ErrorDateTime,ErrorDupes,ErrorOHLC,ErrorVolume,FinalFail errorNode
     class WarnSort,WarnOutlier,WarnCoverage,FinalWarn warnNode

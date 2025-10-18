@@ -72,11 +72,11 @@ flowchart TD
     note3["🗄️ CACHE STRUCTURE<br/>---<br/>ETag cache (JSON):<br/>  {<br/>    'url': 'https://...',<br/>    'etag': 'abc123...',<br/>    'last_modified': '2024-01-15',<br/>    'size': 180456789<br/>  }<br/>---<br/>ZIP cache (files):<br/>  BTCUSDT-1h-2024-01.zip<br/>  BTCUSDT-1h-2024-02.zip<br/>  ...<br/>---<br/>Invalidation: Manual only<br/>TTL: Infinite (immutable data)"] -.-> CheckCache
 
     %% Styling
-    classDef cacheHit stroke:#22c55e,stroke-width:3px
-    classDef cacheMiss stroke:#f59e0b,stroke-width:2px
-    classDef cloudfront stroke:#06b6d4,stroke-width:2px
-    classDef decision stroke:#6b7280,stroke-width:2px
-    classDef critical stroke:#3b82f6,stroke-width:3px
+    classDef cacheHit fill:#22c55e
+    classDef cacheMiss fill:#f59e0b
+    classDef cloudfront fill:#06b6d4
+    classDef decision fill:#6b7280
+    classDef critical fill:#3b82f6
 
     class Return304,Use304,LoadLocal,ExtractCached cacheHit
     class Return200,Return200New,DownloadZIP,SaveZIP,ExtractNew cacheMiss

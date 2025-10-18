@@ -108,12 +108,12 @@ flowchart TD
     FormatError -.-> ErrorEnd
 
     %% Styling
-    classDef apiNode stroke:#f59e0b,stroke-width:2px
-    classDef successNode stroke:#22c55e,stroke-width:2px
-    classDef errorNode stroke:#ef4444,stroke-width:2px
-    classDef criticalNode stroke:#3b82f6,stroke-width:3px
-    classDef decisionNode stroke:#06b6d4,stroke-width:2px
-    classDef dataNode stroke:#6b7280,stroke-width:1px
+    classDef apiNode fill:#f59e0b
+    classDef successNode fill:#22c55e
+    classDef errorNode fill:#ef4444
+    classDef criticalNode fill:#3b82f6
+    classDef decisionNode fill:#06b6d4
+    classDef dataNode fill:#6b7280
 
     class BuildAPIRequest,CallBinanceAPI,CheckAPIResponse,ParseAPI apiNode
     class RecordSuccess,Complete,DeleteBackup,NoContinuous successNode
