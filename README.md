@@ -44,35 +44,7 @@ uv tool install gapless-crypto-data
 pip install gapless-crypto-data
 ```
 
-### CLI Usage
-
-```bash
-# Collect data for multiple timeframes (all 13 timeframes supported)
-gapless-crypto-data --symbol SOLUSDT --timeframes 1s,1m,5m,1h,4h,1d
-
-# Ultra-high frequency data collection (1-second intervals)
-gapless-crypto-data --symbol BTCUSDT --timeframes 1s,1m,3m
-
-# Extended timeframes with intelligent fallback
-gapless-crypto-data --symbol ETHUSDT --timeframes 6h,8h,12h,1d
-
-# Collect multiple symbols at once (native multi-symbol support)
-gapless-crypto-data --symbol BTCUSDT,ETHUSDT,SOLUSDT --timeframes 1h,4h,1d
-
-# Collect specific date range with custom output directory
-gapless-crypto-data --symbol BTCUSDT --timeframes 1h --start 2023-01-01 --end 2023-12-31 --output-dir ./crypto_data
-
-# Multi-symbol with custom settings
-gapless-crypto-data --symbol BTCUSDT,ETHUSDT --timeframes 5m,1h --start 2024-01-01 --end 2024-06-30 --output-dir ./crypto_data
-
-# Fill gaps in existing data
-gapless-crypto-data --fill-gaps --directory ./data
-
-# Help
-gapless-crypto-data --help
-```
-
-### Python API
+### Python API (Recommended)
 
 #### Function-based API
 
@@ -114,6 +86,37 @@ df = result["dataframe"]
 # Manual gap filling
 gap_filler = UniversalGapFiller()
 gaps = gap_filler.detect_all_gaps(csv_file, "1h")
+```
+
+### CLI Usage (⚠️ Deprecated - Will be removed in v4.0.0)
+
+> **Deprecation Notice**: The CLI interface is deprecated and will be removed in v4.0.0.
+> Please use the Python API instead. See the [migration guide](#python-api-recommended) above.
+
+```bash
+# Collect data for multiple timeframes (all 13 timeframes supported)
+gapless-crypto-data --symbol SOLUSDT --timeframes 1s,1m,5m,1h,4h,1d
+
+# Ultra-high frequency data collection (1-second intervals)
+gapless-crypto-data --symbol BTCUSDT --timeframes 1s,1m,3m
+
+# Extended timeframes with intelligent fallback
+gapless-crypto-data --symbol ETHUSDT --timeframes 6h,8h,12h,1d
+
+# Collect multiple symbols at once (native multi-symbol support)
+gapless-crypto-data --symbol BTCUSDT,ETHUSDT,SOLUSDT --timeframes 1h,4h,1d
+
+# Collect specific date range with custom output directory
+gapless-crypto-data --symbol BTCUSDT --timeframes 1h --start 2023-01-01 --end 2023-12-31 --output-dir ./crypto_data
+
+# Multi-symbol with custom settings
+gapless-crypto-data --symbol BTCUSDT,ETHUSDT --timeframes 5m,1h --start 2024-01-01 --end 2024-06-30 --output-dir ./crypto_data
+
+# Fill gaps in existing data
+gapless-crypto-data --fill-gaps --directory ./data
+
+# Help
+gapless-crypto-data --help
 ```
 
 ## Data Structure

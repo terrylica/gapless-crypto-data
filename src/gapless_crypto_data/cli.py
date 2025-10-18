@@ -525,6 +525,29 @@ def fill_gaps(command_line_args: Any) -> int:
 def main() -> int:
     """Main CLI entry point"""
 
+    # === DEPRECATION WARNING ===
+    print("\n" + "=" * 70, file=sys.stderr)
+    print("⚠️  CLI DEPRECATION NOTICE", file=sys.stderr)
+    print("=" * 70, file=sys.stderr)
+    print(
+        "The gapless-crypto-data CLI is deprecated and will be removed in v4.0.0.", file=sys.stderr
+    )
+    print("", file=sys.stderr)
+    print("Please migrate to the Python API:", file=sys.stderr)
+    print("", file=sys.stderr)
+    print("  # Instead of CLI:", file=sys.stderr)
+    print("  gapless-crypto-data --symbol BTCUSDT --timeframes 1h", file=sys.stderr)
+    print("", file=sys.stderr)
+    print("  # Use Python API:", file=sys.stderr)
+    print("  import gapless_crypto_data as gcd", file=sys.stderr)
+    print("  df = gcd.fetch_data('BTCUSDT', '1h')", file=sys.stderr)
+    print("", file=sys.stderr)
+    print(
+        "Migration guide: https://github.com/terrylica/gapless-crypto-data#python-api",
+        file=sys.stderr,
+    )
+    print("=" * 70 + "\n", file=sys.stderr)
+
     data_availability_info = """
 Data Availability Notes:
   Historical Data: Available from each symbol's listing date

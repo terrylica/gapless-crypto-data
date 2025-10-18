@@ -63,10 +63,13 @@ Usage:
     result = collector.collect_timeframe_data("1h")
     df = result["dataframe"]
 
-CLI Usage:
-    uv run gapless-crypto-data --symbol SOLUSDT --timeframes 1s,1m,5m,1h,4h,1d
-    uv run gapless-crypto-data --symbol BTCUSDT --timeframes 1s,6h,8h,12h,1d
-    uv run gapless-crypto-data --fill-gaps --directory ./data
+CLI Usage (DEPRECATED - Will be removed in v4.0.0):
+    ⚠️  The CLI is deprecated. Please use the Python API instead (see above).
+
+    Legacy CLI (deprecated):
+        uv run gapless-crypto-data --symbol SOLUSDT --timeframes 1s,1m,5m,1h,4h,1d
+        uv run gapless-crypto-data --symbol BTCUSDT --timeframes 1s,6h,8h,12h,1d
+        uv run gapless-crypto-data --fill-gaps --directory ./data
 
 Supported Symbols (USDT Spot Only):
     BTCUSDT, ETHUSDT, SOLUSDT, ADAUSDT, DOTUSDT, LINKUSDT, MATICUSDT,

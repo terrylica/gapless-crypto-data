@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+### ⚠️ BREAKING CHANGES (Upcoming v4.0.0)
+
+- **cli**: CLI interface deprecated and will be removed in v4.0.0 (v3.3.0)
+  - Added deprecation warning to CLI entry point displayed on every invocation
+  - Reorganized README.md to prioritize Python API over CLI
+  - Updated all documentation with deprecation notices
+  - Created comprehensive CLI Migration Guide (docs/CLI_MIGRATION_GUIDE.md)
+  - Python API is now the recommended interface for all use cases
+  - CLI will continue to work with warnings through v3.x series
+  - Migration timeline: v3.3.0 (deprecation) → v4.0.0 (removal, Q2 2025)
+  - See migration guide for side-by-side CLI→API examples
+
+
 ### ✨ Features
 
 - **api**: Deliver zero gaps guarantee by default with auto-fill Implement automatic gap detection and filling in download() and fetch_data() to fulfill the package's core promise of "zero gaps guarantee". Previous Behavior (BROKEN): - Package name: gapless-crypto-data - Promise: "zero gaps guarantee" in README - Reality: download() returned data with gaps from Binance Vision - User complaint: False advertising - had to manually discover and call fill_gaps() New Behavior (FIXED): - auto_fill_gaps=True by default in download() and fetch_data() - Automatically detects gaps using UniversalGapFiller - Fills gaps with authentic Binance API data - Logs gap-filling activity for transparency - Opt-out available: auto_fill_gaps=False for raw Vision data Implementation Details: - Added auto_fill_gaps parameter to both download() and fetch_data() - Integrated UniversalGapFiller.process_file() into data collection flow - Automatic DataFrame reload after gap filling - Clear logging: "✅ Auto-filled N/M gap(s)" or warning if fill fails - Enhanced docstrings with "zero gaps guarantee" language Testing: - Added 4 comprehensive test cases in test_simple_api.py: * test_auto_fill_gaps_enabled_by_default() * test_auto_fill_gaps_can_be_disabled() * test_fetch_data_auto_fill_parameter() * test_download_delivers_zero_gaps_guarantee() - March 24, 2023 gap scenario validation Addresses user complaint: /tmp/github_issue_gapless_crypto_data.md - Gap-filling capability existed but wasn't integrated by default - Users discovered gaps in production after trusting package name - Had to manually diagnose, call fill_gaps(), and reload data BREAKING CHANGE: download() and fetch_data() now automatically fill gaps by default, which may result in additional API calls for data with gaps. Users can disable with auto_fill_gaps=False to maintain previous behavior.
