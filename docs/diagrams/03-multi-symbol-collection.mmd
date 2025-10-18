@@ -88,9 +88,9 @@ flowchart TD
     KeepCheckpoint --> EndPartial([Exit with partial success])
 
     %% Interruption Handling
-    SymbolLoop -.->|Ctrl+C or crash| SaveState[Save current state<br/>to checkpoint]
-    TimeframeLoop -.->|Ctrl+C or crash| SaveState
-    CallCollect -.->|Ctrl+C or crash| SaveState
+    SymbolLoop -.-> SaveState[Save current state<br/>to checkpoint]
+    TimeframeLoop -.-> SaveState
+    CallCollect -.-> SaveState
     SaveState -.-> InterruptExit([Exit cleanly<br/>resume next time])
 
     %% Example Progress States
