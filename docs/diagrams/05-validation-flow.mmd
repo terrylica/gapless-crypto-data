@@ -2,6 +2,8 @@
 %% Shows multi-layer validation with specific checks at each layer
 %% Reference: src/gapless_crypto_data/validation/csv_validator.py:170-232
 
+%%{init: {'theme':'base', 'themeVariables': {'lineColor':'#8b5cf6'}}}%%
+
 flowchart TD
     %% Entry Point
     Start([CSV file loaded<br/>into DataFrame]) --> Layer1[LAYER 1:<br/>Structure Validation]
@@ -129,8 +131,6 @@ flowchart TD
     classDef layerNode fill:#3b82f6
     classDef decisionNode fill:#06b6d4
     classDef dataNode fill:#6b7280
-
-    linkStyle default stroke:#8b5cf6,stroke-width:2px
 
     class ErrorFile,ErrorStructure,ErrorDateTime,ErrorDupes,ErrorOHLC,ErrorVolume,FinalFail errorNode
     class WarnSort,WarnOutlier,WarnCoverage,FinalWarn warnNode

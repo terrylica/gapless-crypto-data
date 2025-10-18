@@ -2,6 +2,8 @@
 %% Shows complex nested loops with intelligent checkpointing and resume
 %% Reference: src/gapless_crypto_data/cli.py:424-470
 
+%%{init: {'theme':'base', 'themeVariables': {'lineColor':'#8b5cf6'}}}%%
+
 flowchart TD
     %% Entry Point
     Start([CLI: gapless-crypto-data<br/>--symbol BTC,ETH,SOL<br/>--timeframes 1h,4h,1d]) --> ParseArgs[Parse CLI arguments]
@@ -102,8 +104,6 @@ flowchart TD
     classDef errorNode fill:#ef4444
     classDef processNode fill:#6b7280
     classDef criticalNode fill:#3b82f6
-
-    linkStyle default stroke:#8b5cf6,stroke-width:2px
 
     class Start,End startNode
     class InitCheckpoint,LoadCheckpoint,CalcResume,UpdateCheckpointTF,CheckpointSymbol,SaveState,CleanCheckpoint,DeleteCheckpoint,KeepCheckpoint checkpointNode

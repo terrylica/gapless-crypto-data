@@ -2,6 +2,8 @@
 %% Shows how ETag caching achieves 22x faster performance vs API-only collection
 %% Reference: src/gapless_crypto_data/collectors/binance_public_data_collector.py:354-481
 
+%%{init: {'theme':'base', 'themeVariables': {'lineColor':'#8b5cf6'}}}%%
+
 flowchart TD
     %% Entry Point
     Start([Need data for<br/>BTCUSDT 1h Jan 2024]) --> GenerateURL[Generate monthly ZIP URL:<br/>data.binance.vision/data/spot/<br/>monthly/klines/BTCUSDT/1h/<br/>BTCUSDT-1h-2024-01.zip]
@@ -77,8 +79,6 @@ flowchart TD
     classDef cloudfront fill:#06b6d4
     classDef decision fill:#6b7280
     classDef critical fill:#3b82f6
-
-    linkStyle default stroke:#8b5cf6,stroke-width:2px
 
     class Return304,Use304,LoadLocal,ExtractCached cacheHit
     class Return200,Return200New,DownloadZIP,SaveZIP,ExtractNew cacheMiss

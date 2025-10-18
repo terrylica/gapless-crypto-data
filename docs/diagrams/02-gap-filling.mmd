@@ -2,6 +2,8 @@
 %% Shows the zero-gap guarantee process using authentic Binance API data
 %% Reference: src/gapless_crypto_data/gap_filling/universal_gap_filler.py:597-644
 
+%%{init: {'theme':'base', 'themeVariables': {'lineColor':'#8b5cf6'}}}%%
+
 flowchart TD
     %% Entry Point
     Start([CSV file or DataFrame<br/>with potential gaps]) --> DetectFormat[Detect CSV format:<br/>enhanced 11-col vs legacy 6-col]
@@ -114,8 +116,6 @@ flowchart TD
     classDef criticalNode fill:#3b82f6
     classDef decisionNode fill:#06b6d4
     classDef dataNode fill:#6b7280
-
-    linkStyle default stroke:#8b5cf6,stroke-width:2px
 
     class BuildAPIRequest,CallBinanceAPI,CheckAPIResponse,ParseAPI apiNode
     class RecordSuccess,Complete,DeleteBackup,NoContinuous successNode
