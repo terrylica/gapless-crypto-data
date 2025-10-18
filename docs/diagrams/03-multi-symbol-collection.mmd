@@ -78,7 +78,7 @@ flowchart TD
     %% Final Reporting
     AllSymbolsComplete --> GenerateSummary[Generate final summary:<br/>total files, total size,<br/>errors, success rate]
 
-    GenerateSummary --> PrintSummary[Print summary table:<br/>symbol | timeframes | status]
+    GenerateSummary --> PrintSummary[Print summary table:<br/>symbol / timeframes / status]
 
     PrintSummary --> CleanCheckpoint{All successful?}
     CleanCheckpoint --> DeleteCheckpoint[Delete checkpoint file<br/>job complete!]
