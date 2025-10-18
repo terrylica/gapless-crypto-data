@@ -277,23 +277,15 @@ class UniversalGapFiller:
             logger.error(f"   ❌ Binance API error: {api_exception}")
             return None
 
-    def fill_gap(
-        self,
-        timestamp_gap_info: Dict,
-        csv_path: Path,
-        trading_timeframe: str,
-    ) -> bool:
-        """Fill a single gap with authentic Binance data using API-first validation protocol"""
-        logger.info(
-            f"🔧 Filling gap: {timestamp_gap_info['start_time']} → {timestamp_gap_info['end_time']}"
-        )
-        logger.info("   📋 Applying API-first validation protocol")
+    def _detect_csv_format(self, existing_data: pd.DataFrame) -> tuple[bool, bool]:
+        """Detect CSV format: enhanced (11 columns) vs legacy (6 columns).
 
-        # Load current CSV data to detect format
-        existing_ohlcv_data = pd.read_csv(csv_path, comment="#")
-        existing_ohlcv_data["date"] = pd.to_datetime(existing_ohlcv_data["date"])
+        Args:
+            existing_data: Existing CSV data as DataFrame
 
-        # Detect format: enhanced (11 columns) vs legacy (6 columns)
+        Returns:
+            tuple: (is_enhanced_format, is_legacy_format)
+        """
         enhanced_columns = [
             "date",
             "open",
@@ -309,27 +301,36 @@ class UniversalGapFiller:
         ]
         legacy_columns = ["date", "open", "high", "low", "close", "volume"]
 
-        is_enhanced_format = all(
-            column_name in existing_ohlcv_data.columns for column_name in enhanced_columns
-        )
-        is_legacy_format = all(
-            column_name in existing_ohlcv_data.columns for column_name in legacy_columns
-        )
+        is_enhanced = all(col in existing_data.columns for col in enhanced_columns)
+        is_legacy = all(col in existing_data.columns for col in legacy_columns)
 
-        if is_enhanced_format:
+        if is_enhanced:
             logger.info("   🚀 Enhanced 11-column format detected")
-        elif is_legacy_format:
+        elif is_legacy:
             logger.info("   📊 Legacy 6-column format detected")
         else:
-            logger.error(f"   ❌ Unknown CSV format. Columns: {list(existing_ohlcv_data.columns)}")
-            return False
+            logger.error(f"   ❌ Unknown CSV format. Columns: {list(existing_data.columns)}")
 
-        # ✅ API-FIRST VALIDATION: Always use authentic Binance REST API data
-        # Extract symbol from filename to ensure correct data is fetched
-        extracted_symbol = self.extract_symbol_from_filename(csv_path)
-        filename = Path(csv_path).name if isinstance(csv_path, str) else csv_path.name
-        logger.info(f"   🎯 Extracted symbol: {extracted_symbol} from file: {filename}")
+        return is_enhanced, is_legacy
 
+    def _retrieve_api_data_with_metadata(
+        self,
+        timestamp_gap_info: Dict,
+        trading_timeframe: str,
+        extracted_symbol: str,
+        is_enhanced_format: bool,
+    ) -> tuple[Optional[List[Dict]], Dict]:
+        """Retrieve API data and create metadata tracking.
+
+        Args:
+            timestamp_gap_info: Gap information with start/end times
+            trading_timeframe: Trading timeframe (e.g., "1h")
+            extracted_symbol: Symbol extracted from filename
+            is_enhanced_format: Whether enhanced format is used
+
+        Returns:
+            tuple: (authentic_api_data, gap_fill_metadata)
+        """
         logger.info("   🔍 Step 1: Attempting authentic Binance REST API data retrieval")
         authentic_api_data = self.fetch_binance_data(
             timestamp_gap_info["start_time"],
@@ -339,7 +340,7 @@ class UniversalGapFiller:
             enhanced_format=is_enhanced_format,
         )
 
-        # Track gap filling details for metadata
+        # Initialize metadata
         gap_fill_metadata = {
             "timestamp": timestamp_gap_info["start_time"].strftime("%Y-%m-%d %H:%M:%S"),
             "duration_hours": (
@@ -358,60 +359,68 @@ class UniversalGapFiller:
         if not authentic_api_data:
             logger.warning("   ⚠️ Step 1 Failed: No authentic API data available")
             logger.info("   🔍 Step 2: Checking if gap is legitimate exchange outage")
-
-            # Gap represents legitimate exchange outage - preserve data integrity
-            # For now, fail gracefully to maintain authentic data mandate
             logger.error("   ❌ Gap filling failed: No authentic data available via API")
             logger.info("   📋 Preserving authentic data integrity - no synthetic fill applied")
-            return False
-        else:
-            logger.info(
-                f"   ✅ Step 1 Success: Retrieved {len(authentic_api_data)} authentic candles from API"
-            )
+            return None, gap_fill_metadata
 
-            # Update gap fill details for authentic API data
-            gap_fill_metadata.update(
-                {
-                    "fill_method": "binance_rest_api",
-                    "data_source": "https://api.binance.com/api/v3/klines",
-                    "authentic_data": True,
-                    "synthetic_data": False,
-                    "reason": "missing_from_monthly_file_but_available_via_api",
+        logger.info(
+            f"   ✅ Step 1 Success: Retrieved {len(authentic_api_data)} authentic candles from API"
+        )
+
+        # Update metadata for successful retrieval
+        gap_fill_metadata.update(
+            {
+                "fill_method": "binance_rest_api",
+                "data_source": "https://api.binance.com/api/v3/klines",
+                "authentic_data": True,
+                "synthetic_data": False,
+                "reason": "missing_from_monthly_file_but_available_via_api",
+            }
+        )
+
+        # Add OHLCV data to metadata
+        if authentic_api_data:
+            first_candle = authentic_api_data[0]
+            gap_fill_metadata["ohlcv"] = {
+                "open": first_candle["open"],
+                "high": first_candle["high"],
+                "low": first_candle["low"],
+                "close": first_candle["close"],
+                "volume": first_candle["volume"],
+            }
+
+            if is_enhanced_format and "quote_asset_volume" in first_candle:
+                gap_fill_metadata["microstructure_data"] = {
+                    "quote_asset_volume": first_candle["quote_asset_volume"],
+                    "number_of_trades": first_candle["number_of_trades"],
+                    "taker_buy_base_asset_volume": first_candle["taker_buy_base_asset_volume"],
+                    "taker_buy_quote_asset_volume": first_candle["taker_buy_quote_asset_volume"],
                 }
-            )
 
-            if authentic_api_data:
-                first_candle_data = authentic_api_data[0]
-                gap_fill_metadata["ohlcv"] = {
-                    "open": first_candle_data["open"],
-                    "high": first_candle_data["high"],
-                    "low": first_candle_data["low"],
-                    "close": first_candle_data["close"],
-                    "volume": first_candle_data["volume"],
-                }
+        return authentic_api_data, gap_fill_metadata
 
-                if is_enhanced_format and "quote_asset_volume" in first_candle_data:
-                    gap_fill_metadata["microstructure_data"] = {
-                        "quote_asset_volume": first_candle_data["quote_asset_volume"],
-                        "number_of_trades": first_candle_data["number_of_trades"],
-                        "taker_buy_base_asset_volume": first_candle_data[
-                            "taker_buy_base_asset_volume"
-                        ],
-                        "taker_buy_quote_asset_volume": first_candle_data[
-                            "taker_buy_quote_asset_volume"
-                        ],
-                    }
+    def _prepare_api_dataframe(
+        self,
+        authentic_api_data: List[Dict],
+        is_enhanced_format: bool,
+    ) -> pd.DataFrame:
+        """Convert API data to DataFrame and select appropriate columns.
 
-        # Create DataFrame for Binance data
-        api_data_dataframe = pd.DataFrame(authentic_api_data)
-        api_data_dataframe["date"] = pd.to_datetime(api_data_dataframe["timestamp"])
+        Args:
+            authentic_api_data: Raw API data
+            is_enhanced_format: Whether to include microstructure columns
 
-        # Select appropriate columns based on format
+        Returns:
+            DataFrame with selected columns
+        """
+        df = pd.DataFrame(authentic_api_data)
+        df["date"] = pd.to_datetime(df["timestamp"])
+
         if is_enhanced_format:
-            # For enhanced format, include all microstructure columns
-            selected_columns = ["date", "open", "high", "low", "close", "volume"]
-            if "close_time" in api_data_dataframe.columns:
-                selected_columns.extend(
+            # Enhanced format: include all microstructure columns
+            columns = ["date", "open", "high", "low", "close", "volume"]
+            if "close_time" in df.columns:
+                columns.extend(
                     [
                         "close_time",
                         "quote_asset_volume",
@@ -420,83 +429,169 @@ class UniversalGapFiller:
                         "taker_buy_quote_asset_volume",
                     ]
                 )
-            api_data_dataframe = api_data_dataframe[selected_columns]
+            return df[columns]
         else:
-            # For legacy format, only basic OHLCV columns
-            api_data_dataframe = api_data_dataframe[
-                ["date", "open", "high", "low", "close", "volume"]
-            ]
+            # Legacy format: only basic OHLCV columns
+            return df[["date", "open", "high", "low", "close", "volume"]]
 
-        # FIXED: Filter Binance data to only include timestamps within the gap period
-        gap_start_time = pd.to_datetime(timestamp_gap_info["start_time"])
-        gap_end_time = pd.to_datetime(timestamp_gap_info["end_time"])
+    def _filter_to_gap_period(
+        self,
+        api_dataframe: pd.DataFrame,
+        timestamp_gap_info: Dict,
+    ) -> Optional[pd.DataFrame]:
+        """Filter API data to only include timestamps within gap period.
 
-        # Only include Binance data that falls within the gap period
-        gap_time_filter = (api_data_dataframe["date"] >= gap_start_time) & (
-            api_data_dataframe["date"] < gap_end_time
-        )
-        filtered_api_data = api_data_dataframe[gap_time_filter].copy()
+        Args:
+            api_dataframe: API data as DataFrame
+            timestamp_gap_info: Gap information with start/end times
 
-        if len(filtered_api_data) == 0:
+        Returns:
+            Filtered DataFrame or None if no data in gap period
+        """
+        gap_start = pd.to_datetime(timestamp_gap_info["start_time"])
+        gap_end = pd.to_datetime(timestamp_gap_info["end_time"])
+
+        time_filter = (api_dataframe["date"] >= gap_start) & (api_dataframe["date"] < gap_end)
+        filtered = api_dataframe[time_filter].copy()
+
+        if len(filtered) == 0:
             logger.warning("   ⚠️ No authentic Binance data falls within gap period after filtering")
-            return False
+            return None
 
-        logger.info(
-            f"   📊 Filtered to {len(filtered_api_data)} authentic candles within gap period"
-        )
+        logger.info(f"   📊 Filtered to {len(filtered)} authentic candles within gap period")
+        return filtered
 
-        # FIXED: Simple append and sort - no position-based insertion needed
-        combined_dataframe = pd.concat([existing_ohlcv_data, filtered_api_data], ignore_index=True)
+    def _merge_and_deduplicate(
+        self,
+        existing_data: pd.DataFrame,
+        filtered_api_data: pd.DataFrame,
+    ) -> pd.DataFrame:
+        """Merge existing and new data, removing duplicates.
 
-        # Sort by date and remove any exact timestamp duplicates (keep first occurrence)
-        pre_dedup_count = len(combined_dataframe)
-        combined_dataframe = combined_dataframe.sort_values("date").drop_duplicates(
-            subset=["date"], keep="first"
-        )
-        duplicates_removed = pre_dedup_count - len(combined_dataframe)
+        Args:
+            existing_data: Existing CSV data
+            filtered_api_data: Filtered API data for gap period
 
-        if duplicates_removed > 0:
-            logger.warning(
-                f"   ⚠️ Removed {duplicates_removed} duplicate timestamp(s) during gap filling"
-            )
+        Returns:
+            Combined DataFrame with duplicates removed
+        """
+        combined = pd.concat([existing_data, filtered_api_data], ignore_index=True)
 
-        # Validate gap was actually filled
-        gap_filled_dataframe = combined_dataframe.sort_values("date").reset_index(drop=True)
-        remaining_timestamp_gaps = []
+        pre_dedup = len(combined)
+        combined = combined.sort_values("date").drop_duplicates(subset=["date"], keep="first")
+        duplicates = pre_dedup - len(combined)
 
-        # Check if gap is filled by looking for continuous timestamps
-        for validation_index in range(1, len(gap_filled_dataframe)):
-            current_timestamp = gap_filled_dataframe.iloc[validation_index]["date"]
-            previous_timestamp = gap_filled_dataframe.iloc[validation_index - 1]["date"]
-            expected_time_interval = TIMEFRAME_TO_TIMEDELTA[trading_timeframe]
-            actual_time_difference = current_timestamp - previous_timestamp
+        if duplicates > 0:
+            logger.warning(f"   ⚠️ Removed {duplicates} duplicate timestamp(s) during gap filling")
 
-            if actual_time_difference > expected_time_interval:
-                # Check if this overlaps with our target gap
-                if (previous_timestamp < gap_end_time) and (current_timestamp > gap_start_time):
-                    remaining_timestamp_gaps.append(f"{previous_timestamp} → {current_timestamp}")
+        return combined
 
-        if remaining_timestamp_gaps:
-            logger.warning(
-                f"   ⚠️ Gap partially filled - remaining gaps: {remaining_timestamp_gaps}"
-            )
+    def _validate_gap_filled(
+        self,
+        combined_data: pd.DataFrame,
+        timestamp_gap_info: Dict,
+        trading_timeframe: str,
+    ) -> None:
+        """Validate that gap was actually filled.
 
-        # Save back to CSV with header comments preserved
-        csv_header_comments = []
-        with open(csv_path, "r") as csv_file_handle:
-            for csv_line in csv_file_handle:
-                if csv_line.startswith("#"):
-                    csv_header_comments.append(csv_line.rstrip())
+        Args:
+            combined_data: Combined DataFrame after gap filling
+            timestamp_gap_info: Gap information with start/end times
+            trading_timeframe: Trading timeframe for interval calculation
+        """
+        gap_start = pd.to_datetime(timestamp_gap_info["start_time"])
+        gap_end = pd.to_datetime(timestamp_gap_info["end_time"])
+
+        sorted_data = combined_data.sort_values("date").reset_index(drop=True)
+        remaining_gaps = []
+
+        for i in range(1, len(sorted_data)):
+            current = sorted_data.iloc[i]["date"]
+            previous = sorted_data.iloc[i - 1]["date"]
+            expected_interval = TIMEFRAME_TO_TIMEDELTA[trading_timeframe]
+            actual_diff = current - previous
+
+            if actual_diff > expected_interval:
+                # Check if overlaps with target gap
+                if (previous < gap_end) and (current > gap_start):
+                    remaining_gaps.append(f"{previous} → {current}")
+
+        if remaining_gaps:
+            logger.warning(f"   ⚠️ Gap partially filled - remaining gaps: {remaining_gaps}")
+
+    def _save_with_headers(
+        self,
+        csv_path: Path,
+        dataframe: pd.DataFrame,
+    ) -> None:
+        """Save DataFrame to CSV with header comments preserved.
+
+        Args:
+            csv_path: Path to CSV file
+            dataframe: DataFrame to save
+        """
+        # Read header comments
+        headers = []
+        with open(csv_path, "r") as f:
+            for line in f:
+                if line.startswith("#"):
+                    headers.append(line.rstrip())
                 else:
                     break
 
-        # Write header comments + data
-        with open(csv_path, "w") as output_file_handle:
-            for header_comment in csv_header_comments:
-                output_file_handle.write(header_comment + "\n")
-            combined_dataframe.to_csv(output_file_handle, index=False)
+        # Write headers + data
+        with open(csv_path, "w") as f:
+            for header in headers:
+                f.write(header + "\n")
+            dataframe.to_csv(f, index=False)
 
-        logger.info(f"   ✅ Gap filled with {len(filtered_api_data)} authentic candles")
+    def fill_gap(
+        self,
+        timestamp_gap_info: Dict,
+        csv_path: Path,
+        trading_timeframe: str,
+    ) -> bool:
+        """Fill a single gap with authentic Binance data using API-first validation protocol."""
+        logger.info(
+            f"🔧 Filling gap: {timestamp_gap_info['start_time']} → {timestamp_gap_info['end_time']}"
+        )
+        logger.info("   📋 Applying API-first validation protocol")
+
+        # Load and detect format
+        existing_data = pd.read_csv(csv_path, comment="#")
+        existing_data["date"] = pd.to_datetime(existing_data["date"])
+
+        is_enhanced, is_legacy = self._detect_csv_format(existing_data)
+        if not is_enhanced and not is_legacy:
+            return False
+
+        # Extract symbol and retrieve API data
+        extracted_symbol = self.extract_symbol_from_filename(csv_path)
+        filename = Path(csv_path).name if isinstance(csv_path, str) else csv_path.name
+        logger.info(f"   🎯 Extracted symbol: {extracted_symbol} from file: {filename}")
+
+        api_data, metadata = self._retrieve_api_data_with_metadata(
+            timestamp_gap_info, trading_timeframe, extracted_symbol, is_enhanced
+        )
+
+        if not api_data:
+            return False
+
+        # Prepare and filter API data
+        api_df = self._prepare_api_dataframe(api_data, is_enhanced)
+        filtered_df = self._filter_to_gap_period(api_df, timestamp_gap_info)
+
+        if filtered_df is None:
+            return False
+
+        # Merge and validate
+        combined = self._merge_and_deduplicate(existing_data, filtered_df)
+        self._validate_gap_filled(combined, timestamp_gap_info, trading_timeframe)
+
+        # Save results
+        self._save_with_headers(csv_path, combined)
+
+        logger.info(f"   ✅ Gap filled with {len(filtered_df)} authentic candles")
         return True
 
     def process_file(self, csv_path: Path, trading_timeframe: str) -> Dict:
