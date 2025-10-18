@@ -110,6 +110,8 @@ flowchart TD
     classDef decisionNode fill:#f59e0b
     classDef criticalNode fill:#3b82f6
 
+    linkStyle default stroke:#8b5cf6,stroke-width:2px
+
     class ErrorDates,ErrorSymbol,End errorNode
     class CheckETag,HasETag,SendConditional,UpdateETag,UseCached cacheNode
     class ProcessData,Extract11Col,ValidateSequence,MergeData processNode

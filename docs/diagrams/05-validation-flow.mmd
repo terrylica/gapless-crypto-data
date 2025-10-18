@@ -130,6 +130,8 @@ flowchart TD
     classDef decisionNode fill:#06b6d4
     classDef dataNode fill:#6b7280
 
+    linkStyle default stroke:#8b5cf6,stroke-width:2px
+
     class ErrorFile,ErrorStructure,ErrorDateTime,ErrorDupes,ErrorOHLC,ErrorVolume,FinalFail errorNode
     class WarnSort,WarnOutlier,WarnCoverage,FinalWarn warnNode
     class ValidStructure,LegacyStructure,NoGaps,DateTimePass,OHLCVPass,FullCoverage,NoSpikes,NoCrash,AnomalyPass,FinalPass passNode

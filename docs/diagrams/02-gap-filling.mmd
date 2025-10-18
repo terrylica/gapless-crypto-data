@@ -115,6 +115,8 @@ flowchart TD
     classDef decisionNode fill:#06b6d4
     classDef dataNode fill:#6b7280
 
+    linkStyle default stroke:#8b5cf6,stroke-width:2px
+
     class BuildAPIRequest,CallBinanceAPI,CheckAPIResponse,ParseAPI apiNode
     class RecordSuccess,Complete,DeleteBackup,NoContinuous successNode
     class FormatError,LogAPIError,ErrorEnd,RestoreBackup errorNode

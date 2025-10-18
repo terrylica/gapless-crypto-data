@@ -78,6 +78,8 @@ flowchart TD
     classDef decision fill:#6b7280
     classDef critical fill:#3b82f6
 
+    linkStyle default stroke:#8b5cf6,stroke-width:2px
+
     class Return304,Use304,LoadLocal,ExtractCached cacheHit
     class Return200,Return200New,DownloadZIP,SaveZIP,ExtractNew cacheMiss
     class CloudFront,FindEdge,ResolveDNS,CheckS3 cloudfront
