@@ -73,7 +73,7 @@ Supported Symbols (USDT Spot Only):
     AVAXUSDT, ATOMUSDT, NEARUSDT, FTMUSDT, SANDUSDT, MANAUSDT, etc.
 """
 
-__version__ = "3.1.0"
+__version__ = "3.2.0"
 __author__ = "Eon Labs"
 __email__ = "terry@eonlabs.com"
 
@@ -94,6 +94,13 @@ from .api import (
     save_parquet,
 )
 from .collectors.binance_public_data_collector import BinancePublicDataCollector
+from .exceptions import (
+    DataCollectionError,
+    GapFillingError,
+    GaplessCryptoDataError,
+    NetworkError,
+    ValidationError,
+)
 from .gap_filling.safe_file_operations import AtomicCSVOperations, SafeCSVMerger
 from .gap_filling.universal_gap_filler import UniversalGapFiller
 
@@ -113,6 +120,12 @@ __all__ = [
     "UniversalGapFiller",
     "AtomicCSVOperations",
     "SafeCSVMerger",
+    # Structured exception hierarchy (v3.2.0)
+    "GaplessCryptoDataError",
+    "DataCollectionError",
+    "ValidationError",
+    "NetworkError",
+    "GapFillingError",
     # AI agent probe hooks
     "__probe__",
 ]
