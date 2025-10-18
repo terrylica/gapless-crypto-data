@@ -1,14 +1,15 @@
 # Changelog
 
-All notable changes to RangeBar will be documented in this file.
+All notable changes to gapless-crypto-data will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.0] - 2025-10-18
 
 ### ⚠️ BREAKING CHANGES (Upcoming v4.0.0)
 
-- **cli**: CLI interface deprecated and will be removed in v4.0.0 (v3.3.0)
+- **cli**: CLI interface deprecated and will be removed in v4.0.0
   - Added deprecation warning to CLI entry point displayed on every invocation
   - Reorganized README.md to prioritize Python API over CLI
   - Updated all documentation with deprecation notices
@@ -18,6 +19,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Migration timeline: v3.3.0 (deprecation) → v4.0.0 (removal, Q2 2025)
   - See migration guide for side-by-side CLI→API examples
 
+### 📚 Documentation
+
+- **cli**: Add CLI deprecation badges and migration guide
+  - Created comprehensive 400-line migration guide with side-by-side examples
+  - Updated DOCUMENTATION.md with deprecation badges
+  - Added migration timeline and benefits documentation
+
+## [Unreleased]
 
 ### ✨ Features
 

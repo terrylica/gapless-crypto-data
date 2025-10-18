@@ -1,6 +1,6 @@
 [project]
 name = "gapless-crypto-data"
-version = "3.2.0"
+version = "3.3.0"
 description = "Ultra-fast cryptocurrency data collection with zero gaps guarantee. 22x faster via Binance public repository with complete 13-timeframe support (1s-1d) and intelligent monthly-to-daily fallback. Provides 11-column microstructure format with order flow metrics."
 readme = { file = "README.md", content-type = "text/markdown" }
 authors = [
