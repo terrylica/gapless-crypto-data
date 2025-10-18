@@ -1749,8 +1749,12 @@ class BinancePublicDataCollector:
         return "15m"  # Default
 
 
-def main():
-    """Main execution function with CLI argument support."""
+def _setup_argument_parser() -> argparse.ArgumentParser:
+    """Create and configure CLI argument parser.
+
+    Returns:
+        Configured ArgumentParser with all CLI options
+    """
     parser = argparse.ArgumentParser(
         description="Ultra-fast Binance spot data collector with validation"
     )
@@ -1781,143 +1785,212 @@ def main():
         action="store_true",
         help="Skip validation after collection (not recommended)",
     )
+    return parser
 
+
+def _discover_files_to_validate(args, collector) -> List[Path]:
+    """Discover CSV files to validate based on arguments.
+
+    Args:
+        args: Parsed command line arguments
+        collector: BinancePublicDataCollector instance
+
+    Returns:
+        List of Path objects for files to validate
+    """
+    if args.validate_files:
+        return [Path(f) for f in args.validate_files]
+    else:
+        pattern = f"*{args.symbol}*.csv"
+        return list(collector.output_dir.glob(pattern))
+
+
+def _validate_files(collector, files_to_validate: List[Path]) -> List[Dict]:
+    """Validate list of CSV files.
+
+    Args:
+        collector: BinancePublicDataCollector instance
+        files_to_validate: List of file paths to validate
+
+    Returns:
+        List of validation summary dictionaries
+    """
+    validation_summary = []
+    for csv_file in files_to_validate:
+        # Extract timeframe from filename
+        timeframe = None
+        for tf in ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "1d"]:
+            if f"-{tf}_" in csv_file.name:
+                timeframe = tf
+                break
+
+        # Validate file
+        validation_result = collector.validate_csv_file(csv_file, timeframe)
+        collector.update_metadata_with_validation(csv_file, validation_result)
+
+        validation_summary.append(
+            {
+                "file": csv_file.name,
+                "status": validation_result["validation_summary"],
+                "errors": validation_result["total_errors"],
+                "warnings": validation_result["total_warnings"],
+            }
+        )
+
+    return validation_summary
+
+
+def _print_validation_summary(validation_summary: List[Dict]) -> int:
+    """Print validation summary and return exit code.
+
+    Args:
+        validation_summary: List of validation result dictionaries
+
+    Returns:
+        Exit code (0 for success, 1 for failures)
+    """
+    print("\n" + "=" * 80)
+    print("VALIDATION SUMMARY")
+    print("=" * 80)
+
+    perfect_files = 0
+    good_files = 0
+    failed_files = 0
+
+    for summary in validation_summary:
+        if summary["errors"] == 0:
+            if summary["warnings"] == 0:
+                status_icon = "✅"
+                perfect_files += 1
+            else:
+                status_icon = "⚠️ "
+                good_files += 1
+        else:
+            status_icon = "❌"
+            failed_files += 1
+
+        print(f"{status_icon} {summary['file']}: {summary['status']}")
+        if summary["errors"] > 0 or summary["warnings"] > 0:
+            print(f"   └─ {summary['errors']} errors, {summary['warnings']} warnings")
+
+    print("\nOVERALL RESULTS:")
+    print(f"  ✅ Perfect: {perfect_files} files")
+    print(f"  ⚠️  Good: {good_files} files")
+    print(f"  ❌ Failed: {failed_files} files")
+
+    if failed_files == 0:
+        print("\n🎉 ALL VALIDATIONS PASSED!")
+        return 0
+    else:
+        print(f"\n⚠️  {failed_files} files failed validation")
+        return 1
+
+
+def _run_validation_only_mode(args, collector) -> int:
+    """Execute validation-only mode workflow.
+
+    Args:
+        args: Parsed command line arguments
+        collector: BinancePublicDataCollector instance
+
+    Returns:
+        Exit code (0 for success, 1 for failures)
+    """
+    print("🔍 VALIDATION-ONLY MODE")
+
+    files_to_validate = _discover_files_to_validate(args, collector)
+
+    if not files_to_validate:
+        print("❌ No CSV files found to validate")
+        return 1
+
+    print(f"Found {len(files_to_validate)} files to validate:")
+    for file_path in files_to_validate:
+        print(f"  📄 {file_path.name}")
+
+    validation_summary = _validate_files(collector, files_to_validate)
+    return _print_validation_summary(validation_summary)
+
+
+def _auto_validate_collected_files(collector, results: Dict) -> bool:
+    """Perform auto-validation on collected files.
+
+    Args:
+        collector: BinancePublicDataCollector instance
+        results: Collection results dictionary
+
+    Returns:
+        True if all validations passed, False otherwise
+    """
+    print("\n🔍 AUTO-VALIDATION AFTER COLLECTION")
+    validation_passed = 0
+    validation_failed = 0
+
+    for timeframe, csv_file in results.items():
+        validation_result = collector.validate_csv_file(csv_file, timeframe)
+        collector.update_metadata_with_validation(csv_file, validation_result)
+
+        if validation_result["total_errors"] == 0:
+            validation_passed += 1
+        else:
+            validation_failed += 1
+
+    print(f"\nVALIDATION RESULTS: {validation_passed} passed, {validation_failed} failed")
+
+    if validation_failed == 0:
+        print("🎉 ALL FILES VALIDATED SUCCESSFULLY!")
+        print("Ready for ML training, backtesting, and production use")
+        collector.apply_gap_filling_to_validated_files()
+        return True
+    else:
+        print("⚠️  Some files failed validation - check errors above")
+        return False
+
+
+def _run_collection_mode(args, collector) -> int:
+    """Execute data collection mode workflow.
+
+    Args:
+        args: Parsed command line arguments
+        collector: BinancePublicDataCollector instance
+
+    Returns:
+        Exit code (0 for success, 1 for failure)
+    """
+    timeframes = [tf.strip() for tf in args.timeframes.split(",")]
+    print(f"Collecting timeframes: {timeframes}")
+
+    results = collector.collect_multiple_timeframes(timeframes)
+
+    if not results:
+        print("❌ Collection failed")
+        return 1
+
+    print(f"\n🚀 ULTRA-FAST COLLECTION SUCCESS: Generated {len(results)} datasets")
+
+    if not args.no_validation:
+        _auto_validate_collected_files(collector, results)
+
+    return 0
+
+
+def main():
+    """Main execution function with CLI argument support."""
+    parser = _setup_argument_parser()
     args = parser.parse_args()
 
     print("Binance Public Data Ultra-Fast Collector with Validation")
     print("Official Binance data repository - 10-100x faster than API")
     print("=" * 80)
 
-    # Initialize collector
     collector = BinancePublicDataCollector(
         symbol=args.symbol, start_date=args.start, end_date=args.end
     )
 
     if args.validate_only:
-        # VALIDATION-ONLY MODE
-        print("🔍 VALIDATION-ONLY MODE")
-
-        if args.validate_files:
-            # Validate specific files
-            files_to_validate = [Path(f) for f in args.validate_files]
-        else:
-            # Auto-discover CSV files in sample_data directory
-            pattern = f"*{args.symbol}*.csv"
-            files_to_validate = list(collector.output_dir.glob(pattern))
-
-        if not files_to_validate:
-            print("❌ No CSV files found to validate")
-            return 1
-
-        print(f"Found {len(files_to_validate)} files to validate:")
-        for file_path in files_to_validate:
-            print(f"  📄 {file_path.name}")
-
-        validation_summary = []
-        for csv_file in files_to_validate:
-            # Extract timeframe from filename for validation
-            timeframe = None
-            for tf in ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "1d"]:
-                if f"-{tf}_" in csv_file.name:
-                    timeframe = tf
-                    break
-
-            # Validate file
-            validation_result = collector.validate_csv_file(csv_file, timeframe)
-
-            # Update metadata with validation results
-            collector.update_metadata_with_validation(csv_file, validation_result)
-
-            validation_summary.append(
-                {
-                    "file": csv_file.name,
-                    "status": validation_result["validation_summary"],
-                    "errors": validation_result["total_errors"],
-                    "warnings": validation_result["total_warnings"],
-                }
-            )
-
-        # Print validation summary
-        print("\n" + "=" * 80)
-        print("VALIDATION SUMMARY")
-        print("=" * 80)
-
-        perfect_files = 0
-        good_files = 0
-        failed_files = 0
-
-        for summary in validation_summary:
-            if summary["errors"] == 0:
-                if summary["warnings"] == 0:
-                    status_icon = "✅"
-                    perfect_files += 1
-                else:
-                    status_icon = "⚠️ "
-                    good_files += 1
-            else:
-                status_icon = "❌"
-                failed_files += 1
-
-            print(f"{status_icon} {summary['file']}: {summary['status']}")
-            if summary["errors"] > 0 or summary["warnings"] > 0:
-                print(f"   └─ {summary['errors']} errors, {summary['warnings']} warnings")
-
-        print("\nOVERALL RESULTS:")
-        print(f"  ✅ Perfect: {perfect_files} files")
-        print(f"  ⚠️  Good: {good_files} files")
-        print(f"  ❌ Failed: {failed_files} files")
-
-        if failed_files == 0:
-            print("\n🎉 ALL VALIDATIONS PASSED!")
-            return 0
-        else:
-            print(f"\n⚠️  {failed_files} files failed validation")
-            return 1
-
+        return _run_validation_only_mode(args, collector)
     else:
-        # COLLECTION MODE (with optional validation)
-        timeframes = [tf.strip() for tf in args.timeframes.split(",")]
-        print(f"Collecting timeframes: {timeframes}")
-
-        # Collect data
-        results = collector.collect_multiple_timeframes(timeframes)
-
-        if results:
-            print(f"\n🚀 ULTRA-FAST COLLECTION SUCCESS: Generated {len(results)} datasets")
-
-            # Auto-validation after collection (unless disabled)
-            if not args.no_validation:
-                print("\n🔍 AUTO-VALIDATION AFTER COLLECTION")
-                validation_passed = 0
-                validation_failed = 0
-
-                for timeframe, csv_file in results.items():
-                    validation_result = collector.validate_csv_file(csv_file, timeframe)
-                    collector.update_metadata_with_validation(csv_file, validation_result)
-
-                    if validation_result["total_errors"] == 0:
-                        validation_passed += 1
-                    else:
-                        validation_failed += 1
-
-                print(
-                    f"\nVALIDATION RESULTS: {validation_passed} passed, {validation_failed} failed"
-                )
-
-                if validation_failed == 0:
-                    print("🎉 ALL FILES VALIDATED SUCCESSFULLY!")
-                    print("Ready for ML training, backtesting, and production use")
-
-                    # AUTOMATIC GAP FILLING - Now using comprehensive gap detection and filling
-                    collector.apply_gap_filling_to_validated_files()
-
-                else:
-                    print("⚠️  Some files failed validation - check errors above")
-
-            return 0
-        else:
-            print("❌ Collection failed")
-            return 1
+        return _run_collection_mode(args, collector)
 
 
 if __name__ == "__main__":
