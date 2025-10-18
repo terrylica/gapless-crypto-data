@@ -92,6 +92,246 @@ SupportedTimeframe = Literal[
 ]
 
 
+def _validate_timeframe_parameters(
+    timeframe: Optional[Union[str, SupportedTimeframe]],
+    interval: Optional[Union[str, SupportedTimeframe]],
+) -> str:
+    """Validate and resolve timeframe/interval parameters.
+
+    Args:
+        timeframe: Timeframe parameter (preferred)
+        interval: Legacy interval parameter
+
+    Returns:
+        Resolved timeframe string
+
+    Raises:
+        ValueError: If parameters are invalid or conflicting
+    """
+    # Dual parameter validation with exception-only failures
+    if timeframe is None and interval is None:
+        raise ValueError(
+            "Must specify 'timeframe' parameter. "
+            "CCXT-compatible 'timeframe' is preferred over legacy 'interval'."
+        )
+
+    if timeframe is not None and interval is not None:
+        raise ValueError(
+            "Cannot specify both 'timeframe' and 'interval' parameters. "
+            "Use 'timeframe' (CCXT-compatible) or 'interval' (legacy), not both."
+        )
+
+    # Use timeframe if provided, otherwise use interval (legacy)
+    return timeframe if timeframe is not None else interval
+
+
+def _validate_index_type_parameter(index_type: Optional[str]) -> None:
+    """Validate deprecated index_type parameter.
+
+    Args:
+        index_type: Deprecated index_type parameter
+
+    Raises:
+        ValueError: If index_type is invalid
+    """
+    if index_type is None:
+        return
+
+    import warnings
+
+    warnings.warn(
+        "The 'index_type' parameter is deprecated and will be removed in v3.0.0. "
+        "Use standard pandas operations on the returned DataFrame instead.",
+        DeprecationWarning,
+        stacklevel=3,
+    )
+
+    # Validate deprecated parameter for backward compatibility
+    valid_index_types = {"datetime", "range", "auto"}
+    if index_type not in valid_index_types:
+        raise ValueError(
+            f"Invalid index_type '{index_type}'. "
+            f"Must be one of: {', '.join(sorted(valid_index_types))}"
+        )
+
+
+def _calculate_date_range_from_limit(
+    limit: Optional[int],
+    period: str,
+    start: Optional[str],
+    end: Optional[str],
+) -> tuple[str, str]:
+    """Calculate date range from limit parameter.
+
+    Args:
+        limit: Maximum number of bars to return
+        period: Timeframe interval
+        start: Existing start date
+        end: Existing end date
+
+    Returns:
+        Tuple of (start_date, end_date) strings
+    """
+    # If start/end already specified, use them
+    if start or end:
+        return start, end
+
+    # If no limit, return as-is
+    if not limit:
+        return start, end
+
+    # Calculate start date based on limit and interval
+    interval_minutes = {
+        "1s": 1 / 60,  # 1 second = 1/60 minute
+        "1m": 1,
+        "3m": 3,
+        "5m": 5,
+        "15m": 15,
+        "30m": 30,
+        "1h": 60,
+        "2h": 120,
+        "4h": 240,
+        "6h": 360,
+        "8h": 480,
+        "12h": 720,
+        "1d": 1440,
+    }
+
+    if period in interval_minutes:
+        minutes_total = limit * interval_minutes[period]
+        start_date = datetime.now() - timedelta(minutes=minutes_total)
+        calculated_start = start_date.strftime("%Y-%m-%d")
+        calculated_end = datetime.now().strftime("%Y-%m-%d")
+    else:
+        # Default fallback for unknown periods
+        calculated_start = "2024-01-01"
+        calculated_end = datetime.now().strftime("%Y-%m-%d")
+
+    return calculated_start, calculated_end
+
+
+def _apply_default_date_range(start: Optional[str], end: Optional[str]) -> tuple[str, str]:
+    """Apply default date range if not specified.
+
+    Args:
+        start: Start date
+        end: End date
+
+    Returns:
+        Tuple of (start_date, end_date) with defaults applied
+    """
+    if not start:
+        start = "2021-01-01"
+    if not end:
+        end = datetime.now().strftime("%Y-%m-%d")
+    return start, end
+
+
+def _perform_gap_filling(
+    result: dict,
+    auto_fill_gaps: bool,
+    period: str,
+    df: pd.DataFrame,
+) -> pd.DataFrame:
+    """Perform automatic gap filling on collected data.
+
+    Args:
+        result: Collection result dictionary
+        auto_fill_gaps: Whether to auto-fill gaps
+        period: Timeframe interval
+        df: DataFrame with collected data
+
+    Returns:
+        DataFrame with gaps filled (if applicable)
+    """
+    if not auto_fill_gaps or not result.get("filepath"):
+        return df
+
+    import logging
+
+    logger = logging.getLogger(__name__)
+
+    csv_file = Path(result["filepath"])
+    gap_filler = UniversalGapFiller()
+
+    # Detect and fill gaps
+    gap_result = gap_filler.process_file(csv_file, period)
+
+    if gap_result["gaps_detected"] > 0:
+        if gap_result["gaps_filled"] > 0:
+            logger.info(
+                f"✅ Auto-filled {gap_result['gaps_filled']}/{gap_result['gaps_detected']} "
+                f"gap(s) with authentic Binance API data"
+            )
+            # Reload DataFrame with filled gaps
+            df = pd.read_csv(csv_file, comment="#")
+        else:
+            logger.warning(
+                f"⚠️  Detected {gap_result['gaps_detected']} gap(s) but could not fill them. "
+                f"Data may not be complete."
+            )
+
+    return df
+
+
+def _apply_limit_and_index(
+    df: pd.DataFrame,
+    limit: Optional[int],
+    index_type: Optional[str],
+) -> pd.DataFrame:
+    """Apply limit and index_type to DataFrame.
+
+    Args:
+        df: DataFrame to process
+        limit: Maximum number of rows to return
+        index_type: Deprecated index_type parameter
+
+    Returns:
+        Processed DataFrame
+    """
+    # Apply limit if specified
+    if limit and len(df) > limit:
+        df = df.tail(limit).reset_index(drop=True)
+
+    # Handle deprecated index_type parameter for backward compatibility
+    if index_type in ("datetime", "auto"):
+        if "date" in df.columns:
+            # For deprecated datetime mode, return DataFrame with DatetimeIndex
+            return df.set_index("date", drop=False)
+        else:
+            # Handle edge case where date column is missing
+            return df
+    elif index_type == "range":
+        # For deprecated range mode, return DataFrame with RangeIndex (default)
+        return df
+    else:
+        # Default behavior: return standard pandas DataFrame with RangeIndex
+        # Users can use df.set_index('date') for DatetimeIndex operations
+        return df
+
+
+def _create_empty_dataframe() -> pd.DataFrame:
+    """Create empty DataFrame with expected OHLCV columns.
+
+    Returns:
+        Empty DataFrame with standard columns
+    """
+    columns = [
+        "date",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "close_time",
+        "quote_asset_volume",
+        "number_of_trades",
+        "taker_buy_base_asset_volume",
+        "taker_buy_quote_asset_volume",
+    ]
+    return pd.DataFrame(columns=columns)
+
+
 def fetch_data(
     symbol: Union[str, SupportedSymbol],
     timeframe: Optional[Union[str, SupportedTimeframe]] = None,
@@ -155,151 +395,36 @@ def fetch_data(
         # Legacy interval parameter (deprecated)
         df = fetch_data("BTCUSDT", interval="1h", limit=1000)
     """
-    # Dual parameter validation with exception-only failures
-    if timeframe is None and interval is None:
-        raise ValueError(
-            "Must specify 'timeframe' parameter. "
-            "CCXT-compatible 'timeframe' is preferred over legacy 'interval'."
-        )
+    # Validate and resolve timeframe parameters
+    period = _validate_timeframe_parameters(timeframe, interval)
 
-    if timeframe is not None and interval is not None:
-        raise ValueError(
-            "Cannot specify both 'timeframe' and 'interval' parameters. "
-            "Use 'timeframe' (CCXT-compatible) or 'interval' (legacy), not both."
-        )
+    # Validate deprecated index_type parameter
+    _validate_index_type_parameter(index_type)
 
-    # Use timeframe if provided, otherwise use interval (legacy)
-    period = timeframe if timeframe is not None else interval
+    # Calculate date range from limit if needed
+    start, end = _calculate_date_range_from_limit(limit, period, start, end)
 
-    # Handle deprecated index_type parameter
-    if index_type is not None:
-        import warnings
+    # Apply default date range if not specified
+    start, end = _apply_default_date_range(start, end)
 
-        warnings.warn(
-            "The 'index_type' parameter is deprecated and will be removed in v3.0.0. "
-            "Use standard pandas operations on the returned DataFrame instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        # Validate deprecated parameter for backward compatibility
-        valid_index_types = {"datetime", "range", "auto"}
-        if index_type not in valid_index_types:
-            raise ValueError(
-                f"Invalid index_type '{index_type}'. "
-                f"Must be one of: {', '.join(sorted(valid_index_types))}"
-            )
-
-    # Handle limit by calculating date range
-    if limit and not start and not end:
-        # Calculate start date based on limit and interval
-        interval_minutes = {
-            "1s": 1 / 60,  # 1 second = 1/60 minute
-            "1m": 1,
-            "3m": 3,
-            "5m": 5,
-            "15m": 15,
-            "30m": 30,
-            "1h": 60,
-            "2h": 120,
-            "4h": 240,
-            "6h": 360,
-            "8h": 480,
-            "12h": 720,
-            "1d": 1440,
-        }
-
-        if period in interval_minutes:
-            minutes_total = limit * interval_minutes[period]
-            start_date = datetime.now() - timedelta(minutes=minutes_total)
-            start = start_date.strftime("%Y-%m-%d")
-            end = datetime.now().strftime("%Y-%m-%d")
-        else:
-            # Default fallback for unknown periods
-            start = "2024-01-01"
-            end = datetime.now().strftime("%Y-%m-%d")
-
-    # Set default date range if not specified
-    if not start:
-        start = "2021-01-01"
-    if not end:
-        end = datetime.now().strftime("%Y-%m-%d")
-
-    # Initialize collector
+    # Initialize collector and collect data
     collector = BinancePublicDataCollector(
         symbol=symbol, start_date=start, end_date=end, output_dir=output_dir
     )
-
-    # Collect data for single timeframe
     result = collector.collect_timeframe_data(period)
 
+    # Process result or return empty DataFrame
     if result and "dataframe" in result:
         df = result["dataframe"]
 
         # Auto-fill gaps if enabled (delivers "zero gaps guarantee")
-        if auto_fill_gaps and result.get("filepath"):
-            import logging
+        df = _perform_gap_filling(result, auto_fill_gaps, period, df)
 
-            logger = logging.getLogger(__name__)
-
-            csv_file = Path(result["filepath"])
-            gap_filler = UniversalGapFiller()
-
-            # Detect and fill gaps
-            gap_result = gap_filler.process_file(csv_file, period)
-
-            if gap_result["gaps_detected"] > 0:
-                if gap_result["gaps_filled"] > 0:
-                    logger.info(
-                        f"✅ Auto-filled {gap_result['gaps_filled']}/{gap_result['gaps_detected']} "
-                        f"gap(s) with authentic Binance API data"
-                    )
-                    # Reload DataFrame with filled gaps
-                    df = pd.read_csv(csv_file, comment="#")
-                else:
-                    logger.warning(
-                        f"⚠️  Detected {gap_result['gaps_detected']} gap(s) but could not fill them. "
-                        f"Data may not be complete."
-                    )
-
-        # Apply limit if specified
-        if limit and len(df) > limit:
-            df = df.tail(limit).reset_index(drop=True)
-
-        # Handle deprecated index_type parameter for backward compatibility
-        if index_type in ("datetime", "auto"):
-            if "date" in df.columns:
-                # For deprecated datetime mode, return DataFrame with DatetimeIndex
-                return df.set_index("date", drop=False)
-            else:
-                # Handle edge case where date column is missing
-                return df
-        elif index_type == "range":
-            # For deprecated range mode, return DataFrame with RangeIndex (default)
-            return df
-        else:
-            # Default behavior: return standard pandas DataFrame with RangeIndex
-            # Users can use df.set_index('date') for DatetimeIndex operations
-            return df
+        # Apply limit and index_type
+        return _apply_limit_and_index(df, limit, index_type)
     else:
         # Return empty DataFrame with expected columns
-        columns = [
-            "date",
-            "open",
-            "high",
-            "low",
-            "close",
-            "volume",
-            "close_time",
-            "quote_asset_volume",
-            "number_of_trades",
-            "taker_buy_base_asset_volume",
-            "taker_buy_quote_asset_volume",
-        ]
-        df_empty = pd.DataFrame(columns=columns)
-
-        # For empty DataFrame, ensure consistent structure but don't set index
-        # (empty date column can't be converted to DatetimeIndex meaningfully)
-        return df_empty
+        return _create_empty_dataframe()
 
 
 def download(
