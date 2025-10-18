@@ -43,6 +43,130 @@ class CSVValidator:
         in the validation results dictionary.
     """
 
+    def _run_structure_validation_layer(self, df: pd.DataFrame, validation_results: dict) -> None:
+        """Run structure validation layer and update results.
+
+        Args:
+            df: DataFrame to validate
+            validation_results: Validation results dict to update
+        """
+        print("\n1. BASIC STRUCTURE VALIDATION")
+        structure_validation = self._validate_csv_structure(df)
+        validation_results["structure_validation"] = structure_validation
+        print(f"  Columns: {structure_validation['status']}")
+
+        if structure_validation["errors"]:
+            for error in structure_validation["errors"]:
+                print(f"    ❌ {error}")
+                validation_results["total_errors"] += 1
+
+    def _run_datetime_validation_layer(
+        self, df: pd.DataFrame, expected_timeframe: Optional[str], validation_results: dict
+    ) -> None:
+        """Run datetime validation layer and update results.
+
+        Args:
+            df: DataFrame to validate
+            expected_timeframe: Expected timeframe for gap detection
+            validation_results: Validation results dict to update
+        """
+        print("\n2. DATE/TIME VALIDATION")
+        datetime_validation = self._validate_datetime_sequence(df, expected_timeframe)
+        validation_results["datetime_validation"] = datetime_validation
+        print(
+            f"  Date Range: {datetime_validation['date_range']['start']} to {datetime_validation['date_range']['end']}"
+        )
+        print(f"  Duration: {datetime_validation['duration_days']:.1f} days")
+        print(f"  Gaps Found: {datetime_validation['gaps_found']}")
+        print(f"  Sequence: {datetime_validation['chronological_order']}")
+
+        if datetime_validation["errors"]:
+            for error in datetime_validation["errors"]:
+                print(f"    ❌ {error}")
+                validation_results["total_errors"] += 1
+        if datetime_validation["warnings"]:
+            for warning in datetime_validation["warnings"]:
+                print(f"    ⚠️  {warning}")
+                validation_results["total_warnings"] += 1
+
+    def _run_ohlcv_validation_layer(self, df: pd.DataFrame, validation_results: dict) -> None:
+        """Run OHLCV quality validation layer and update results.
+
+        Args:
+            df: DataFrame to validate
+            validation_results: Validation results dict to update
+        """
+        print("\n3. OHLCV DATA QUALITY VALIDATION")
+        ohlcv_validation = self._validate_ohlcv_quality(df)
+        validation_results["ohlcv_validation"] = ohlcv_validation
+        print(
+            f"  Price Range: ${ohlcv_validation['price_range']['min']:.4f} - ${ohlcv_validation['price_range']['max']:.4f}"
+        )
+        print(
+            f"  Volume Range: {ohlcv_validation['volume_stats']['min']:.2f} - {ohlcv_validation['volume_stats']['max']:,.0f}"
+        )
+        print(f"  OHLC Logic Errors: {ohlcv_validation['ohlc_errors']}")
+        print(f"  Negative/Zero Values: {ohlcv_validation['negative_zero_values']}")
+
+        if ohlcv_validation["errors"]:
+            for error in ohlcv_validation["errors"]:
+                print(f"    ❌ {error}")
+                validation_results["total_errors"] += 1
+        if ohlcv_validation["warnings"]:
+            for warning in ohlcv_validation["warnings"]:
+                print(f"    ⚠️  {warning}")
+                validation_results["total_warnings"] += 1
+
+    def _run_coverage_and_anomaly_layers(
+        self, df: pd.DataFrame, expected_timeframe: Optional[str], validation_results: dict
+    ) -> None:
+        """Run coverage and anomaly validation layers.
+
+        Args:
+            df: DataFrame to validate
+            expected_timeframe: Expected timeframe for coverage calculation
+            validation_results: Validation results dict to update
+        """
+        print("\n4. EXPECTED COVERAGE VALIDATION")
+        coverage_validation = self._validate_expected_coverage(df, expected_timeframe)
+        validation_results["coverage_validation"] = coverage_validation
+        print(f"  Expected Bars: {coverage_validation['expected_bars']:,}")
+        print(f"  Actual Bars: {coverage_validation['actual_bars']:,}")
+        print(f"  Coverage: {coverage_validation['coverage_percentage']:.1f}%")
+
+        print("\n5. STATISTICAL ANOMALY DETECTION")
+        anomaly_validation = self._validate_statistical_anomalies(df)
+        validation_results["anomaly_validation"] = anomaly_validation
+        print(f"  Price Outliers: {anomaly_validation['price_outliers']}")
+        print(f"  Volume Outliers: {anomaly_validation['volume_outliers']}")
+        print(f"  Suspicious Patterns: {anomaly_validation['suspicious_patterns']}")
+
+    def _generate_final_validation_summary(self, validation_results: dict) -> None:
+        """Generate and print final validation summary.
+
+        Args:
+            validation_results: Validation results dict to update with summary
+        """
+        if validation_results["total_errors"] == 0:
+            if validation_results["total_warnings"] == 0:
+                validation_results["validation_summary"] = "PERFECT - No errors or warnings"
+                print("\n✅ VALIDATION RESULT: PERFECT")
+                print("   No errors or warnings found. Data quality is excellent.")
+            else:
+                validation_results["validation_summary"] = (
+                    f"GOOD - {validation_results['total_warnings']} warnings"
+                )
+                print("\n✅ VALIDATION RESULT: GOOD")
+                print(f"   No errors, but {validation_results['total_warnings']} warnings found.")
+        else:
+            validation_results["validation_summary"] = (
+                f"FAILED - {validation_results['total_errors']} errors, {validation_results['total_warnings']} warnings"
+            )
+            print("\n❌ VALIDATION RESULT: FAILED")
+            print(
+                f"   {validation_results['total_errors']} errors and {validation_results['total_warnings']} warnings found."
+            )
+
     def validate_csv_file(
         self, csv_filepath: Union[str, Path], expected_timeframe: Optional[str] = None
     ) -> Dict[str, Any]:
@@ -91,96 +215,14 @@ class CSVValidator:
             validation_results["total_bars"] = len(df)
             print(f"  ✅ Loaded {len(df):,} data bars")
 
-            # 1. BASIC STRUCTURE VALIDATION
-            print("\n1. BASIC STRUCTURE VALIDATION")
-            structure_validation = self._validate_csv_structure(df)
-            validation_results["structure_validation"] = structure_validation
-            print(f"  Columns: {structure_validation['status']}")
-            if structure_validation["errors"]:
-                for error in structure_validation["errors"]:
-                    print(f"    ❌ {error}")
-                    validation_results["total_errors"] += 1
+            # Run all validation layers
+            self._run_structure_validation_layer(df, validation_results)
+            self._run_datetime_validation_layer(df, expected_timeframe, validation_results)
+            self._run_ohlcv_validation_layer(df, validation_results)
+            self._run_coverage_and_anomaly_layers(df, expected_timeframe, validation_results)
 
-            # 2. DATE/TIME VALIDATION
-            print("\n2. DATE/TIME VALIDATION")
-            datetime_validation = self._validate_datetime_sequence(df, expected_timeframe)
-            validation_results["datetime_validation"] = datetime_validation
-            print(
-                f"  Date Range: {datetime_validation['date_range']['start']} to {datetime_validation['date_range']['end']}"
-            )
-            print(f"  Duration: {datetime_validation['duration_days']:.1f} days")
-            print(f"  Gaps Found: {datetime_validation['gaps_found']}")
-            print(f"  Sequence: {datetime_validation['chronological_order']}")
-
-            if datetime_validation["errors"]:
-                for error in datetime_validation["errors"]:
-                    print(f"    ❌ {error}")
-                    validation_results["total_errors"] += 1
-            if datetime_validation["warnings"]:
-                for warning in datetime_validation["warnings"]:
-                    print(f"    ⚠️  {warning}")
-                    validation_results["total_warnings"] += 1
-
-            # 3. OHLCV DATA QUALITY VALIDATION
-            print("\n3. OHLCV DATA QUALITY VALIDATION")
-            ohlcv_validation = self._validate_ohlcv_quality(df)
-            validation_results["ohlcv_validation"] = ohlcv_validation
-            print(
-                f"  Price Range: ${ohlcv_validation['price_range']['min']:.4f} - ${ohlcv_validation['price_range']['max']:.4f}"
-            )
-            print(
-                f"  Volume Range: {ohlcv_validation['volume_stats']['min']:.2f} - {ohlcv_validation['volume_stats']['max']:,.0f}"
-            )
-            print(f"  OHLC Logic Errors: {ohlcv_validation['ohlc_errors']}")
-            print(f"  Negative/Zero Values: {ohlcv_validation['negative_zero_values']}")
-
-            if ohlcv_validation["errors"]:
-                for error in ohlcv_validation["errors"]:
-                    print(f"    ❌ {error}")
-                    validation_results["total_errors"] += 1
-            if ohlcv_validation["warnings"]:
-                for warning in ohlcv_validation["warnings"]:
-                    print(f"    ⚠️  {warning}")
-                    validation_results["total_warnings"] += 1
-
-            # 4. EXPECTED COVERAGE VALIDATION
-            print("\n4. EXPECTED COVERAGE VALIDATION")
-            coverage_validation = self._validate_expected_coverage(df, expected_timeframe)
-            validation_results["coverage_validation"] = coverage_validation
-            print(f"  Expected Bars: {coverage_validation['expected_bars']:,}")
-            print(f"  Actual Bars: {coverage_validation['actual_bars']:,}")
-            print(f"  Coverage: {coverage_validation['coverage_percentage']:.1f}%")
-
-            # 5. STATISTICAL ANOMALY DETECTION
-            print("\n5. STATISTICAL ANOMALY DETECTION")
-            anomaly_validation = self._validate_statistical_anomalies(df)
-            validation_results["anomaly_validation"] = anomaly_validation
-            print(f"  Price Outliers: {anomaly_validation['price_outliers']}")
-            print(f"  Volume Outliers: {anomaly_validation['volume_outliers']}")
-            print(f"  Suspicious Patterns: {anomaly_validation['suspicious_patterns']}")
-
-            # FINAL VALIDATION SUMMARY
-            if validation_results["total_errors"] == 0:
-                if validation_results["total_warnings"] == 0:
-                    validation_results["validation_summary"] = "PERFECT - No errors or warnings"
-                    print("\n✅ VALIDATION RESULT: PERFECT")
-                    print("   No errors or warnings found. Data quality is excellent.")
-                else:
-                    validation_results["validation_summary"] = (
-                        f"GOOD - {validation_results['total_warnings']} warnings"
-                    )
-                    print("\n✅ VALIDATION RESULT: GOOD")
-                    print(
-                        f"   No errors, but {validation_results['total_warnings']} warnings found."
-                    )
-            else:
-                validation_results["validation_summary"] = (
-                    f"FAILED - {validation_results['total_errors']} errors, {validation_results['total_warnings']} warnings"
-                )
-                print("\n❌ VALIDATION RESULT: FAILED")
-                print(
-                    f"   {validation_results['total_errors']} errors and {validation_results['total_warnings']} warnings found."
-                )
+            # Generate final summary
+            self._generate_final_validation_summary(validation_results)
 
         except Exception as e:
             validation_results["validation_summary"] = f"ERROR - {str(e)}"
@@ -188,6 +230,78 @@ class CSVValidator:
             print(f"❌ Validation failed with exception: {e}")
 
         return validation_results
+
+    def _detect_csv_format_type(
+        self, df: pd.DataFrame, expected_columns: list, legacy_columns: list
+    ) -> tuple[str, bool, bool]:
+        """Detect CSV format type (enhanced, legacy, or incomplete).
+
+        Args:
+            df: DataFrame to analyze
+            expected_columns: List of enhanced format columns
+            legacy_columns: List of legacy format columns
+
+        Returns:
+            tuple: (format_type, has_enhanced_format, has_legacy_format)
+        """
+        has_enhanced_format = all(col in df.columns for col in expected_columns)
+        has_legacy_format = all(col in df.columns for col in legacy_columns)
+
+        if has_enhanced_format:
+            format_type = "enhanced"
+        elif has_legacy_format:
+            format_type = "legacy"
+        else:
+            format_type = "incomplete"
+
+        return format_type, has_enhanced_format, has_legacy_format
+
+    def _validate_column_completeness(
+        self,
+        df: pd.DataFrame,
+        format_type: str,
+        expected_columns: list,
+        legacy_columns: list,
+        errors: list,
+        warnings: list,
+    ) -> None:
+        """Validate column completeness based on format type.
+
+        Args:
+            df: DataFrame to validate
+            format_type: Detected format type
+            expected_columns: List of enhanced format columns
+            legacy_columns: List of legacy format columns
+            errors: List to append errors to
+            warnings: List to append warnings to
+        """
+        if format_type == "enhanced":
+            missing_columns = [col for col in expected_columns if col not in df.columns]
+            if missing_columns:
+                errors.append(f"Missing enhanced columns: {missing_columns}")
+        elif format_type == "legacy":
+            warnings.append(
+                "Legacy format detected - missing microstructure columns for advanced analysis"
+            )
+            missing_enhanced = [col for col in expected_columns if col not in df.columns]
+            warnings.append(f"Enhanced features unavailable: {missing_enhanced}")
+        else:  # incomplete format
+            missing_basic = [col for col in legacy_columns if col not in df.columns]
+            errors.append(f"Missing basic required columns: {missing_basic}")
+
+    def _check_extra_columns(
+        self, df: pd.DataFrame, expected_columns: list, warnings: list
+    ) -> None:
+        """Check for unexpected extra columns.
+
+        Args:
+            df: DataFrame to check
+            expected_columns: List of expected columns
+            warnings: List to append warnings to
+        """
+        extra_columns = [col for col in df.columns if col not in expected_columns]
+        if extra_columns:
+            warnings.append(f"Unexpected extra columns: {extra_columns}")
 
     def _validate_csv_structure(self, df: pd.DataFrame) -> Dict[str, Any]:
         """Validate CSV has correct structure and columns.
@@ -223,30 +337,18 @@ class CSVValidator:
         errors = []
         warnings = []
 
-        # Check if it's enhanced or legacy format
-        has_enhanced_format = all(col in df.columns for col in expected_columns)
-        has_legacy_format = all(col in df.columns for col in legacy_columns)
+        # Detect format type
+        format_type, has_enhanced_format, has_legacy_format = self._detect_csv_format_type(
+            df, expected_columns, legacy_columns
+        )
 
-        if has_enhanced_format:
-            # Validate enhanced format
-            missing_columns = [col for col in expected_columns if col not in df.columns]
-            if missing_columns:
-                errors.append(f"Missing enhanced columns: {missing_columns}")
-        elif has_legacy_format:
-            # Legacy format detected
-            warnings.append(
-                "Legacy format detected - missing microstructure columns for advanced analysis"
-            )
-            missing_enhanced = [col for col in expected_columns if col not in df.columns]
-            warnings.append(f"Enhanced features unavailable: {missing_enhanced}")
-        else:
-            # Neither format complete
-            missing_basic = [col for col in legacy_columns if col not in df.columns]
-            errors.append(f"Missing basic required columns: {missing_basic}")
+        # Validate column completeness based on format
+        self._validate_column_completeness(
+            df, format_type, expected_columns, legacy_columns, errors, warnings
+        )
 
-        extra_columns = [col for col in df.columns if col not in expected_columns]
-        if extra_columns:
-            warnings.append(f"Unexpected extra columns: {extra_columns}")
+        # Check for extra columns
+        self._check_extra_columns(df, expected_columns, warnings)
 
         # Check for empty data
         if len(df) == 0:
@@ -254,11 +356,7 @@ class CSVValidator:
 
         return {
             "status": "VALID" if not errors else "INVALID",
-            "format_type": "enhanced"
-            if has_enhanced_format
-            else "legacy"
-            if has_legacy_format
-            else "incomplete",
+            "format_type": format_type,
             "errors": errors,
             "warnings": warnings,
             "columns_found": list(df.columns),
