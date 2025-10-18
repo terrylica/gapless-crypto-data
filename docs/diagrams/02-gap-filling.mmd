@@ -8,10 +8,10 @@ flowchart TD
 
     %% Format Detection
     DetectFormat --> CheckColumns{Has all 11<br/>enhanced cols?}
-    CheckColumns -->|Yes| UseEnhanced[Format: Enhanced<br/>11-column microstructure]
-    CheckColumns -->|No| CheckLegacy{Has 6<br/>legacy cols?}
-    CheckLegacy -->|Yes| UseLegacy[Format: Legacy<br/>6-column OHLCV]
-    CheckLegacy -->|No| FormatError[Error: Unknown format<br/>cannot process]
+    CheckColumns --> UseEnhanced[Format: Enhanced<br/>11-column microstructure]
+    CheckColumns --> CheckLegacy{Has 6<br/>legacy cols?}
+    CheckLegacy --> UseLegacy[Format: Legacy<br/>6-column OHLCV]
+    CheckLegacy --> FormatError[Error: Unknown format<br/>cannot process]
 
     %% Load and Analyze
     UseEnhanced --> LoadData[Load CSV into DataFrame]
@@ -19,8 +19,8 @@ flowchart TD
     LoadData --> ParseDates[Parse 'date' column<br/>to datetime]
 
     ParseDates --> SortCheck{Data sorted<br/>chronologically?}
-    SortCheck -->|No| SortData[Sort by timestamp]
-    SortCheck -->|Yes| CalcInterval[Calculate expected interval<br/>from timeframe param]
+    SortCheck --> SortData[Sort by timestamp]
+    SortCheck --> CalcInterval[Calculate expected interval<br/>from timeframe param]
     SortData --> CalcInterval
 
     %% Gap Detection
@@ -31,8 +31,8 @@ flowchart TD
     CompareInterval --> IdentifyGaps[Identify gaps where<br/>actual > expected + tolerance]
 
     IdentifyGaps --> HasGaps{Any gaps<br/>detected?}
-    HasGaps -->|No| NoContinuous[Data is continuous!<br/>No filling needed]
-    HasGaps -->|Yes| CountGaps[Count total gaps<br/>and affected periods]
+    HasGaps --> NoContinuous[Data is continuous!<br/>No filling needed]
+    HasGaps --> CountGaps[Count total gaps<br/>and affected periods]
 
     %% Gap Details
     CountGaps --> LogGapInfo[Log gap details:<br/>start time, end time,<br/>expected bars, missing bars]
@@ -49,9 +49,9 @@ flowchart TD
     BuildAPIRequest --> CallBinanceAPI[Call Binance REST API<br/>klines endpoint]
     CallBinanceAPI --> CheckAPIResponse{API<br/>response?}
 
-    CheckAPIResponse -->|200 OK + data| ParseAPI[Parse API response<br/>array of klines]
-    CheckAPIResponse -->|200 OK + empty| LogNoData[Log: No data available<br/>from Binance for period]
-    CheckAPIResponse -->|Error| LogAPIError[Log API error<br/>skip this gap]
+    CheckAPIResponse --> ParseAPI[Parse API response<br/>array of klines]
+    CheckAPIResponse --> LogNoData[Log: No data available<br/>from Binance for period]
+    CheckAPIResponse --> LogAPIError[Log API error<br/>skip this gap]
 
     %% Process API Data
     ParseAPI --> ConvertFormat[Convert API format<br/>to CSV format]
@@ -60,8 +60,8 @@ flowchart TD
     FilterToGap --> ValidateAPI[Validate API data:<br/>timestamps, OHLCV logic]
     ValidateAPI --> MatchFormat{Match CSV<br/>format?}
 
-    MatchFormat -->|Enhanced| ExtractAll11[Extract all 11 columns]
-    MatchFormat -->|Legacy| ExtractOHLCV6[Extract 6 OHLCV columns]
+    MatchFormat --> ExtractAll11[Extract all 11 columns]
+    MatchFormat --> ExtractOHLCV6[Extract 6 OHLCV columns]
 
     %% Merge Process
     ExtractAll11 --> MergeData[Merge existing + new data]
@@ -74,16 +74,16 @@ flowchart TD
     ReSort --> ValidateMerge[Validate merge:<br/>no new gaps created?]
     ValidateMerge --> VerifyFill{Gap successfully<br/>filled?}
 
-    VerifyFill -->|Yes| RecordSuccess[Record success<br/>increment filled_count]
-    VerifyFill -->|No| RecordPartial[Record partial fill<br/>or failure]
+    VerifyFill --> RecordSuccess[Record success<br/>increment filled_count]
+    VerifyFill --> RecordPartial[Record partial fill<br/>or failure]
 
     RecordSuccess --> MoreGaps{More gaps<br/>to fill?}
     RecordPartial --> MoreGaps
     LogNoData --> MoreGaps
     LogAPIError --> MoreGaps
 
-    MoreGaps -->|Yes| ForEachGap
-    MoreGaps -->|No| FinalValidation[Final validation:<br/>scan for remaining gaps]
+    MoreGaps --> ForEachGap
+    MoreGaps --> FinalValidation[Final validation:<br/>scan for remaining gaps]
 
     %% Final Steps
     FinalValidation --> CalcStats[Calculate statistics:<br/>gaps_detected, gaps_filled,<br/>success_rate, data_quality]
@@ -91,15 +91,15 @@ flowchart TD
     CalcStats --> UpdateMetadata[Update metadata JSON:<br/>gap_analysis section]
     UpdateMetadata --> SaveResults{Save to<br/>original file?}
 
-    SaveResults -->|Yes| AtomicSave[Atomic save operation:<br/>write to temp → rename]
-    SaveResults -->|No| ReturnDF[Return filled DataFrame<br/>without saving]
+    SaveResults --> AtomicSave[Atomic save operation:<br/>write to temp → rename]
+    SaveResults --> ReturnDF[Return filled DataFrame<br/>without saving]
 
     AtomicSave --> BackupOriginal[Backup original file<br/>.bak extension]
     BackupOriginal --> WriteNew[Write new filled data]
     WriteNew --> VerifyWrite{Write<br/>successful?}
 
-    VerifyWrite -->|Yes| DeleteBackup[Delete backup<br/>all good!]
-    VerifyWrite -->|No| RestoreBackup[Restore from backup<br/>log error]
+    VerifyWrite --> DeleteBackup[Delete backup<br/>all good!]
+    VerifyWrite --> RestoreBackup[Restore from backup<br/>log error]
 
     DeleteBackup --> Complete([Gap filling complete!<br/>Zero gaps achieved])
     RestoreBackup --> ErrorEnd([End with error])

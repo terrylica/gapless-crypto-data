@@ -12,11 +12,11 @@ flowchart TD
     CheckCache --> CacheExists{ETag entry<br/>exists for URL?}
 
     %% First Download Path
-    CacheExists -->|No - First Time| NoCache[No cache entry<br/>send normal HTTP request]
+    CacheExists --> NoCache[No cache entry<br/>send normal HTTP request]
     NoCache --> FullRequest[HTTP GET request<br/>no special headers]
 
     %% Cached Path
-    CacheExists -->|Yes - Re-download| HasCache[ETag cached:<br/>e.g., 'abc123...']
+    CacheExists --> HasCache[ETag cached:<br/>e.g., 'abc123...']
     HasCache --> ConditionalRequest[HTTP GET request with:<br/>If-None-Match: 'abc123...']
 
     %% DNS Resolution
@@ -28,15 +28,15 @@ flowchart TD
     %% CloudFront Processing
     FindEdge --> CloudFront{CloudFront<br/>processes request}
 
-    CloudFront -->|No If-None-Match| FreshDownload[Full download requested]
-    CloudFront -->|With If-None-Match| CompareETag[Compare cached ETag<br/>vs current object ETag]
+    CloudFront --> FreshDownload[Full download requested]
+    CloudFront --> CompareETag[Compare cached ETag<br/>vs current object ETag]
 
     %% ETag Comparison
     CompareETag --> ETagMatch{ETags match?}
 
-    ETagMatch -->|Yes - Unchanged!| Return304[HTTP 304 Not Modified<br/>Content-Length: 0<br/>ETag: 'abc123...'<br/>⚡ 0 BYTES TRANSFERRED!]
+    ETagMatch --> Return304[HTTP 304 Not Modified<br/>Content-Length: 0<br/>ETag: 'abc123...'<br/>⚡ 0 BYTES TRANSFERRED!]
 
-    ETagMatch -->|No - File changed| Return200New[HTTP 200 OK<br/>Content-Length: ~180 MB<br/>ETag: 'xyz789...'<br/>📦 FULL FILE DOWNLOAD]
+    ETagMatch --> Return200New[HTTP 200 OK<br/>Content-Length: ~180 MB<br/>ETag: 'xyz789...'<br/>📦 FULL FILE DOWNLOAD]
 
     FreshDownload --> CheckS3[CloudFront checks<br/>origin S3 bucket]
     CheckS3 --> Return200[HTTP 200 OK<br/>Content-Length: ~180 MB<br/>ETag: 'def456...'<br/>📦 FULL FILE DOWNLOAD]

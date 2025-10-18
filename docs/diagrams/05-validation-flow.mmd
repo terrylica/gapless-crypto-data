@@ -8,14 +8,14 @@ flowchart TD
 
     %% Layer 1: Structure
     Layer1 --> CheckFile{File exists<br/>and readable?}
-    CheckFile -->|No| ErrorFile[❌ File Error:<br/>Cannot access file]
-    CheckFile -->|Yes| CheckColumns[Check required columns<br/>present in DataFrame]
+    CheckFile --> ErrorFile[❌ File Error:<br/>Cannot access file]
+    CheckFile --> CheckColumns[Check required columns<br/>present in DataFrame]
 
     CheckColumns --> Has11Cols{Has all 11<br/>enhanced cols?}
-    Has11Cols -->|Yes| ValidStructure[✅ Enhanced format<br/>11-column microstructure]
-    Has11Cols -->|No| Has6Cols{Has 6<br/>legacy cols?}
-    Has6Cols -->|Yes| LegacyStructure[✅ Legacy format<br/>6-column OHLCV]
-    Has6Cols -->|No| ErrorStructure[❌ Structure Error:<br/>Missing required columns]
+    Has11Cols --> ValidStructure[✅ Enhanced format<br/>11-column microstructure]
+    Has11Cols --> Has6Cols{Has 6<br/>legacy cols?}
+    Has6Cols --> LegacyStructure[✅ Legacy format<br/>6-column OHLCV]
+    Has6Cols --> ErrorStructure[❌ Structure Error:<br/>Missing required columns]
 
     %% Layer 2: DateTime Validation
     ValidStructure --> Layer2[LAYER 2:<br/>DateTime Validation]
@@ -24,25 +24,25 @@ flowchart TD
     Layer2 --> ParseDateTime[Parse 'date' column<br/>to datetime objects]
     ParseDateTime --> ParseSuccess{Parse<br/>successful?}
 
-    ParseSuccess -->|No| ErrorDateTime[❌ DateTime Error:<br/>Invalid timestamp format]
-    ParseSuccess -->|Yes| CheckSorted{Timestamps<br/>sorted chronologically?}
+    ParseSuccess --> ErrorDateTime[❌ DateTime Error:<br/>Invalid timestamp format]
+    ParseSuccess --> CheckSorted{Timestamps<br/>sorted chronologically?}
 
-    CheckSorted -->|No| WarnSort[⚠️  Warning:<br/>Data not chronological]
-    CheckSorted -->|Yes| CalcDiffs[Calculate time diffs<br/>between consecutive rows]
+    CheckSorted --> WarnSort[⚠️  Warning:<br/>Data not chronological]
+    CheckSorted --> CalcDiffs[Calculate time diffs<br/>between consecutive rows]
 
     WarnSort --> CalcDiffs
     CalcDiffs --> ScanGaps[Scan for gaps:<br/>diff > expected interval]
 
     ScanGaps --> HasGaps{Gaps<br/>detected?}
-    HasGaps -->|Yes| RecordGaps[📊 Record gap details:<br/>count, positions, sizes]
-    HasGaps -->|No| NoGaps[✅ Continuous sequence<br/>no gaps]
+    HasGaps --> RecordGaps[📊 Record gap details:<br/>count, positions, sizes]
+    HasGaps --> NoGaps[✅ Continuous sequence<br/>no gaps]
 
     RecordGaps --> CheckDuplicates[Check for duplicate<br/>timestamps]
     NoGaps --> CheckDuplicates
 
     CheckDuplicates --> HasDupes{Duplicates<br/>found?}
-    HasDupes -->|Yes| ErrorDupes[❌ DateTime Error:<br/>Duplicate timestamps]
-    HasDupes -->|No| DateTimePass[✅ DateTime validation passed]
+    HasDupes --> ErrorDupes[❌ DateTime Error:<br/>Duplicate timestamps]
+    HasDupes --> DateTimePass[✅ DateTime validation passed]
 
     %% Layer 3: OHLCV Quality
     DateTimePass --> Layer3[LAYER 3:<br/>OHLCV Quality Validation]
@@ -52,16 +52,16 @@ flowchart TD
 
     note1["OHLCV Logic Checks:<br/>• high >= open<br/>• high >= close<br/>• low <= open<br/>• low <= close<br/>• high >= low<br/>• All values > 0"] -.-> ValidateLogic
 
-    ValidateLogic -->|No| ErrorOHLC[❌ OHLCV Error:<br/>Illogical price relationships]
-    ValidateLogic -->|Yes| CheckVolume[Validate volume > 0<br/>for all rows]
+    ValidateLogic --> ErrorOHLC[❌ OHLCV Error:<br/>Illogical price relationships]
+    ValidateLogic --> CheckVolume[Validate volume > 0<br/>for all rows]
 
     CheckVolume --> VolumeValid{Volume<br/>valid?}
-    VolumeValid -->|No| ErrorVolume[❌ Volume Error:<br/>Zero or negative volume]
-    VolumeValid -->|Yes| CheckRanges[Check price ranges<br/>for sanity]
+    VolumeValid --> ErrorVolume[❌ Volume Error:<br/>Zero or negative volume]
+    VolumeValid --> CheckRanges[Check price ranges<br/>for sanity]
 
     CheckRanges --> RangeCheck{Prices in<br/>reasonable range?}
-    RangeCheck -->|No| WarnOutlier[⚠️  Warning:<br/>Extreme price values]
-    RangeCheck -->|Yes| OHLCVPass[✅ OHLCV validation passed]
+    RangeCheck --> WarnOutlier[⚠️  Warning:<br/>Extreme price values]
+    RangeCheck --> OHLCVPass[✅ OHLCV validation passed]
 
     WarnOutlier --> OHLCVPass
 
@@ -74,8 +74,8 @@ flowchart TD
     CountActual --> CompareCoverage[Compare:<br/>actual vs expected]
     CompareCoverage --> CoverageCheck{Coverage<br/>>= 95%?}
 
-    CoverageCheck -->|No| WarnCoverage[⚠️  Warning:<br/>Low coverage < 95%]
-    CoverageCheck -->|Yes| FullCoverage[✅ Good coverage<br/>>= 95% complete]
+    CoverageCheck --> WarnCoverage[⚠️  Warning:<br/>Low coverage < 95%]
+    CoverageCheck --> FullCoverage[✅ Good coverage<br/>>= 95% complete]
 
     WarnCoverage --> Layer5
     FullCoverage --> Layer5
@@ -86,15 +86,15 @@ flowchart TD
     CalcStats --> DetectSpikes[Detect price spikes<br/>>3 std from mean]
     DetectSpikes --> HasSpikes{Suspicious<br/>spikes?}
 
-    HasSpikes -->|Yes| LogSpikes[📊 Log anomalies:<br/>positions, values]
-    HasSpikes -->|No| NoSpikes[✅ No anomalies detected]
+    HasSpikes --> LogSpikes[📊 Log anomalies:<br/>positions, values]
+    HasSpikes --> NoSpikes[✅ No anomalies detected]
 
     LogSpikes --> CheckFlash[Check for flash crashes<br/>price drop >20% in 1 bar]
     NoSpikes --> CheckFlash
 
     CheckFlash --> HasCrash{Flash crash<br/>detected?}
-    HasCrash -->|Yes| LogCrash[📊 Log crash event<br/>for investigation]
-    HasCrash -->|No| NoCrash[✅ No flash crashes]
+    HasCrash --> LogCrash[📊 Log crash event<br/>for investigation]
+    HasCrash --> NoCrash[✅ No flash crashes]
 
     LogCrash --> AnomalyPass
     NoCrash --> AnomalyPass[✅ Anomaly detection passed]
@@ -106,9 +106,9 @@ flowchart TD
 
     GenerateReport --> OverallCheck{All critical<br/>checks passed?}
 
-    OverallCheck -->|No| FinalFail[❌ VALIDATION FAILED<br/>Data quality issues detected]
-    OverallCheck -->|Yes + warnings| FinalWarn[⚠️  VALIDATION PASSED<br/>with warnings]
-    OverallCheck -->|Yes + no warnings| FinalPass[✅ VALIDATION PASSED<br/>High quality data!]
+    OverallCheck --> FinalFail[❌ VALIDATION FAILED<br/>Data quality issues detected]
+    OverallCheck --> FinalWarn[⚠️  VALIDATION PASSED<br/>with warnings]
+    OverallCheck --> FinalPass[✅ VALIDATION PASSED<br/>High quality data!]
 
     FinalFail --> End([Return validation report])
     FinalWarn --> End
