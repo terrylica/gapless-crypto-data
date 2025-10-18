@@ -25,7 +25,7 @@ Complete documentation for gapless-crypto-data - ultra-fast cryptocurrency data 
 
 - [README.md](README.md) - Main project documentation
   - Installation (uv, pip, pipx)
-  - Quick start (CLI and Python API)
+  - Quick start (Python API and CLI - **CLI deprecated**)
   - Feature overview
   - Supported symbols and timeframes
   - **Start here for first-time users**
@@ -98,9 +98,10 @@ Complete documentation for gapless-crypto-data - ultra-fast cryptocurrency data 
   - Standard data collection
   - Simple configuration
 
-- [examples/cli_usage_examples.sh](examples/cli_usage_examples.sh) - CLI patterns
-  - Command-line usage examples
-  - Shell script integration
+- [examples/cli_usage_examples.sh](examples/cli_usage_examples.sh) - CLI patterns ⚠️ **DEPRECATED**
+  - Command-line usage examples (legacy)
+  - Shell script integration (deprecated in v3.3.0)
+  - **Use Python API instead - see [CLI_MIGRATION_GUIDE.md](docs/CLI_MIGRATION_GUIDE.md)**
 
 ### Intermediate Examples
 
