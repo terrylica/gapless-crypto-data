@@ -16,11 +16,15 @@ SLO Targets:
     Maintainability: Single source of truth for CSV validation
 """
 
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
 import pandas as pd
+
+from .models import ValidationReport
+from .storage import ValidationStorage, extract_symbol_timeframe_from_path
 
 
 class CSVValidator:
@@ -168,7 +172,10 @@ class CSVValidator:
             )
 
     def validate_csv_file(
-        self, csv_filepath: Union[str, Path], expected_timeframe: Optional[str] = None
+        self,
+        csv_filepath: Union[str, Path],
+        expected_timeframe: Optional[str] = None,
+        store_report: bool = False,
     ) -> Dict[str, Any]:
         """
         Comprehensive validation of CSV file data integrity, completeness, and quality.
@@ -176,6 +183,7 @@ class CSVValidator:
         Args:
             csv_filepath: Path to CSV file to validate
             expected_timeframe: Expected timeframe (e.g., '30m') for interval validation
+            store_report: If True, persist validation report to DuckDB for analysis (default: False)
 
         Returns:
             dict: Validation results with detailed analysis
@@ -184,7 +192,13 @@ class CSVValidator:
             >>> validator = CSVValidator()
             >>> results = validator.validate_csv_file("data.csv", "1h")
             >>> print(f"Errors: {results['total_errors']}, Warnings: {results['total_warnings']}")
+
+            >>> # Store validation report for AI agent analysis
+            >>> results = validator.validate_csv_file("data.csv", "1h", store_report=True)
         """
+        # Start timing for performance metrics
+        start_time = time.perf_counter()
+
         csv_filepath = Path(csv_filepath)
 
         print(f"\n{'=' * 60}")
@@ -228,6 +242,29 @@ class CSVValidator:
             validation_results["validation_summary"] = f"ERROR - {str(e)}"
             validation_results["total_errors"] += 1
             print(f"❌ Validation failed with exception: {e}")
+
+        # Calculate validation duration
+        end_time = time.perf_counter()
+        duration_ms = (end_time - start_time) * 1000
+
+        # Store report to DuckDB if requested
+        if store_report:
+            try:
+                # Extract symbol and timeframe from filepath
+                symbol, timeframe = extract_symbol_timeframe_from_path(str(csv_filepath))
+
+                # Convert legacy dict to typed ValidationReport
+                report = ValidationReport.from_legacy_dict(
+                    validation_results, duration_ms=duration_ms, symbol=symbol, timeframe=timeframe
+                )
+
+                # Persist to DuckDB
+                storage = ValidationStorage()
+                storage.insert_report(report)
+                print(f"\n📊 Validation report stored to database ({duration_ms:.2f}ms)")
+
+            except Exception as e:
+                print(f"⚠️  Failed to store validation report: {e}")
 
         return validation_results
 

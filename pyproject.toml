@@ -37,8 +37,10 @@ classifiers = [
 ]
 requires-python = ">=3.9"
 dependencies = [
+    "duckdb>=1.1.0",  # Single-file OLAP database for validation report persistence
     "httpx>=0.25.0",
     "pandas>=2.0.0",
+    "pydantic>=2.0.0",  # Data validation and OpenAPI schema generation for validation reports
     "pyarrow>=16.0.0",  # Required by pandas for Parquet I/O (df.to_parquet/read_parquet engine)
 ]
 
