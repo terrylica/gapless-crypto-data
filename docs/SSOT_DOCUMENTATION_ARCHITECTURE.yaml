@@ -1,0 +1,508 @@
+openapi: 3.1.1
+info:
+  title: "Single Source of Truth (SSoT) Documentation Architecture"
+  description: |
+    Consolidated plan for reorganizing project documentation as Link Farm + Hub-and-Spoke
+    with Progressive Disclosure. CLAUDE.md becomes a lightweight navigation hub linking to
+    detailed specifications organized by topic. All references point to canonical sources
+    for current capabilities, architecture, and workflows.
+  version: "1.0.0"
+  contact:
+    name: "Gapless Crypto Data Project"
+    email: "terry@eonlabs.com"
+
+paths: {}
+
+components:
+  schemas:
+    DocumentationArchitecture:
+      type: object
+      description: "Complete documentation organization structure"
+      properties:
+        hub:
+          $ref: "#/components/schemas/HubStructure"
+        spokes:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/SpokeCategory"
+
+# DOCUMENTATION SSOT ARCHITECTURE PLAN (2025-10-20)
+x-ssot-architecture:
+  status: "PLANNING"
+  effective_date: "2025-10-20"
+
+  # Hub-and-Spoke Overview
+  hub_definition: |
+    CLAUDE.md is the navigation hub providing:
+    1. 50-line essentials overview (project purpose, core components)
+    2. Quick navigation links to detailed documentation
+    3. Progressive disclosure (essentials → deep dives)
+    4. Single entry point for Claude Code users
+
+  spoke_definition: |
+    Each spoke is a detailed specification document covering one topic:
+    - Located in appropriate docs/ subdirectory
+    - Self-contained with complete information
+    - Linked from CLAUDE.md hub
+    - Version-tracked via OpenAPI/YAML format
+    - Uses neutral language (no promotional terms)
+
+  # Current Hub State (BEFORE reorganization)
+  current_hub_structure:
+    file: "CLAUDE.md"
+    lines: 476
+    issues:
+      - "Too comprehensive (tries to cover everything)"
+      - "Should be 50-70 lines maximum for quick navigation"
+      - "Mixes essentials with deep technical details"
+      - "Difficult to update when details change"
+      - "No version tracking"
+
+    current_topics_mixed:
+      - "Architecture overview (essential)"
+      - "Development commands (reference, not essential)"
+      - "Data collection patterns (should be spoke)"
+      - "CLI usage (should be spoke)"
+      - "Python API (should be spoke)"
+      - "Validation architecture (should be spoke)"
+      - "SDK quality standards (should be spoke)"
+      - "CI/CD integration (should be spoke)"
+      - "Network architecture (should be spoke)"
+      - "Authentication (should be spoke)"
+
+  # Proposed Hub Structure (AFTER reorganization)
+  proposed_hub_structure:
+    file: "CLAUDE.md"
+    target_lines: "50-70"
+    structure:
+      - section: "Project Overview"
+        lines: 10-15
+        content:
+          - "One-sentence project description"
+          - "Core value propositions (3-5 bullets)"
+          - "Links to README.md for marketing details"
+
+      - section: "Quick Start"
+        lines: 10-15
+        content:
+          - "Installation command (UV and pip)"
+          - "Minimal Python API example"
+          - "Links to docs/api/quick-start.md"
+
+      - section: "Navigation Hub (Spokes)"
+        lines: 30-40
+        content:
+          - "Architecture & Design → docs/architecture/"
+          - "Data Collection → docs/guides/data-collection.md"
+          - "Gap Filling → docs/guides/gap-filling.md"
+          - "Validation & Quality → docs/validation/"
+          - "API Reference → docs/api/"
+          - "Development → docs/development/"
+          - "Publishing & Releases → docs/PUBLISHING.md"
+          - "Network Configuration → docs/architecture/network.md"
+
+      - section: "Development (for Claude Code)"
+        lines: 5-10
+        content:
+          - "Quick command reference (uv run pytest, etc)"
+          - "Link to docs/development/commands.md for full reference"
+
+  # Proposed Spoke Categories
+  proposed_spokes:
+
+    # Spoke 1: Architecture & Design
+    architecture:
+      directory: "docs/architecture/"
+      files:
+        - filename: "OVERVIEW.md"
+          purpose: "High-level system design with diagrams"
+          links_from: "CLAUDE.md → Architecture"
+          source: "Move from CLAUDE.md lines 5-35"
+          version_source: "CURRENT_ARCHITECTURE_STATUS.yaml"
+
+        - filename: "CORE_COMPONENTS.md"
+          purpose: "Detailed component specifications"
+          links_from: "OVERVIEW.md"
+          sections:
+            - "BinancePublicDataCollector"
+            - "UniversalGapFiller"
+            - "CSVValidator / ValidationStorage"
+            - "AtomicCSVOperations / SafeCSVMerger"
+          version_source: "Track as separate spec document"
+
+        - filename: "DATA_FORMAT.md"
+          purpose: "11-column microstructure format specification"
+          links_from: "OVERVIEW.md"
+          source: "Move from CLAUDE.md lines 30-35"
+          sections:
+            - "Column definitions"
+            - "Data types and ranges"
+            - "Example CSV layout"
+            - "Format transitions (v2.x → v3.x)"
+
+        - filename: "network.md"
+          purpose: "Network architecture details (currently in CLAUDE.md)"
+          links_from: "OVERVIEW.md"
+          source: "Move from CLAUDE.md 'Network Architecture' section"
+          sections:
+            - "Data source architecture"
+            - "CDN optimization (ETag caching)"
+            - "Retry behavior (empirically tested)"
+            - "What NOT to change"
+
+    # Spoke 2: Data Collection
+    collection:
+      directory: "docs/guides/"
+      files:
+        - filename: "DATA_COLLECTION.md"
+          purpose: "Complete data collection workflow guide"
+          links_from: "CLAUDE.md → Data Collection"
+          source: "Move from CLAUDE.md 'Data Collection Patterns' section"
+          sections:
+            - "Default collection (SOLUSDT example)"
+            - "Dual data source strategy"
+            - "Output directory structure"
+            - "Custom symbols and timeframes"
+            - "Date range handling"
+
+        - filename: "python-api.md"
+          purpose: "Python API usage patterns"
+          links_from: "docs/guides/DATA_COLLECTION.md"
+          source: "Move from CLAUDE.md 'Python API Integration' section"
+          sections:
+            - "Basic collection"
+            - "Multi-symbol collection"
+            - "Custom configurations"
+            - "Error handling patterns"
+
+    # Spoke 3: Gap Filling
+    gap_filling:
+      directory: "docs/guides/"
+      files:
+        - filename: "GAP_FILLING.md"
+          purpose: "Gap detection and filling operations"
+          links_from: "CLAUDE.md → Gap Filling"
+          source: "New document (currently scattered in CLAUDE.md)"
+          sections:
+            - "Gap detection algorithm"
+            - "Fill operations with Binance API"
+            - "Batch gap filling"
+            - "Data integrity guarantees"
+
+    # Spoke 4: Validation & Quality
+    validation:
+      directory: "docs/validation/"
+      files:
+        - filename: "OVERVIEW.md"
+          purpose: "Validation architecture overview"
+          links_from: "CLAUDE.md → Validation & Quality"
+          source: "Move from CLAUDE.md 'Validation Architecture' section"
+          version: "v3.3.0+ (DuckDB-based persistence)"
+          sections:
+            - "5-layer validation pipeline"
+            - "DuckDB storage design"
+            - "ValidationReport Pydantic model"
+
+        - filename: "STORAGE.md"
+          purpose: "ValidationStorage detailed specification"
+          links_from: "OVERVIEW.md"
+          source: "Move from CLAUDE.md 'Database Schema' section"
+          sections:
+            - "Schema definition (30+ columns)"
+            - "Query interface (SQL examples)"
+            - "Index strategy"
+            - "Data export patterns"
+
+        - filename: "QUERY_PATTERNS.md"
+          purpose: "Common query patterns for AI agents"
+          links_from: "STORAGE.md"
+          source: "New document based on existing examples"
+          sections:
+            - "Recent validations query"
+            - "Status-based filtering"
+            - "Date range queries"
+            - "Summary statistics"
+            - "DataFrame export"
+
+    # Spoke 5: API Reference
+    api:
+      directory: "docs/api/"
+      files:
+        - filename: "quick-start.md"
+          purpose: "API quick start (already exists, enhance links)"
+          current_status: "EXISTS"
+          enhancement: "Add reference to new architecture docs"
+
+        - filename: "reference.md"
+          purpose: "Complete function reference"
+          links_from: "CLAUDE.md → API Reference"
+          sections:
+            - "Public API functions"
+            - "Class-based API"
+            - "Parameter specifications"
+            - "Return types and exceptions"
+
+    # Spoke 6: Development
+    development:
+      directory: "docs/development/"
+      files:
+        - filename: "SETUP.md"
+          purpose: "Development environment setup"
+          links_from: "CLAUDE.md → Development"
+          source: "Move from CLAUDE.md 'Environment Setup' section"
+          sections:
+            - "Dependency installation (uv sync)"
+            - "Virtual environment activation"
+            - "Development tools setup"
+
+        - filename: "COMMANDS.md"
+          purpose: "Complete development command reference"
+          links_from: "CLAUDE.md → Development"
+          source: "Move from CLAUDE.md 'Testing', 'Code Quality', 'Build' sections"
+          sections:
+            - "Testing commands"
+            - "Code quality and formatting"
+            - "Type checking"
+            - "Build and packaging"
+
+        - filename: "TESTING.md"
+          purpose: "Testing strategy and patterns"
+          links_from: "COMMANDS.md"
+          sections:
+            - "Test organization"
+            - "Running specific tests"
+            - "Integration tests"
+            - "Performance benchmarks"
+
+        - filename: "CONTRIBUTING.md"
+          purpose: "Contribution guidelines"
+          links_from: "CLAUDE.md → Development"
+          current_status: "EXISTS (at project root)"
+          enhancement: "Link from docs/development/ for organization"
+
+  # Progressive Disclosure Strategy
+  progressive_disclosure:
+    level_1_essentials: |
+      CLAUDE.md (50-70 lines):
+      - Project purpose in 1-2 sentences
+      - Core features (3-5 bullets)
+      - Quick start (2-3 code examples)
+      - Navigation links to detailed docs
+      Audience: New users, quick reference
+
+    level_2_quick_start: |
+      docs/api/quick-start.md:
+      - Installation instructions
+      - Basic usage examples
+      - Common use cases
+      - Links to detailed guides
+      Audience: Users wanting immediate utility
+
+    level_3_detailed_guides: |
+      docs/guides/, docs/architecture/:
+      - Complete workflow documentation
+      - API specifications
+      - Configuration options
+      - Edge cases and error handling
+      - Links to implementation details
+      Audience: Power users, integrators
+
+    level_4_implementation: |
+      docs/architecture/CORE_COMPONENTS.md:
+      - Component design rationale
+      - Algorithm descriptions
+      - Performance characteristics
+      - Optimization opportunities
+      Audience: Contributors, maintainers
+
+    level_5_deep_research: |
+      docs/research/:
+      - Performance benchmarks
+      - Algorithm analysis
+      - Design trade-off studies
+      - Future optimization paths
+      Audience: Researchers, architects
+
+  # Version Tracking Strategy
+  version_tracking:
+    approach: "OpenAPI 3.1.1 YAML format with x-* extensions"
+    location: "Each spoke document"
+
+    hub_version:
+      file: "CLAUDE.md"
+      version_header: "<!-- Version: v1.0.0 (2025-10-20) -->"
+      tracking: "Timestamp + semantic version"
+      updates:
+        - "Minor: Navigation link additions"
+        - "Patch: Link target changes, typo fixes"
+        - "Major: Restructuring spoke organization"
+
+    spoke_versioning:
+      format: |
+        ---
+        version: "1.0.0"
+        last_updated: "2025-10-20"
+        canonical_source: true
+        supersedes: []
+        ---
+      properties:
+        - "version: Semantic version (MAJOR.MINOR.PATCH)"
+        - "last_updated: ISO 8601 date"
+        - "canonical_source: true/false (is this the source of truth?)"
+        - "supersedes: Array of previous versions this replaces"
+
+    example_spoke_header:
+      |
+        openapi: 3.1.1
+        info:
+          title: "Data Collection Guide"
+          version: "1.0.0"
+          x-last-updated: "2025-10-20"
+          x-canonical-source: true
+          x-supersedes: []
+
+  # Language & Tone Guidelines
+  language_standards:
+    principle: "Neutral, technical language. No promotional terms."
+    violations_to_remove:
+      - '"enhanced" -> "improved" or "added"'
+      - '"production-graded" -> "production-ready"'
+      - '"corrected" -> "fixed"'
+      - '"state-of-the-art (SOTA)" -> "current" or specific capability name'
+      - '"innovative" -> specific description of what it does'
+      - '"intelligent" -> describe the algorithm or logic'
+
+    approved_terms:
+      - "fast, faster, fastest (with benchmarks)"
+      - "efficient, efficiency (with metrics)"
+      - "reliable, robust (with test coverage %)"
+      - "atomic, transaction, ACID (technical terms)"
+      - "zero-gap guarantee (measurable property)"
+      - "22x faster than API (with measurement context)"
+
+  # Current Documentation Audit
+  current_documentation:
+    hub:
+      - file: "CLAUDE.md"
+        status: "NEEDS_REORGANIZATION"
+        issues: "476 lines, too comprehensive"
+        action: "Reduce to 50-70 lines, convert to link hub"
+
+    existing_spokes:
+      - file: "docs/README.md"
+        status: "GOOD"
+        action: "Enhance as navigation guide to spokes"
+
+      - file: "README.md (project root)"
+        status: "GOOD"
+        action: "Link from CLAUDE.md essentials"
+
+      - file: "docs/CURRENT_ARCHITECTURE_STATUS.yaml"
+        status: "GOOD"
+        action: "Source for architecture spoke"
+
+      - file: "docs/CLI_MIGRATION_GUIDE.md"
+        status: "GOOD"
+        action: "Link from development spoke"
+
+      - file: "docs/PUBLISHING.md"
+        status: "GOOD"
+        action: "Move to docs/development/PUBLISHING.md"
+
+      - file: "docs/milestones/"
+        status: "GOOD"
+        action: "Link from CLAUDE.md → Release History"
+
+      - file: "docs/diagrams/"
+        status: "GOOD"
+        action: "Reference from architecture spoke"
+
+  # Implementation Roadmap
+  implementation:
+    phase_1_planning:
+      status: "IN_PROGRESS"
+      tasks:
+        - "Survey project structure (✅ COMPLETED)"
+        - "Sample documentation patterns (✅ COMPLETED)"
+        - "Create SSoT planning (THIS DOCUMENT)"
+        - "Identify gaps and opportunities"
+
+    phase_2_spoke_creation:
+      status: "PENDING"
+      estimated_effort: "1-2 weeks"
+      tasks:
+        - "Create docs/architecture/ subdirectory"
+        - "Create docs/guides/ structure"
+        - "Create docs/development/ structure"
+        - "Extract and reorganize from CLAUDE.md"
+        - "Add version headers to each spoke"
+        - "Add cross-links between spokes"
+
+    phase_3_hub_reorganization:
+      status: "PENDING"
+      estimated_effort: "3-5 days"
+      tasks:
+        - "Reduce CLAUDE.md to 50-70 lines"
+        - "Convert to navigation hub only"
+        - "Add version header"
+        - "Create and maintain spoke links"
+
+    phase_4_testing_and_validation:
+      status: "PENDING"
+      estimated_effort: "3-5 days"
+      tasks:
+        - "Verify all links resolve correctly"
+        - "Check for dead references"
+        - "Ensure progressive disclosure works"
+        - "Update CLI and scripts that reference docs"
+
+    phase_5_publishing:
+      status: "PENDING"
+      estimated_effort: "1-2 days"
+      tasks:
+        - "Update pyproject.toml documentation URLs"
+        - "Update GitHub organization settings"
+        - "Announce documentation restructuring"
+
+  # Success Metrics
+  success_criteria:
+    - "CLAUDE.md reduced from 476 → 50-70 lines"
+    - "All detailed topics have dedicated spoke documents"
+    - "100% of CLAUDE.md content moved to appropriate spoke"
+    - "All spokes have version tracking"
+    - "Zero broken links in documentation"
+    - "Progressive disclosure tested with new users"
+    - "Language audit completed (no promotional terms)"
+    - "All spokes linked from CLAUDE.md hub"
+
+  # Maintenance Strategy
+  ongoing_maintenance:
+    hub_updates:
+      frequency: "As needed (quarterly review minimum)"
+      process: |
+        1. Review CLAUDE.md for outdated links
+        2. Check if new spokes should be added
+        3. Update version header
+        4. Commit with message: "docs: update CLAUDE.md hub links"
+
+    spoke_updates:
+      frequency: "When content changes"
+      process: |
+        1. Update spoke document content
+        2. Increment version (PATCH for minor fixes, MINOR for additions)
+        3. Update last_updated timestamp
+        4. Commit with message: "docs: update [spoke-name] (v[version])"
+
+    link_validation:
+      frequency: "Monthly"
+      process: |
+        1. Run link checker on docs/
+        2. Fix any broken internal links
+        3. Update hub/spoke link map if needed
+
+    language_audit:
+      frequency: "Quarterly"
+      process: |
+        1. Search for promotional terms
+        2. Replace with neutral language
+        3. Verify no marketing-speak remains
