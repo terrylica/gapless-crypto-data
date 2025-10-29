@@ -1,3 +1,10 @@
+---
+version: "1.0.0"
+last_updated: "2025-10-28"
+canonical_source: true
+supersedes: []
+---
+
 # Publishing Guide: Automated PyPI Publishing with GitHub Actions
 
 This guide explains how to set up secure, automated publishing to PyPI using GitHub Actions with Trusted Publishing (OIDC).
@@ -5,6 +12,7 @@ This guide explains how to set up secure, automated publishing to PyPI using Git
 ## 🔐 Security Overview
 
 This setup uses **Trusted Publishing** - the most secure method for PyPI publishing in 2025:
+
 - ✅ No long-lived API tokens stored anywhere
 - ✅ Short-lived OIDC tokens exchanged automatically
 - ✅ Digital attestations with Sigstore signatures
@@ -15,6 +23,7 @@ This setup uses **Trusted Publishing** - the most secure method for PyPI publish
 ### 1. Configure PyPI Trusted Publishing
 
 #### For PyPI (Production)
+
 1. Go to https://pypi.org/manage/account/publishing/
 2. Add a new trusted publisher with these details:
    - **PyPI project name**: `gapless-crypto-data`
@@ -24,6 +33,7 @@ This setup uses **Trusted Publishing** - the most secure method for PyPI publish
    - **Environment name**: `pypi`
 
 #### For TestPyPI (Testing)
+
 1. Go to https://test.pypi.org/manage/account/publishing/
 2. Add a new trusted publisher with these details:
    - **TestPyPI project name**: `gapless-crypto-data`
@@ -35,6 +45,7 @@ This setup uses **Trusted Publishing** - the most secure method for PyPI publish
 ### 2. Create GitHub Environments
 
 #### Create PyPI Environment (Production)
+
 1. Go to your repository: https://github.com/terryli/gapless-crypto-data
 2. Navigate to **Settings** → **Environments**
 3. Click **New Environment** and name it `pypi`
@@ -44,21 +55,25 @@ This setup uses **Trusted Publishing** - the most secure method for PyPI publish
    - ✅ **Prevent self-review**: Unchecked (since you're the sole maintainer)
 
 #### Create TestPyPI Environment (Testing)
+
 1. Click **New Environment** and name it `testpypi`
 2. No protection rules needed (auto-publishes on main branch pushes)
 
 ### 3. Repository Secrets (Not Needed)
+
 ❌ **No secrets required!** Trusted Publishing eliminates the need for API tokens.
 
 ## 🚀 Publishing Workflows
 
 ### Automatic TestPyPI Publishing
+
 - **Trigger**: Every push to `main` branch
 - **Purpose**: Test releases and validation
 - **URL**: https://test.pypi.org/p/gapless-crypto-data
 - **Installation**: `pip install -i https://test.pypi.org/simple/ gapless-crypto-data`
 
 ### Manual PyPI Publishing
+
 - **Trigger**: GitHub release creation
 - **Purpose**: Production releases
 - **Approval**: Requires manual approval in `pypi` environment
@@ -68,6 +83,7 @@ This setup uses **Trusted Publishing** - the most secure method for PyPI publish
 ## 📦 Release Process
 
 ### 1. Prepare Release
+
 ```bash
 # Update version in pyproject.toml
 # Update CHANGELOG.md
@@ -78,6 +94,7 @@ git push origin main
 ```
 
 ### 2. Create GitHub Release
+
 ```bash
 # Create and push tag
 git tag v1.0.1
@@ -92,6 +109,7 @@ git push origin v1.0.1
 ```
 
 ### 3. Approve PyPI Publication
+
 1. GitHub Actions will start the `publish-to-pypi` job
 2. Navigate to **Actions** tab in your repository
 3. Click on the running workflow
@@ -101,10 +119,12 @@ git push origin v1.0.1
 ## 🔍 Monitoring & Verification
 
 ### Workflow Status
+
 - **TestPyPI**: Check https://github.com/terryli/gapless-crypto-data/actions
 - **PyPI**: Monitor the `publish-to-pypi` job for approval requests
 
 ### Package Verification
+
 ```bash
 # Verify TestPyPI upload
 pip install -i https://test.pypi.org/simple/ gapless-crypto-data==<version>
@@ -117,6 +137,7 @@ python -c "from gapless_crypto_data import BinancePublicDataCollector; print('�
 ```
 
 ### Digital Attestations
+
 - Automatic signing with Sigstore
 - Attestations visible on PyPI package pages
 - Release artifacts include `.sigstore` signature files
@@ -124,6 +145,7 @@ python -c "from gapless_crypto_data import BinancePublicDataCollector; print('�
 ## 🛡️ Security Features
 
 ### Built-in Protections
+
 - **OIDC Authentication**: No long-lived tokens
 - **Environment Approval**: Manual review for production
 - **Workflow Isolation**: Separate build/publish jobs
@@ -131,6 +153,7 @@ python -c "from gapless_crypto_data import BinancePublicDataCollector; print('�
 - **Audit Trail**: Complete GitHub Actions logs
 
 ### Best Practices Implemented
+
 - ✅ Per-job permissions (minimal privilege)
 - ✅ Pinned Action versions for reproducibility
 - ✅ Separate environments for testing/production
@@ -143,19 +166,23 @@ python -c "from gapless_crypto_data import BinancePublicDataCollector; print('�
 ### Common Issues
 
 #### "Trusted publishing exchange failure"
+
 - Verify PyPI trusted publisher configuration
 - Check environment name matches exactly: `pypi` or `testpypi`
 - Ensure workflow filename is `publish.yml`
 
 #### "Missing id-token permission"
+
 - Confirm `permissions: id-token: write` is set
 - Check per-job permissions in workflow
 
 #### "Environment protection rules"
+
 - Verify you're added as a required reviewer for `pypi` environment
 - Check environment name spelling in workflow
 
 ### Debug Commands
+
 ```bash
 # Check workflow syntax
 yamllint .github/workflows/publish.yml

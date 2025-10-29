@@ -11,19 +11,23 @@ Gapless Crypto Data is a high-performance cryptocurrency data collection tool pr
 ## Quick Navigation
 
 ### Architecture
+
 - [Architecture Overview](/Users/terryli/eon/gapless-crypto-data/docs/architecture/OVERVIEW.md) - Core components, data flow, SLOs
 - [Data Format Specification](/Users/terryli/eon/gapless-crypto-data/docs/architecture/DATA_FORMAT.md) - 11-column microstructure format
 
 ### Usage Guides
+
 - [Data Collection Guide](/Users/terryli/eon/gapless-crypto-data/docs/guides/DATA_COLLECTION.md) - CLI usage, dual data source strategy, troubleshooting
 - [Python API Reference](/Users/terryli/eon/gapless-crypto-data/docs/guides/python-api.md) - Function-based and class-based APIs, complete examples
 
 ### Validation System
+
 - [Validation Overview](/Users/terryli/eon/gapless-crypto-data/docs/validation/OVERVIEW.md) - 5-layer validation pipeline, DuckDB persistence
 - [ValidationStorage Specification](/Users/terryli/eon/gapless-crypto-data/docs/validation/STORAGE.md) - Database schema, API methods
 - [AI Agent Query Patterns](/Users/terryli/eon/gapless-crypto-data/docs/validation/QUERY_PATTERNS.md) - Common patterns for validation analysis
 
 ### Development
+
 - [Development Setup](/Users/terryli/eon/gapless-crypto-data/docs/development/SETUP.md) - Environment setup, IDE configuration, troubleshooting
 - [Development Commands](/Users/terryli/eon/gapless-crypto-data/docs/development/COMMANDS.md) - Testing, code quality, build, CI/CD
 - [CLI Migration Guide](/Users/terryli/eon/gapless-crypto-data/docs/development/CLI_MIGRATION_GUIDE.md) - v2.x to v3.x migration
@@ -36,8 +40,9 @@ Gapless Crypto Data is a high-performance cryptocurrency data collection tool pr
 **Specification**: [`docs/sdk-quality-standards.yaml`](/Users/terryli/eon/gapless-crypto-data/docs/sdk-quality-standards.yaml) - Machine-readable standards
 
 **Key Abstractions**:
+
 - **Type Safety**: PEP 561 compliance via py.typed marker
-- **AI Discoverability**: __probe__ module, llms.txt
+- **AI Discoverability**: **probe** module, llms.txt
 - **Structured Exceptions**: Machine-parseable error context
 - **Coverage Strategy**: SDK entry points (85%+) > Core engines (70%+)
 
@@ -63,10 +68,3 @@ Gapless Crypto Data is a high-performance cryptocurrency data collection tool pr
 **Canonical Reference**: `docs/CURRENT_ARCHITECTURE_STATUS.yaml`
 
 **Production-Ready**: Core collection, intelligent resume (joblib Memory), memory streaming (Polars lazy), regression detection (PyOD ensemble), native multi-symbol CLI
-
-## Research Extensions
-
-**Exness Forex Tick Data**: [`~/.claude/tools/exness-data/README.md`](file:///Users/terryli/.claude/tools/exness-data/README.md)
-- EUR/USD microstructure analysis, zero-spread deviation research
-- [`docs/research/eurusd-zero-spread-deviations/`](docs/research/eurusd-zero-spread-deviations/) - Multi-period validation (16 months)
-- [`docs/research/eurusd-spread-analysis/`](docs/research/eurusd-spread-analysis/) - Modal-band-excluded variance estimation

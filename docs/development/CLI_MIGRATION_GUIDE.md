@@ -1,3 +1,10 @@
+---
+version: "1.0.0"
+last_updated: "2025-10-28"
+canonical_source: true
+supersedes: []
+---
+
 # CLI Migration Guide
 
 ⚠️ **The CLI is deprecated and will be removed in v4.0.0.**
@@ -31,11 +38,13 @@ The Python API offers several advantages over the CLI:
 ### Basic Data Collection
 
 **CLI (Deprecated)**:
+
 ```bash
 gapless-crypto-data --symbol BTCUSDT --timeframes 1h
 ```
 
 **Python API (Recommended)**:
+
 ```python
 import gapless_crypto_data as gcd
 
@@ -47,11 +56,13 @@ print(f"Collected {len(df)} bars")
 ### Multiple Timeframes
 
 **CLI (Deprecated)**:
+
 ```bash
 gapless-crypto-data --symbol ETHUSDT --timeframes 1h,4h,1d
 ```
 
 **Python API (Recommended)**:
+
 ```python
 import gapless_crypto_data as gcd
 
@@ -64,12 +75,14 @@ for tf in timeframes:
 ### Date Range Collection
 
 **CLI (Deprecated)**:
+
 ```bash
 gapless-crypto-data --symbol BTCUSDT --timeframes 1h \
   --start 2023-01-01 --end 2023-12-31
 ```
 
 **Python API (Recommended)**:
+
 ```python
 import gapless_crypto_data as gcd
 
@@ -85,11 +98,13 @@ print(f"Collected {len(df)} bars from 2023")
 ### Multiple Symbols
 
 **CLI (Deprecated)**:
+
 ```bash
 gapless-crypto-data --symbol BTCUSDT,ETHUSDT,SOLUSDT --timeframes 1h
 ```
 
 **Python API (Recommended)**:
+
 ```python
 import gapless_crypto_data as gcd
 
@@ -109,12 +124,14 @@ for symbol in symbols:
 ### Pattern 1: Custom Output Directory
 
 **CLI (Deprecated)**:
+
 ```bash
 gapless-crypto-data --symbol BTCUSDT --timeframes 1h \
   --output-dir ./crypto_data
 ```
 
 **Python API (Recommended)**:
+
 ```python
 import gapless_crypto_data as gcd
 from pathlib import Path
@@ -134,11 +151,13 @@ gcd.save_parquet(df, output_dir / "BTCUSDT_1h.parquet")
 ### Pattern 2: Gap Filling
 
 **CLI (Deprecated)**:
+
 ```bash
 gapless-crypto-data --fill-gaps --directory ./data
 ```
 
 **Python API (Recommended)**:
+
 ```python
 import gapless_crypto_data as gcd
 
@@ -153,12 +172,14 @@ print(f"Success rate: {results['success_rate']:.1%}")
 ### Pattern 3: Ultra-High Frequency Data
 
 **CLI (Deprecated)**:
+
 ```bash
 gapless-crypto-data --symbol BTCUSDT --timeframes 1s,1m,3m \
   --start 2024-01-01 --end 2024-01-01
 ```
 
 **Python API (Recommended)**:
+
 ```python
 import gapless_crypto_data as gcd
 
@@ -184,12 +205,14 @@ for tf in timeframes:
 ### Batch Processing with Progress Tracking
 
 **CLI (Deprecated)**:
+
 ```bash
 # Limited progress information
 gapless-crypto-data --symbol BTCUSDT,ETHUSDT,SOLUSDT --timeframes 1h,4h,1d
 ```
 
 **Python API (Recommended)**:
+
 ```python
 import gapless_crypto_data as gcd
 from datetime import datetime
@@ -225,6 +248,7 @@ for symbol, tfs in results.items():
 ### Data Analysis Integration
 
 **CLI (Deprecated)**:
+
 ```bash
 # CLI requires saving to file then loading in Python
 gapless-crypto-data --symbol BTCUSDT --timeframes 1h --output-dir ./data
@@ -232,6 +256,7 @@ gapless-crypto-data --symbol BTCUSDT --timeframes 1h --output-dir ./data
 ```
 
 **Python API (Recommended)**:
+
 ```python
 import gapless_crypto_data as gcd
 import pandas as pd
@@ -257,12 +282,14 @@ print(f"Average trade size: {df['avg_trade_size'].mean():.4f} BTC")
 ### Error Handling and Retry Logic
 
 **CLI (Deprecated)**:
+
 ```bash
 # Limited error handling
 gapless-crypto-data --symbol BTCUSDT --timeframes 1h
 ```
 
 **Python API (Recommended)**:
+
 ```python
 import gapless_crypto_data as gcd
 from gapless_crypto_data import NetworkError, DataCollectionError

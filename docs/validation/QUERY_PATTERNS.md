@@ -1,8 +1,8 @@
 ---
-version: "1.0.0"
-last_updated: "2025-10-27"
+version: "1.0.1"
+last_updated: "2025-10-28"
 canonical_source: true
-supersedes: []
+supersedes: ["1.0.0"]
 ---
 
 # Validation Query Patterns for AI Agents
@@ -381,6 +381,32 @@ print(f"Baseline avg errors: {baseline['total_errors'].mean():.2f}")
 if recent['total_errors'].mean() > baseline['total_errors'].mean():
     print("⚠️  Quality regression detected")
 ```
+
+## SLOs (Service Level Objectives)
+
+### Correctness
+
+**Query Accuracy**: All SQL patterns return accurate results matching DuckDB query semantics
+
+**API Consistency**: ValidationStorage API methods produce results equivalent to direct SQL queries
+
+**Data Integrity**: All exported DataFrames maintain referential integrity with underlying DuckDB tables
+
+### Observability
+
+**Query Examples**: All common query patterns documented with working code examples
+
+**API Discovery**: All ValidationStorage query methods documented with return type specifications
+
+**Performance Context**: Query complexity noted for large result sets (DataFrame exports, full scans)
+
+### Maintainability
+
+**Pattern Library**: Query patterns organized by use case (common queries, batch workflows, research patterns)
+
+**SQL Standards**: Direct SQL examples use standard DuckDB syntax (portable to other SQL databases)
+
+**Documentation Sync**: Query patterns kept in sync with ValidationStorage API evolution
 
 ## Related Documentation
 
