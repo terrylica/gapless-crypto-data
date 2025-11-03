@@ -13,12 +13,14 @@ Thank you for your interest in contributing to gapless-crypto-data! This documen
 ### Environment Setup
 
 1. **Fork and clone the repository:**
+
    ```bash
-   git clone https://github.com/your-username/gapless-crypto-data.git
+   git clone https://github.com/terrylica/gapless-crypto-data.git
    cd gapless-crypto-data
    ```
 
 2. **Set up development environment:**
+
    ```bash
    # Create virtual environment
    uv venv
@@ -41,11 +43,13 @@ Thank you for your interest in contributing to gapless-crypto-data! This documen
 ### Before Making Changes
 
 1. **Create a feature branch:**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
 2. **Verify setup:**
+
    ```bash
    # Run tests
    uv run pytest
@@ -60,6 +64,7 @@ Thank you for your interest in contributing to gapless-crypto-data! This documen
 ### Making Changes
 
 1. **Code formatting and linting:**
+
    ```bash
    # Format code
    uv run ruff format .
@@ -72,6 +77,7 @@ Thank you for your interest in contributing to gapless-crypto-data! This documen
    ```
 
 2. **Running tests:**
+
    ```bash
    # Run all tests
    uv run pytest
@@ -116,6 +122,7 @@ Thank you for your interest in contributing to gapless-crypto-data! This documen
 ### Pull Request Process
 
 1. **Ensure all checks pass:**
+
    ```bash
    uv run pytest
    uv run ruff format --check .
@@ -125,12 +132,14 @@ Thank you for your interest in contributing to gapless-crypto-data! This documen
    ```
 
 2. **Commit changes:**
+
    ```bash
    git add .
    git commit -m "feat: add new feature description"
    ```
 
 3. **Push to your fork:**
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -154,6 +163,7 @@ Use conventional commit format:
 - `chore:` - Maintenance tasks
 
 Examples:
+
 ```
 feat: add concurrent download manager
 fix: resolve gap detection edge case

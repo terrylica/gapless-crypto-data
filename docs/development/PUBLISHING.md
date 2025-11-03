@@ -27,7 +27,7 @@ This setup uses **Trusted Publishing** - the most secure method for PyPI publish
 1. Go to https://pypi.org/manage/account/publishing/
 2. Add a new trusted publisher with these details:
    - **PyPI project name**: `gapless-crypto-data`
-   - **Owner**: `terryli` (your GitHub username)
+   - **Owner**: `terrylica` (your GitHub username)
    - **Repository name**: `gapless-crypto-data`
    - **Workflow filename**: `publish.yml`
    - **Environment name**: `pypi`
@@ -37,7 +37,7 @@ This setup uses **Trusted Publishing** - the most secure method for PyPI publish
 1. Go to https://test.pypi.org/manage/account/publishing/
 2. Add a new trusted publisher with these details:
    - **TestPyPI project name**: `gapless-crypto-data`
-   - **Owner**: `terryli` (your GitHub username)
+   - **Owner**: `terrylica` (your GitHub username)
    - **Repository name**: `gapless-crypto-data`
    - **Workflow filename**: `publish.yml`
    - **Environment name**: `testpypi`
@@ -46,7 +46,7 @@ This setup uses **Trusted Publishing** - the most secure method for PyPI publish
 
 #### Create PyPI Environment (Production)
 
-1. Go to your repository: https://github.com/terryli/gapless-crypto-data
+1. Go to your repository: https://github.com/terrylica/gapless-crypto-data
 2. Navigate to **Settings** → **Environments**
 3. Click **New Environment** and name it `pypi`
 4. Configure protection rules:
@@ -120,7 +120,7 @@ git push origin v1.0.1
 
 ### Workflow Status
 
-- **TestPyPI**: Check https://github.com/terryli/gapless-crypto-data/actions
+- **TestPyPI**: Check https://github.com/terrylica/gapless-crypto-data/actions
 - **PyPI**: Monitor the `publish-to-pypi` job for approval requests
 
 ### Package Verification

@@ -18,6 +18,7 @@ Complete guide to setting up a local development environment for gapless-crypto-
 **Python**: 3.9+ (3.12+ recommended for latest features)
 
 **uv**: Fast Python package manager and project manager
+
 ```bash
 # Install uv (macOS/Linux)
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -27,6 +28,7 @@ brew install uv
 ```
 
 **Git**: Version control
+
 ```bash
 # Verify installation
 git --version
@@ -35,6 +37,7 @@ git --version
 ### Optional Tools
 
 **Docker + Colima**: For containerized testing (optional)
+
 ```bash
 brew install colima docker
 colima start
@@ -45,7 +48,7 @@ colima start
 ### Clone Repository
 
 ```bash
-git clone https://github.com/your-org/gapless-crypto-data.git
+git clone https://github.com/terrylica/gapless-crypto-data.git
 cd gapless-crypto-data
 ```
 
@@ -57,6 +60,7 @@ uv sync --dev
 ```
 
 **What this does**:
+
 - Creates `.venv/` virtual environment
 - Installs production dependencies
 - Installs development dependencies (pytest, ruff, mypy, etc.)
@@ -65,6 +69,7 @@ uv sync --dev
 ### Virtual Environment Activation
 
 **Using `uv run` (Recommended)**:
+
 ```bash
 # Run commands directly without activation
 uv run pytest
@@ -73,6 +78,7 @@ uv run python examples/simple_api_examples.py
 ```
 
 **Manual activation (Optional)**:
+
 ```bash
 # macOS/Linux
 source .venv/bin/activate
@@ -188,6 +194,7 @@ find src/ tests/ examples/ -name "*.py" -o -name "*.md" | xargs file --mime-enco
 ### `pyproject.toml`
 
 Main project configuration:
+
 - Package metadata (name, version, dependencies)
 - Build system configuration (Hatchling)
 - Tool configurations (ruff, mypy, pytest)
@@ -197,6 +204,7 @@ Main project configuration:
 ### `.python-version`
 
 Python version specification for `uv`:
+
 ```
 3.12
 ```
@@ -206,6 +214,7 @@ Python version specification for `uv`:
 ### `uv.lock`
 
 Dependency lock file (auto-generated):
+
 - Pinned versions for reproducible builds
 - Do not edit manually
 - Regenerate with `uv sync`
@@ -217,6 +226,7 @@ Dependency lock file (auto-generated):
 **Location**: `pyproject.toml` → `[tool.pytest.ini_options]`
 
 **Key settings**:
+
 - Test discovery: `tests/` directory
 - Markers: `@pytest.mark.integration`, `@pytest.mark.unit`
 - Coverage: Enabled for `src/gapless_crypto_data/`
@@ -226,6 +236,7 @@ Dependency lock file (auto-generated):
 **Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/sample_data/`
 
 **Purpose**: Real data files for end-to-end tests
+
 - SOLUSDT data (multiple timeframes)
 - Used by `tests/test_validation_storage.py`
 - Committed to repository for reproducible tests
@@ -235,13 +246,16 @@ Dependency lock file (auto-generated):
 ### Optional Configuration
 
 **Data Collection**:
+
 - `BINANCE_API_KEY` - Not required (public data)
 - `OUTPUT_DIR` - Override default output directory
 
 **Testing**:
+
 - `PYTEST_MARKERS` - Filter tests by marker (`unit`, `integration`)
 
 **Cache**:
+
 - `XDG_CACHE_HOME` - Override XDG cache directory (default: `~/.cache/`)
 
 ### Validation Database
@@ -249,6 +263,7 @@ Dependency lock file (auto-generated):
 **Location**: `~/.cache/gapless-crypto-data/validation.duckdb`
 
 **Behavior**:
+
 - Auto-created on first validation with `store_report=True`
 - Persistent across sessions
 - Clear for fresh start: `rm ~/.cache/gapless-crypto-data/validation.duckdb`
@@ -258,11 +273,13 @@ Dependency lock file (auto-generated):
 ### VS Code
 
 **Recommended Extensions**:
+
 - Python (Microsoft)
 - Pylance
 - Ruff
 
 **Settings** (`.vscode/settings.json`):
+
 ```json
 {
   "python.defaultInterpreterPath": ".venv/bin/python",
@@ -278,10 +295,12 @@ Dependency lock file (auto-generated):
 ### PyCharm
 
 **Project Interpreter**:
+
 1. File → Settings → Project → Python Interpreter
 2. Select `.venv/bin/python`
 
 **External Tools**:
+
 - Add `uv run pytest` as test runner
 - Add `uv run ruff format` as formatter
 
@@ -294,6 +313,7 @@ Dependency lock file (auto-generated):
 ### Issue: Tests fail with `ModuleNotFoundError`
 
 **Solution**: Reinstall dependencies
+
 ```bash
 uv sync --dev --reinstall
 ```
@@ -301,6 +321,7 @@ uv sync --dev --reinstall
 ### Issue: Virtual environment corrupted
 
 **Solution**: Delete and recreate
+
 ```bash
 rm -rf .venv
 uv sync --dev
@@ -309,6 +330,7 @@ uv sync --dev
 ### Issue: Pre-commit hooks fail
 
 **Solution**: Install hooks
+
 ```bash
 uv run pre-commit install
 uv run pre-commit run --all-files
@@ -317,16 +339,19 @@ uv run pre-commit run --all-files
 ## SLOs (Service Level Objectives)
 
 ### Correctness
+
 - **All tests pass**: 100% pass rate required for commits
 - **Type safety**: mypy strict mode for SDK entry points
 - **Linting**: Zero ruff violations for new code
 
 ### Observability
+
 - **Test coverage**: 85%+ for SDK entry points, 70%+ for core engines
 - **CI feedback**: All checks pass before merge
 - **Clear error messages**: Setup issues provide actionable guidance
 
 ### Maintainability
+
 - **Reproducible builds**: `uv.lock` ensures consistent dependencies
 - **Standard tools**: ruff, mypy, pytest (no custom tooling)
 - **Fast setup**: `uv sync --dev` completes in <30 seconds
