@@ -29,6 +29,7 @@ htmlcov/
 !.sessions/.gitignore
 
 # Lychee link checker cache and results
+.lycheecache
 .lycheecache/
 .lychee-results.json
 .lychee-results.txt
