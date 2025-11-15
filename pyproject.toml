@@ -26,22 +26,22 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Office/Business :: Financial :: Investment",
     "Topic :: Scientific/Engineering :: Information Analysis",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 dependencies = [
     "duckdb>=1.1.0",  # Single-file OLAP database for validation report persistence
     "httpx>=0.25.0",
     "pandas>=2.0.0",
     "pydantic>=2.0.0",  # Data validation and OpenAPI schema generation for validation reports
     "pyarrow>=16.0.0",  # Required by pandas for Parquet I/O (df.to_parquet/read_parquet engine)
+    "psycopg[binary]>=3.2.0",  # PostgreSQL wire protocol client for QuestDB queries
+    "python-dotenv>=1.0.0",  # Environment variable management
+    "questdb>=2.0.0",  # QuestDB Python client for ILP ingestion
 ]
 
 [project.urls]
@@ -51,9 +51,8 @@ Repository = "https://github.com/terrylica/gapless-crypto-data.git"
 Issues = "https://github.com/terrylica/gapless-crypto-data/issues"
 Changelog = "https://github.com/terrylica/gapless-crypto-data/blob/main/CHANGELOG.md"
 
-[project.scripts]
-# DEPRECATED: CLI will be removed in v4.0.0 - Use Python API instead
-gapless-crypto-data = "gapless_crypto_data.cli:main"
+# [project.scripts] section removed in v4.0.0
+# Machine interface only - use Python API for programmatic access
 
 [build-system]
 requires = ["hatchling"]
@@ -66,7 +65,7 @@ packages = ["src/gapless_crypto_data"]
 "src/gapless_crypto_data/py.typed" = "gapless_crypto_data/py.typed"
 
 [tool.ruff]
-target-version = "py39"
+target-version = "py312"
 line-length = 100
 
 [tool.ruff.lint]
@@ -92,11 +91,11 @@ ignore = [
 known-first-party = ["gapless_crypto_data"]
 
 [tool.black]
-target-version = ['py39']
+target-version = ['py312']
 line-length = 100
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
 # Gradually improve type checking
@@ -112,10 +111,7 @@ ignore_missing_imports = false
 
 # Per-module configuration for gradual adoption
 [[tool.mypy.overrides]]
-module = [
-    "gapless_crypto_data.cli",
-    "gapless_crypto_data.__init__"
-]
+module = "gapless_crypto_data.__init__"
 disallow_untyped_defs = true
 
 # Enforce strict mode on SDK entry points (v3.2.0)
