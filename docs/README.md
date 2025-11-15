@@ -5,18 +5,22 @@ This directory contains comprehensive documentation for the gapless-crypto-data 
 ## Documentation Structure
 
 ### API Documentation
+
 - [`api/quick-start.md`](api/quick-start.md) - API quick start guide
 - [`api/dual-parameter-enhancement.yaml`](api/dual-parameter-enhancement.yaml) - OpenAPI specification
 
 ### User Guides
+
 - [`guides/pypi-documentation.md`](guides/pypi-documentation.md) - Complete API documentation for PyPI users
 
 ### Development Documentation
+
 - [`PUBLISHING.md`](PUBLISHING.md) - Package publishing guidelines
 - [`CURRENT_ARCHITECTURE_STATUS.yaml`](CURRENT_ARCHITECTURE_STATUS.yaml) - Current system architecture
 - [`PYPI_PUBLISHING_CONFIGURATION.yaml`](PYPI_PUBLISHING_CONFIGURATION.yaml) - PyPI publishing configuration
 
 ### Release Documentation
+
 - [`release-notes.md`](release-notes.md) - Release notes and announcements
 - [`milestones/`](milestones/) - Version milestone documentation
 

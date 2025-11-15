@@ -23,6 +23,7 @@
 - `klines/` = OHLCV candlestick data
 
 **Contract Types**:
+
 - **Perpetual**: No expiration (e.g., BTCUSDT) - ~400+ symbols
 - **Delivery**: Quarterly expiration (e.g., BTCUSDT_231229) - excluded from this exploration
 
@@ -31,6 +32,7 @@
 **Endpoint**: `https://s3-ap-northeast-1.amazonaws.com/data.binance.vision`
 
 **Parameters**:
+
 - `prefix=data/futures/um/daily/klines/`
 - `delimiter=/`
 - `marker={continuation_token}` (for pagination)
@@ -39,36 +41,42 @@
 
 ### Key Differences: Futures vs Spot
 
-| Aspect | Spot | Futures (UM) |
-|--------|------|--------------|
-| Base URL | `/data/spot/` | `/data/futures/um/` |
-| 1-second data | ✅ Supported | ❌ Not supported |
-| Perpetual contracts | N/A | ✅ Primary focus |
-| Delivery contracts | N/A | ✅ Quarterly/bi-quarterly |
-| Data format | 11-column CSV | 11-column CSV (same) |
+| Aspect              | Spot          | Futures (UM)              |
+| ------------------- | ------------- | ------------------------- |
+| Base URL            | `/data/spot/` | `/data/futures/um/`       |
+| 1-second data       | ✅ Supported  | ❌ Not supported          |
+| Perpetual contracts | N/A           | ✅ Primary focus          |
+| Delivery contracts  | N/A           | ✅ Quarterly/bi-quarterly |
+| Data format         | 11-column CSV | 11-column CSV (same)      |
 
 ## Modules
 
 ### 1. `futures_discovery.py`
+
 S3-based enumeration of all USDT perpetual futures symbols.
 
 **Key Functions**:
+
 - `discover_all_perpetual_symbols()`: Query S3, parse XML, return symbol list
 - `classify_symbol(symbol)`: Distinguish perpetual vs delivery contracts
 - `paginate_s3_listing()`: Handle 1000-result pagination
 
 ### 2. `historical_probe.py`
+
 Determine symbol availability for specific historical dates.
 
 **Key Functions**:
+
 - `check_symbol_availability(symbol, date)`: Probe for data file existence
 - `get_available_symbols_for_date(date)`: Return all symbols active on given date
 - `generate_historical_snapshot(start, end)`: Create date-to-symbols mapping
 
 ### 3. `vision_futures_collector.py`
+
 Integration bridge demonstrating futures collection with gapless-crypto-data patterns.
 
 **Key Features**:
+
 - Extends `BinancePublicDataCollector` pattern
 - Maintains CSV validation compatibility
 - Documents architectural differences
@@ -77,6 +85,7 @@ Integration bridge demonstrating futures collection with gapless-crypto-data pat
 ## Usage Examples
 
 ### Discover All Perpetual Symbols
+
 ```python
 from futures_discovery import discover_all_perpetual_symbols
 
@@ -86,6 +95,7 @@ print(f"Found {len(symbols)} USDT perpetual futures")
 ```
 
 ### Check Historical Availability
+
 ```python
 from historical_probe import check_symbol_availability
 from datetime import date
@@ -96,6 +106,7 @@ print(f"BTCUSDT on 2024-01-15: {result['available']}")
 ```
 
 ### Collect Futures Data
+
 ```python
 from vision_futures_collector import BinanceFuturesCollector
 

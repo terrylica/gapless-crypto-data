@@ -16,6 +16,7 @@ supersedes: []
 ## Architecture Components
 
 ### CSVValidator
+
 **Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/validation/csv_validator.py`
 
 **Purpose**: Multi-layer validation of OHLCV CSV files
@@ -49,11 +50,13 @@ supersedes: []
    - Suspicious patterns
 
 ### ValidationReport (Pydantic Model)
+
 **Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/validation/models.py`
 
 **Purpose**: Type-safe validation report with OpenAPI 3.1.1 schema
 
 **Fields**: 34 typed fields
+
 - Metadata (timestamp, file path, size, version)
 - Core results (total bars, errors, warnings, summary, duration)
 - Layer results (JSON columns for nested data)
@@ -64,6 +67,7 @@ supersedes: []
 **Serialization**: JSON with automatic numpy/pandas type conversion
 
 ### ValidationStorage
+
 **Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/validation/storage.py`
 
 **Purpose**: DuckDB persistent storage for validation reports
@@ -79,6 +83,7 @@ See [Storage Specification](/Users/terryli/eon/gapless-crypto-data/docs/validati
 **Technology**: DuckDB 1.1.0+ (single-file OLAP database)
 
 **Advantages**:
+
 - Zero infrastructure (no server, no setup)
 - Columnar storage for analytical queries
 - SQL interface for AI agents
@@ -162,18 +167,21 @@ See [Query Patterns Guide](/Users/terryli/eon/gapless-crypto-data/docs/validatio
 ## Design Principles
 
 ### AI-First Design
+
 - SQL query interface for flexible exploration
 - Structured JSON schema for machine parsing
 - Summary statistics API for trend analysis
 - Pandas export for ML/analysis workflows
 
 ### Zero-Overhead Persistence
+
 - Optional `store_report=False` (default) for backward compatibility
 - No performance impact when disabled
 - Automatic database creation on first use
 - XDG cache directory compliance
 
 ### High-Volume Support
+
 - Efficient columnar storage (1000+ validations/week)
 - Microsecond-precision timing (`time.perf_counter()`)
 - Automatic numpy/pandas type conversion
@@ -199,16 +207,19 @@ report = validator.validate_csv_file("data.csv", store_report=True)  # Persists 
 ## SLOs (Service Level Objectives)
 
 ### Correctness
+
 - **100% rule accuracy**: All validation rules must be correct
 - **No false positives**: Valid data never flagged as errors
 - **No false negatives**: Invalid data always detected
 
 ### Observability
+
 - **Complete reporting**: All errors and warnings captured
 - **Persistent history**: Validation reports stored indefinitely
 - **Query interface**: SQL access for analysis
 
 ### Maintainability
+
 - **Single source of truth**: CSVValidator is canonical validator
 - **Type safety**: Pydantic models prevent data corruption
 - **Test coverage**: Validation tests in `/Users/terryli/eon/gapless-crypto-data/tests/test_validation_storage.py`
@@ -227,6 +238,7 @@ symbol, timeframe = extract_symbol_timeframe_from_path(
 ```
 
 **Supported Patterns**:
+
 - `binance_spot_{SYMBOL}-{TIMEFRAME}_{START}-{END}_v{VERSION}.csv`
 - `{SYMBOL}-{TIMEFRAME}.csv`
 - Various other formats

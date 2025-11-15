@@ -27,3 +27,8 @@ htmlcov/
 # .Sessions folder - never delete
 .sessions/
 !.sessions/.gitignore
+
+# Lychee link checker cache and results
+.lycheecache/
+.lychee-results.json
+.lychee-results.txt

@@ -55,6 +55,7 @@ uv run pytest -m "not integration"
 ```
 
 **Markers**:
+
 - `@pytest.mark.unit` - Unit tests (fast, no external dependencies)
 - `@pytest.mark.integration` - Integration tests (use real data)
 
@@ -110,6 +111,7 @@ uv run ruff check --diff .
 **Ruleset**: Ruff default (pycodestyle, pyflakes, isort, pydocstyle subset)
 
 **Key rules**:
+
 - E/W - pycodestyle (PEP 8 style)
 - F - pyflakes (logical errors)
 - I - isort (import sorting)
@@ -163,6 +165,7 @@ uv run pre-commit autoupdate
 ```
 
 **Hooks**:
+
 - ruff format (code formatting)
 - ruff check (linting)
 - trailing-whitespace (file cleanup)
@@ -233,10 +236,12 @@ uv lock
 #### CI Pipeline (`ci-cd.yml`)
 
 **Triggers**:
+
 - Push to `main` or `develop` branches
 - Pull requests to `main`
 
 **Jobs**:
+
 1. **Test** (Python 3.9-3.12 matrix)
    - Install dependencies (`uv sync --dev`)
    - Run pytest
@@ -266,10 +271,12 @@ uv lock
 #### Continuous Deployment (`publish.yml`)
 
 **Triggers**:
+
 - Push to `main` branch
 - Manual dispatch
 
 **Jobs**:
+
 1. **Build and Test**
    - Same as CI pipeline
 
@@ -435,6 +442,7 @@ git push origin feature/my-feature
 ### Pre-commit Checklist
 
 Before committing, ensure:
+
 - [ ] Code formatted: `uv run ruff format .`
 - [ ] Linting passes: `uv run ruff check .`
 - [ ] Type checking passes: `uv run mypy src/`
@@ -445,6 +453,7 @@ Before committing, ensure:
 ### Pre-PR Checklist
 
 Before creating pull request:
+
 - [ ] All CI checks pass locally
 - [ ] New tests added for new features
 - [ ] Coverage maintained (85%+ for SDK entry points)
@@ -454,16 +463,19 @@ Before creating pull request:
 ## SLOs (Service Level Objectives)
 
 ### Correctness
+
 - **Zero ruff violations**: All code passes `ruff check`
 - **Zero type errors**: All code passes `mypy --strict` for SDK entry points
 - **100% test pass rate**: All tests must pass before merge
 
 ### Observability
+
 - **Fast feedback**: Local checks complete in <1 minute
 - **CI feedback**: Full CI pipeline completes in <5 minutes
 - **Clear errors**: Failed checks provide actionable error messages
 
 ### Maintainability
+
 - **Standard tools**: ruff, mypy, pytest (no custom tooling)
 - **Single source of truth**: pyproject.toml for all tool configuration
 - **Reproducible**: uv.lock ensures consistent dependency versions

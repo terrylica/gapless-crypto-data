@@ -5,10 +5,12 @@ This directory contains Mermaid flowcharts visualizing the core business logic a
 ## Phase 1 Diagrams (Production-Ready)
 
 ### 1. End-to-End Collection Pipeline
+
 **File**: `01-collection-pipeline.mmd`
 **Reference**: `src/gapless_crypto_data/collectors/binance_public_data_collector.py:732-943`
 
 Visualizes the complete data collection journey from user request through download, validation, and saving. Key flows include:
+
 - Parameter validation and collector initialization
 - ETag-based caching decision logic
 - CloudFront CDN response handling (304 vs 200)
@@ -21,10 +23,12 @@ Visualizes the complete data collection journey from user request through downlo
 ---
 
 ### 2. Gap Detection and Filling Workflow
+
 **File**: `02-gap-filling.mmd`
 **Reference**: `src/gapless_crypto_data/gap_filling/universal_gap_filler.py:597-644`
 
 Shows the zero-gap guarantee process using authentic Binance API data. Covers:
+
 - CSV format detection (enhanced 11-col vs legacy 6-col)
 - Timestamp sequence scanning and gap identification
 - Binance API integration for gap filling
@@ -36,10 +40,12 @@ Shows the zero-gap guarantee process using authentic Binance API data. Covers:
 ---
 
 ### 3. Multi-Symbol Multi-Timeframe Orchestration
+
 **File**: `03-multi-symbol-collection.mmd`
 **Reference**: `src/gapless_crypto_data/cli.py:424-470`
 
 Complex nested loop orchestration with intelligent checkpointing and resume capability. Features:
+
 - Checkpoint-based resume logic for interrupted runs
 - Symbol loop → Timeframe loop hierarchy
 - Progress tracking and state preservation
@@ -51,10 +57,12 @@ Complex nested loop orchestration with intelligent checkpointing and resume capa
 ---
 
 ### 4. Download with ETag Caching Strategy
+
 **File**: `04-download-caching.mmd`
 **Reference**: `src/gapless_crypto_data/collectors/binance_public_data_collector.py:354-481`
 
 Explains the 22x performance advantage through HTTP ETag conditional requests. Details:
+
 - ETag cache structure and lookup
 - Conditional vs full HTTP requests
 - CloudFront CDN architecture (400+ edge locations)
@@ -66,10 +74,12 @@ Explains the 22x performance advantage through HTTP ETag conditional requests. D
 ---
 
 ### 5. Data Validation Decision Tree
+
 **File**: `05-validation-flow.mmd`
 **Reference**: `src/gapless_crypto_data/validation/csv_validator.py:170-232`
 
 Multi-layer validation strategy ensuring data quality. Includes:
+
 - **Layer 1**: Structure validation (11-col enhanced vs 6-col legacy)
 - **Layer 2**: DateTime validation (parsing, sorting, gap detection, duplicates)
 - **Layer 3**: OHLCV quality (price logic, volume checks, range validation)
@@ -86,7 +96,7 @@ Multi-layer validation strategy ensuring data quality. Includes:
 
 GitHub natively renders Mermaid diagrams from `.mmd` files when using code blocks:
 
-```markdown
+````markdown
 # Architecture Overview
 
 ```mermaid
@@ -94,7 +104,9 @@ graph TD
     A[Start] --> B[Process]
     B --> C[End]
 ```
-```
+````
+
+````
 
 For local `.mmd` files, include them inline:
 
@@ -102,13 +114,13 @@ For local `.mmd` files, include them inline:
 # Data Collection Pipeline
 
 See the complete flow in [01-collection-pipeline.mmd](./docs/diagrams/01-collection-pipeline.mmd)
-```
+````
 
 ### Method 2: Inline Embedding
 
 Copy the Mermaid syntax directly into your markdown document:
 
-```markdown
+````markdown
 # Gap Filling Process
 
 ```mermaid
@@ -119,7 +131,9 @@ flowchart TD
     FillGaps --> Validate[Validate merge]
     Validate --> Complete([Zero gaps achieved])
 ```
-```
+````
+
+````
 
 ### Method 3: Mermaid Live Editor (For External Sharing)
 
@@ -130,7 +144,7 @@ flowchart TD
 
 ```markdown
 ![Collection Pipeline](./assets/collection-pipeline.png)
-```
+````
 
 ### Method 4: VS Code Preview
 
@@ -142,7 +156,7 @@ Install the "Markdown Preview Mermaid Support" extension to preview diagrams dir
 
 ### In API Documentation
 
-```markdown
+````markdown
 ## Data Collection Flow
 
 The `BinancePublicDataCollector` follows this flow:
@@ -150,9 +164,11 @@ The `BinancePublicDataCollector` follows this flow:
 ```mermaid
 [Copy from 01-collection-pipeline.mmd]
 ```
+````
 
 See `src/gapless_crypto_data/collectors/binance_public_data_collector.py` for implementation.
-```
+
+````
 
 ### In Architecture Decision Records (ADRs)
 
@@ -169,8 +185,9 @@ Consequences:
 
 ```mermaid
 [Copy from 04-download-caching.mmd]
-```
-```
+````
+
+````
 
 ### In User Guides
 
@@ -181,10 +198,11 @@ When gaps are detected in your data, the system automatically fills them with au
 
 ```mermaid
 [Copy from 02-gap-filling.mmd]
-```
+````
 
 This ensures your datasets have zero gaps without using synthetic data.
-```
+
+````
 
 ---
 
@@ -208,11 +226,12 @@ mmdc -i 01-collection-pipeline.mmd -o collection-pipeline.png
 
 # Render to SVG
 mmdc -i 02-gap-filling.mmd -o gap-filling.svg
-```
+````
 
 ### GitHub
 
 GitHub automatically renders Mermaid diagrams in:
+
 - README.md files
 - Pull request descriptions
 - Issue comments
@@ -223,6 +242,7 @@ Simply use triple backtick code blocks with `mermaid` language identifier.
 ### Documentation Sites
 
 **MkDocs**: Install `mkdocs-mermaid2-plugin`
+
 ```yaml
 # mkdocs.yml
 plugins:
@@ -230,6 +250,7 @@ plugins:
 ```
 
 **Sphinx**: Install `sphinxcontrib-mermaid`
+
 ```python
 # conf.py
 extensions = ['sphinxcontrib.mermaid']
@@ -250,6 +271,7 @@ When updating business logic, ensure corresponding diagrams are updated:
 3. Validate syntax at https://mermaid.live
 4. Update code reference comments if line numbers changed
 5. Commit with descriptive message:
+
    ```
    docs(diagrams): Update gap-filling flow for new API endpoint
 
@@ -260,6 +282,7 @@ When updating business logic, ensure corresponding diagrams are updated:
 ### Adding New Diagrams
 
 Follow the established naming convention:
+
 - `NN-descriptive-name.mmd` (where NN is sequential number)
 - Update this README with new diagram entry
 - Include reference to source code location
@@ -272,6 +295,7 @@ Follow the established naming convention:
 All diagrams follow these conventions:
 
 **Color Coding**:
+
 - Red (`errorNode`): Error states and failures
 - Yellow (`warnNode`): Warnings and non-critical issues
 - Green (`successNode`): Success states and completions
@@ -279,12 +303,14 @@ All diagrams follow these conventions:
 - Gray (`dataNode`): Data processing operations
 
 **Node Shapes**:
+
 - `([Rounded box])`: Start/End points
 - `[Rectangle]`: Process steps
 - `{Diamond}`: Decision points
 - `[/Parallelogram/]`: Input/Output operations
 
 **Annotations**:
+
 - Use `note1[...]` for technical context
 - Include performance metrics where relevant
 - Reference actual code locations with file:line notation
@@ -294,6 +320,7 @@ All diagrams follow these conventions:
 ## Contributing
 
 When adding new diagrams:
+
 1. Follow Phase 1 patterns for structure and styling
 2. Include comprehensive annotations
 3. Reference specific code locations

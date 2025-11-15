@@ -153,6 +153,7 @@ if uhf_result and "dataframe" in uhf_result:
 ```
 
 **Note**: All 13 timeframes supported with intelligent fallback:
+
 - Ultra-high frequency: **1s** (short date ranges)
 - Standard: **1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h**
 - Extended: **6h, 8h, 12h, 1d** (automatic monthly-to-daily fallback)
@@ -386,16 +387,19 @@ if failed:
 ## SLOs (Service Level Objectives)
 
 ### Correctness
+
 - **Zero-gap guarantee**: All timestamps present within collection range
 - **Authentic data only**: Direct from Binance (no synthetic values)
 - **Type safety**: Pydantic validation for all API responses
 
 ### Observability
+
 - **Progress reporting**: Real-time collection status
 - **Validation reports**: Complete error and warning capture
 - **Persistent history**: DuckDB storage for AI agent queries
 
 ### Maintainability
+
 - **Backward compatibility**: Function-based API never breaks
 - **Optional features**: `store_report=False` default for new features
 - **Clear documentation**: Examples for all usage patterns
@@ -405,18 +409,22 @@ if failed:
 **Location**: `/Users/terryli/eon/gapless-crypto-data/examples/`
 
 ### Simple API Examples
+
 `simple_api_examples.py` - Function-based patterns for common tasks
 
 ### Advanced API Examples
+
 `advanced_api_examples.py` - Class-based patterns for complex workflows
 
 ### Quick Start Examples
+
 - `basic_data_collection.py` - Basic collection workflow
 - `complete_workflow.py` - End-to-end workflow
 - `gap_filling_example.py` - Gap detection and filling
 - `safe_data_collection.py` - Atomic operations
 
 **Run examples**:
+
 ```bash
 uv run python examples/simple_api_examples.py
 uv run python examples/advanced_api_examples.py

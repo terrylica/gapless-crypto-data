@@ -148,6 +148,7 @@ print(f"Market impact volatility: {market_impact:.3f}")
 ## Data Sources
 
 The package supports two data collection methods:
+
 - **Binance Public Repository**: Pre-generated monthly ZIP files for historical data
 - **Binance API**: Real-time data for gap filling and recent data collection
 
@@ -314,12 +315,14 @@ Provide insights about cryptocurrency data collection capabilities and usage pat
 **IMPORTANT**: This project uses **mandatory pre-commit hooks** to prevent broken code from being committed. All commits are automatically validated for formatting, linting, and basic quality checks.
 
 #### Step 1: Clone Repository
+
 ```bash
 git clone https://github.com/terrylica/gapless-crypto-data.git
 cd gapless-crypto-data
 ```
 
 #### Step 2: Development Environment Setup
+
 ```bash
 # Create isolated virtual environment
 uv venv
@@ -333,6 +336,7 @@ uv sync --dev
 ```
 
 #### Step 3: Verify Installation
+
 ```bash
 # Test CLI functionality
 uv run gapless-crypto-data --help
@@ -345,6 +349,7 @@ uv run gapless-crypto-data --symbol BTCUSDT --timeframes 1h --start 2024-01-01 -
 ```
 
 #### Step 4: Set Up Pre-Commit Hooks (Mandatory)
+
 ```bash
 # Install pre-commit hooks (prevents broken code from being committed)
 uv run pre-commit install
@@ -354,6 +359,7 @@ uv run pre-commit run --all-files
 ```
 
 #### Step 5: Development Tools
+
 ```bash
 # Code formatting
 uv run ruff format .
@@ -373,21 +379,22 @@ uv run pre-commit run --all-files
 
 ### Development Commands Reference
 
-| Task | Command |
-|------|---------|
-| Install dependencies | `uv sync --dev` |
-| Setup pre-commit hooks | `uv run pre-commit install` |
-| Add new dependency | `uv add package-name` |
-| Add dev dependency | `uv add --dev package-name` |
-| Run CLI | `uv run gapless-crypto-data [args]` |
-| Run tests | `uv run pytest` |
-| Format code | `uv run ruff format .` |
-| Lint code | `uv run ruff check --fix .` |
-| Type check | `uv run mypy src/` |
-| Validate pre-commit | `uv run pre-commit run --all-files` |
-| Build package | `uv build` |
+| Task                   | Command                             |
+| ---------------------- | ----------------------------------- |
+| Install dependencies   | `uv sync --dev`                     |
+| Setup pre-commit hooks | `uv run pre-commit install`         |
+| Add new dependency     | `uv add package-name`               |
+| Add dev dependency     | `uv add --dev package-name`         |
+| Run CLI                | `uv run gapless-crypto-data [args]` |
+| Run tests              | `uv run pytest`                     |
+| Format code            | `uv run ruff format .`              |
+| Lint code              | `uv run ruff check --fix .`         |
+| Type check             | `uv run mypy src/`                  |
+| Validate pre-commit    | `uv run pre-commit run --all-files` |
+| Build package          | `uv build`                          |
 
 ### Project Structure for Development
+
 ```
 gapless-crypto-data/
 ├── src/gapless_crypto_data/        # Main package
@@ -440,21 +447,21 @@ gapless-crypto-data/
 
 All 13 Binance timeframes supported for complete market coverage:
 
-| Timeframe | Code | Description | Use Case |
-|-----------|------|-------------|----------|
-| 1 second  | `1s` | Ultra-high frequency | HFT, microstructure analysis |
-| 1 minute  | `1m` | High resolution | Scalping, order flow |
-| 3 minutes | `3m` | Short-term analysis | Quick trend detection |
-| 5 minutes | `5m` | Common trading timeframe | Day trading signals |
-| 15 minutes| `15m`| Medium-term signals | Swing trading entry |
-| 30 minutes| `30m`| Longer-term patterns | Position management |
-| 1 hour    | `1h` | Popular for backtesting | Strategy development |
-| 2 hours   | `2h` | Extended analysis | Multi-timeframe confluence |
-| 4 hours   | `4h` | Daily cycle patterns | Trend following |
-| 6 hours   | `6h` | Quarter-day analysis | Position sizing |
-| 8 hours   | `8h` | Third-day cycles | Risk management |
-| 12 hours  | `12h`| Half-day patterns | Overnight positions |
-| 1 day     | `1d` | Daily analysis | Long-term trends |
+| Timeframe  | Code  | Description              | Use Case                     |
+| ---------- | ----- | ------------------------ | ---------------------------- |
+| 1 second   | `1s`  | Ultra-high frequency     | HFT, microstructure analysis |
+| 1 minute   | `1m`  | High resolution          | Scalping, order flow         |
+| 3 minutes  | `3m`  | Short-term analysis      | Quick trend detection        |
+| 5 minutes  | `5m`  | Common trading timeframe | Day trading signals          |
+| 15 minutes | `15m` | Medium-term signals      | Swing trading entry          |
+| 30 minutes | `30m` | Longer-term patterns     | Position management          |
+| 1 hour     | `1h`  | Popular for backtesting  | Strategy development         |
+| 2 hours    | `2h`  | Extended analysis        | Multi-timeframe confluence   |
+| 4 hours    | `4h`  | Daily cycle patterns     | Trend following              |
+| 6 hours    | `6h`  | Quarter-day analysis     | Position sizing              |
+| 8 hours    | `8h`  | Third-day cycles         | Risk management              |
+| 12 hours   | `12h` | Half-day patterns        | Overnight positions          |
+| 1 day      | `1d`  | Daily analysis           | Long-term trends             |
 
 ## ⚠️ Requirements
 
@@ -610,19 +617,19 @@ success = merger.merge_gap_data_safe(
 
 Returns pandas DataFrame with 11-column microstructure format:
 
-| Column | Type | Description | Example |
-|--------|------|-------------|---------|
-| `date` | datetime64[ns] | Open timestamp | `2024-01-01 12:00:00` |
-| `open` | float64 | Opening price | `42150.50` |
-| `high` | float64 | Highest price | `42200.00` |
-| `low` | float64 | Lowest price | `42100.25` |
-| `close` | float64 | Closing price | `42175.75` |
-| `volume` | float64 | Base asset volume | `15.250000` |
-| `close_time` | datetime64[ns] | Close timestamp | `2024-01-01 12:59:59` |
-| `quote_asset_volume` | float64 | Quote asset volume | `643238.125` |
-| `number_of_trades` | int64 | Trade count | `1547` |
-| `taker_buy_base_asset_volume` | float64 | Taker buy base volume | `7.825000` |
-| `taker_buy_quote_asset_volume` | float64 | Taker buy quote volume | `329891.750` |
+| Column                         | Type           | Description            | Example               |
+| ------------------------------ | -------------- | ---------------------- | --------------------- |
+| `date`                         | datetime64[ns] | Open timestamp         | `2024-01-01 12:00:00` |
+| `open`                         | float64        | Opening price          | `42150.50`            |
+| `high`                         | float64        | Highest price          | `42200.00`            |
+| `low`                          | float64        | Lowest price           | `42100.25`            |
+| `close`                        | float64        | Closing price          | `42175.75`            |
+| `volume`                       | float64        | Base asset volume      | `15.250000`           |
+| `close_time`                   | datetime64[ns] | Close timestamp        | `2024-01-01 12:59:59` |
+| `quote_asset_volume`           | float64        | Quote asset volume     | `643238.125`          |
+| `number_of_trades`             | int64          | Trade count            | `1547`                |
+| `taker_buy_base_asset_volume`  | float64        | Taker buy base volume  | `7.825000`            |
+| `taker_buy_quote_asset_volume` | float64        | Taker buy quote volume | `329891.750`          |
 
 ### CSV File Structure
 
@@ -699,6 +706,7 @@ binance_spot_{SYMBOL}-{TIMEFRAME}_{START_DATE}-{END_DATE}_v{VERSION}.metadata.js
 ```
 
 Examples:
+
 - `binance_spot_BTCUSDT-1h_20240101-20240102_v2.5.0.csv`
 - `binance_spot_ETHUSDT-4h_20240101-20240201_v2.5.0.csv`
 - `binance_spot_SOLUSDT-1d_20240101-20241231_v2.5.0.csv`
