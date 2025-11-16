@@ -3,23 +3,24 @@
 **Validation ID**: ADR-0002
 **Branch**: `feat/questdb-single-source-truth`
 **Date**: 2025-11-15
-**Target Release**: v4.0.0 (BLOCKED)
-**Status**: ⚠️ **CRITICAL ISSUES FOUND - RELEASE BLOCKED**
+**Target Release**: v4.0.0
+**Status**: ✅ **ALL CRITICAL ISSUES RESOLVED - RELEASE UNBLOCKED**
 
 ---
 
 ## Executive Summary
 
-E2E validation of QuestDB refactor (ADR-0001 Phases 1-3) successfully identified **3 critical bugs** and **1 design flaw** that would have shipped in v4.0.0:
+E2E validation of QuestDB refactor (ADR-0001 Phases 1-3) successfully identified **4 critical bugs** and **1 design flaw** that would have shipped in v4.0.0:
 
 | Finding | Severity | Status | Impact |
 |---------|----------|--------|--------|
 | **Sender API mismatch** | 🔴 Critical | ✅ Fixed | Complete ingestion failure |
 | **Type conversion bug** | 🔴 Critical | ✅ Fixed | Data corruption (FLOAT→LONG cast error) |
-| **Performance below SLO** | 🟡 Medium | ✅ Fixed | 45K→100K rows/sec (partial improvement) |
-| **Deduplication design flaw** | 🔴 **BLOCKER** | ❌ Open | Zero-gap guarantee violated |
+| **Timestamp parsing bug** | 🔴 Critical | ✅ Fixed | All timestamps defaulting to epoch 0 (1970-01) |
+| **Performance below SLO** | 🟡 Medium | Partial | 47K rows/sec (below 100K target, acceptable) |
+| **Deduplication design flaw** | 🔴 Blocker | ✅ Fixed | Zero-gap guarantee violated - RESOLVED |
 
-**Recommendation**: **DO NOT RELEASE v4.0.0** until deduplication issue is resolved.
+**Recommendation**: **RELEASE UNBLOCKED** - All critical bugs fixed, deduplication working correctly.
 
 ---
 
@@ -123,7 +124,59 @@ sender.dataframe(df_ingest, table_name="ohlcv", symbols=[...], at="timestamp")
 
 ---
 
-### **BLOCKER**: Deduplication Design Flaw
+#### Bug 4: Timestamp Parsing Bug (**CRITICAL** - Complete Data Corruption)
+
+**Location**: `src/gapless_crypto_data/collectors/questdb_bulk_loader.py:287-304`
+
+**Issue**: pandas `read_csv()` treating first CSV column as DataFrame index instead of data column
+
+**Symptom**: All ingested timestamps defaulting to Unix epoch 0 (1970-01-01), not actual 2024 values
+
+**Evidence**:
+```
+Query: SELECT to_str(timestamp, 'yyyy-MM') as month, COUNT(*) FROM ohlcv GROUP BY month
+Result: 1970-01: 70,784 rows  ← All timestamps at epoch 0!
+
+Expected: 2024-01: 44,640 rows, 2024-02: 41,760 rows
+```
+
+**Root Cause**:
+When `pd.read_csv()` is called without `index_col=False`, pandas treats the first column (millisecond timestamps) as the DataFrame index rather than storing it as the "open_time" data column. When the code then tries to convert `df["open_time"]` to timestamps, it's converting a different column, resulting in garbage epoch 0 values.
+
+**Diagnosis Process**:
+1. Database query showed all rows in 1970-01 month (epoch 0)
+2. Minimal test with `Sender.dataframe()` worked correctly → ruled out Sender API issue
+3. Inspected DataFrame structure from `_parse_csv()` → discovered index was millisecond timestamps
+4. DataFrame's "timestamp" column had values like `1970-01-01 00:00:42` (epoch + wrong offset)
+5. Root cause: First CSV column became index, not data
+
+**Fix Applied**:
+```python
+# Add index_col=False to prevent pandas auto-indexing
+df = pd.read_csv(
+    csv_path,
+    header=None,
+    index_col=False,  # ← FIX: Prevent first column from becoming index
+    names=["open_time", "open", "high", ...],
+)
+```
+
+**Verification**:
+```
+After fix:
+- timestamp range: 2024-01-01 00:00:00 to 2024-01-31 23:59:00 ✓
+- Jan 2024: 44,640 rows ✓
+- Feb 2024: 41,760 rows ✓
+- Month distribution: 2024-01, 2024-02 (not 1970-01!) ✓
+```
+
+**Impact**: 100% data corruption - all timestamps wrong, making data completely unusable for time-series analysis
+
+**Status**: ✅ **FIXED** - Timestamps now correctly stored as 2024 values
+
+---
+
+### **Bug 5: Deduplication Design Flaw** (BLOCKER - RESOLVED)
 
 **Location**: `src/gapless_crypto_data/questdb/schema.sql:40-42`
 
@@ -197,6 +250,32 @@ ALTER TABLE ohlcv SET PARAM dedup_upsert_key(timestamp, symbol, timeframe);
 ```
 - ✅ Database-level guarantee
 - ❓ Need to verify QuestDB v9.2.0 support
+
+**RESOLUTION: Option C Implemented ✅**
+
+QuestDB v9.2.0 supports `DEDUP ENABLE UPSERT KEYS` syntax (introduced in v7.3+).
+
+**Fix Applied to schema.sql**:
+```sql
+-- Deduplication via UPSERT semantics (QuestDB v7.3+)
+-- Enable deduplication on composite key (timestamp, symbol, timeframe)
+-- This ensures re-ingestion overwrites existing rows instead of creating duplicates
+ALTER TABLE ohlcv DEDUP ENABLE UPSERT KEYS(timestamp, symbol, timeframe);
+```
+
+**Verification**:
+```
+Test: Re-ingest BTCUSDT 1m Jan 2024 (44,640 rows)
+Before re-ingest: 86,400 rows (Jan + Feb)
+After re-ingest: 86,400 rows
+Duplicates created: 0 ✅
+
+Metadata verification:
+- tables() query: dedup = 't' (true) ✅
+- table_columns('ohlcv'): timestamp, symbol, timeframe all have upsertKey = 't' ✅
+```
+
+**Status**: ✅ **RESOLVED** - Deduplication working correctly, zero-gap guarantee restored
 
 ---
 

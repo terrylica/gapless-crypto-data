@@ -37,9 +37,10 @@ CREATE TABLE IF NOT EXISTS ohlcv (
 -- Note: QuestDB automatically creates indices on SYMBOL columns
 -- No explicit INDEX creation needed (handled internally)
 
--- Deduplication via UPSERT semantics
--- QuestDB automatically handles deduplication on (timestamp, symbol, timeframe)
--- No explicit UNIQUE constraint needed (WAL mode provides UPSERT behavior)
+-- Deduplication via UPSERT semantics (QuestDB v7.3+)
+-- Enable deduplication on composite key (timestamp, symbol, timeframe)
+-- This ensures re-ingestion overwrites existing rows instead of creating duplicates
+ALTER TABLE ohlcv DEDUP ENABLE UPSERT KEYS(timestamp, symbol, timeframe);
 
 -- Comments documenting schema design decisions:
 -- 1. Single table (not 5,200 separate tables): Simplifies management, enables cross-symbol queries

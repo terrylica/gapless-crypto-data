@@ -287,6 +287,7 @@ class QuestDBBulkLoader:
             df = pd.read_csv(
                 csv_path,
                 header=None,
+                index_col=False,  # Prevent pandas from using first column as index
                 names=[
                     "open_time",
                     "open",
