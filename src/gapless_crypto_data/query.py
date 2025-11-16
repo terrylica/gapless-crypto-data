@@ -461,42 +461,50 @@ class OHLCVQuery:
                 print(f"Found {len(gaps)} gaps:")
                 print(gaps)
         """
-        # Map timeframe to interval
-        timeframe_to_interval = {
-            "1s": "1 second",
-            "1m": "1 minute",
-            "3m": "3 minutes",
-            "5m": "5 minutes",
-            "15m": "15 minutes",
-            "30m": "30 minutes",
-            "1h": "1 hour",
-            "2h": "2 hours",
-            "4h": "4 hours",
-            "6h": "6 hours",
-            "8h": "8 hours",
-            "12h": "12 hours",
-            "1d": "1 day",
+        # Map timeframe to milliseconds for gap detection
+        timeframe_to_ms = {
+            "1s": 1000,
+            "1m": 60000,
+            "3m": 180000,
+            "5m": 300000,
+            "15m": 900000,
+            "30m": 1800000,
+            "1h": 3600000,
+            "2h": 7200000,
+            "4h": 14400000,
+            "6h": 21600000,
+            "8h": 28800000,
+            "12h": 43200000,
+            "1d": 86400000,
         }
 
-        if timeframe not in timeframe_to_interval:
+        if timeframe not in timeframe_to_ms:
             raise ValueError(f"Unsupported timeframe for gap detection: {timeframe}")
 
-        interval = timeframe_to_interval[timeframe]
+        interval_ms = timeframe_to_ms[timeframe]
         symbol = symbol.upper()
 
         # SQL to detect gaps using LAG window function
+        # QuestDB doesn't support nested window functions, so we need two CTEs
         sql = f"""
-            WITH gaps AS (
+            WITH lagged AS (
                 SELECT
-                    timestamp AS gap_end,
-                    LAG(timestamp) OVER (ORDER BY timestamp) AS gap_start,
-                    DATEDIFF('millisecond', LAG(timestamp) OVER (ORDER BY timestamp), timestamp) / (INTERVAL '{interval}' TO MILLISECONDS) AS bars_diff
+                    timestamp,
+                    LAG(timestamp) OVER (ORDER BY timestamp) AS prev_timestamp
                 FROM ohlcv
                 WHERE symbol = %s
                   AND timeframe = %s
                   AND timestamp >= %s
                   AND timestamp <= %s
-                ORDER BY timestamp
+            ),
+            gaps AS (
+                SELECT
+                    prev_timestamp AS gap_start,
+                    timestamp AS gap_end,
+                    -- QuestDB timestamp arithmetic returns microseconds
+                    CAST((timestamp - prev_timestamp) AS DOUBLE) / ({interval_ms} * 1000) AS bars_diff
+                FROM lagged
+                WHERE prev_timestamp IS NOT NULL
             )
             SELECT
                 gap_start,
