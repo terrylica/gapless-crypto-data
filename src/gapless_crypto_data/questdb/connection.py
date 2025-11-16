@@ -208,11 +208,13 @@ class QuestDBConnection:
         """
         if self._sender is None:
             try:
-                self._sender = Sender.from_uri(self.config.ilp_address)
-                logger.debug(f"ILP sender created: {self.config.ilp_address}")
+                # QuestDB v4.0.0 uses from_conf instead of from_uri
+                conf = f"tcp::addr={self.config.host}:{self.config.ilp_port};"
+                self._sender = Sender.from_conf(conf)
+                logger.debug(f"ILP sender created: {conf}")
             except Exception as e:
                 raise ConnectionError(
-                    f"Failed to create QuestDB ILP sender at {self.config.ilp_address}: {e}"
+                    f"Failed to create QuestDB ILP sender at {self.config.host}:{self.config.ilp_port}: {e}"
                 ) from e
 
         return self._sender

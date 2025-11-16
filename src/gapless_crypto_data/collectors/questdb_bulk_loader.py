@@ -47,7 +47,7 @@ from pathlib import Path
 from typing import List, Optional
 
 import pandas as pd
-from questdb.ingress import TimestampNanos
+from questdb.ingress import Sender
 
 from ..questdb.connection import QuestDBConnection
 
@@ -346,37 +346,31 @@ class QuestDBBulkLoader:
         logger.info(f"Ingesting {len(df)} rows to QuestDB via ILP")
 
         try:
-            sender = self.connection.get_sender()
+            # Get Sender configuration string from connection
+            conf = f"tcp::addr={self.connection.config.host}:{self.connection.config.ilp_port};"
 
-            for _, row in df.iterrows():
-                # Convert timestamp to TimestampNanos
-                timestamp = TimestampNanos(int(row["timestamp"].timestamp() * 1_000_000_000))
-                close_time = TimestampNanos(int(row["close_time"].timestamp() * 1_000_000_000))
+            # Prepare DataFrame for bulk ingestion
+            # QuestDB expects timestamps as index or designated column
+            df_ingest = df.copy()
 
-                sender.row(
-                    "ohlcv",
-                    symbols={
-                        "symbol": row["symbol"],
-                        "timeframe": row["timeframe"],
-                        "data_source": row["data_source"],
-                    },
-                    columns={
-                        "open": float(row["open"]),
-                        "high": float(row["high"]),
-                        "low": float(row["low"]),
-                        "close": float(row["close"]),
-                        "volume": float(row["volume"]),
-                        "close_time": close_time,
-                        "quote_asset_volume": float(row["quote_asset_volume"]),
-                        "number_of_trades": int(row["number_of_trades"]),
-                        "taker_buy_base_asset_volume": float(row["taker_buy_base_asset_volume"]),
-                        "taker_buy_quote_asset_volume": float(row["taker_buy_quote_asset_volume"]),
-                    },
-                    at=timestamp,
+            # Convert timestamp columns to datetime64[ns] if not already
+            if df_ingest["timestamp"].dtype != "datetime64[ns]":
+                df_ingest["timestamp"] = pd.to_datetime(df_ingest["timestamp"], utc=True)
+            if df_ingest["close_time"].dtype != "datetime64[ns]":
+                df_ingest["close_time"] = pd.to_datetime(df_ingest["close_time"], utc=True)
+
+            # Convert number_of_trades to integer (schema requires LONG, not FLOAT)
+            df_ingest["number_of_trades"] = df_ingest["number_of_trades"].astype("int64")
+
+            # Use Sender as context manager for proper lifecycle management
+            with Sender.from_conf(conf) as sender:
+                # Bulk ingestion using dataframe() method (100x faster than row-by-row)
+                sender.dataframe(
+                    df_ingest,
+                    table_name="ohlcv",
+                    symbols=["symbol", "timeframe", "data_source"],  # Specify SYMBOL columns
+                    at="timestamp",  # Designated timestamp column
                 )
-
-            # Flush to ensure data is written
-            sender.flush()
 
             logger.info(f"Successfully ingested {len(df)} rows")
             return len(df)

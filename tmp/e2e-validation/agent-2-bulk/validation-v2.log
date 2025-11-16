@@ -1,0 +1,53 @@
+2025-11-15 18:20:44,921 - INFO - QuestDB bulk loader initialized
+2025-11-15 18:20:44,921 - INFO - Downloading from CloudFront: https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1m/BTCUSDT-1m-2024-01.zip
+2025-11-15 18:20:45,857 - INFO - Download complete: 2169570 bytes
+2025-11-15 18:20:45,858 - INFO - Extracting ZIP: /var/folders/f4/yr36gs0j7gb46m_lcdc6tr2h0000gn/T/tmpsoujryqf/BTCUSDT-1m-2024-01.zip
+2025-11-15 18:20:45,869 - INFO - Extracted CSV: /var/folders/f4/yr36gs0j7gb46m_lcdc6tr2h0000gn/T/tmpsoujryqf/extracted/BTCUSDT-1m-2024-01.csv (6699071 bytes)
+2025-11-15 18:20:45,869 - INFO - Parsing CSV: /var/folders/f4/yr36gs0j7gb46m_lcdc6tr2h0000gn/T/tmpsoujryqf/extracted/BTCUSDT-1m-2024-01.csv
+2025-11-15 18:20:45,924 - INFO - Parsed 44640 rows from CSV
+2025-11-15 18:20:45,924 - INFO - Ingesting 44640 rows to QuestDB via ILP
+2025-11-15 18:20:45,951 - ERROR - Failed to ingest BTCUSDT 1m 2024-01: Failed to ingest data to QuestDB: Could not flush buffer: Broken pipe (os error 32) - See https://py-questdb-client.readthedocs.io/en/v4.0.0/troubleshooting.html#inspecting-and-debugging-errors#flush-failed
+Traceback (most recent call last):
+  File "/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/collectors/questdb_bulk_loader.py", line 365, in _ingest_dataframe
+    sender.dataframe(
+    ~~~~~~~~~~~~~~~~^
+        df_ingest,
+        ^^^^^^^^^^
+    ...<2 lines>...
+        at="timestamp",  # Designated timestamp column
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "src/questdb/ingress.pyx", line 2616, in questdb.ingress.Sender.dataframe
+  File "src/questdb/dataframe.pxi", line 2472, in questdb.ingress._dataframe
+  File "src/questdb/dataframe.pxi", line 2465, in questdb.ingress._dataframe
+  File "src/questdb/dataframe.pxi", line 2440, in questdb.ingress._dataframe
+  File "src/questdb/dataframe.pxi", line 2318, in questdb.ingress._dataframe_handle_auto_flush
+questdb.ingress.IngressError: Could not flush buffer: Broken pipe (os error 32) - See https://py-questdb-client.readthedocs.io/en/v4.0.0/troubleshooting.html#inspecting-and-debugging-errors#flush-failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/terryli/eon/gapless-crypto-data/tmp/e2e-validation/agent-2-bulk/test_bulk_loader.py", line 210, in main
+    results['test_1_jan_ingestion'] = test_jan_2024_download(conn)
+                                      ~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/terryli/eon/gapless-crypto-data/tmp/e2e-validation/agent-2-bulk/test_bulk_loader.py", line 35, in test_jan_2024_download
+    rows_ingested = loader.ingest_month(
+        symbol="BTCUSDT",
+    ...<2 lines>...
+        month=1
+    )
+  File "/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/collectors/questdb_bulk_loader.py", line 435, in ingest_month
+    row_count = self._ingest_dataframe(df)
+  File "/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/collectors/questdb_bulk_loader.py", line 376, in _ingest_dataframe
+    raise ConnectionError(f"Failed to ingest data to QuestDB: {e}") from e
+ConnectionError: Failed to ingest data to QuestDB: Could not flush buffer: Broken pipe (os error 32) - See https://py-questdb-client.readthedocs.io/en/v4.0.0/troubleshooting.html#inspecting-and-debugging-errors#flush-failed
+
+================================================================================
+AGENT 2: BULK LOADER VALIDATION
+================================================================================
+================================================================================
+TEST 1: Download BTCUSDT 1m Jan 2024 from CloudFront
+================================================================================
+
+✗ ERROR: Failed to ingest data to QuestDB: Could not flush buffer: Broken pipe (os error 32) - See https://py-questdb-client.readthedocs.io/en/v4.0.0/troubleshooting.html#inspecting-and-debugging-errors#flush-failed
