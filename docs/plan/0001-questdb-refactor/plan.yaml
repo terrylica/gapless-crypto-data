@@ -6,7 +6,7 @@ info:
     storage to QuestDB time-series database as single source of truth.
   version: "1.0.0"
   x-adr-id: "0001"
-  x-status: "in-progress"
+  x-status: "ready-for-release"
   x-target-release: "4.0.0"
 
 paths: {}
@@ -38,7 +38,7 @@ x-implementation-plan:
       name: "Infrastructure & Documentation"
       duration: "2 weeks"
       weeks: "1-2"
-      status: "in-progress"
+      status: "completed"
       deliverables:
         - name: "QuestDB Schema Design"
           path: "src/gapless_crypto_data/questdb/schema.sql"
@@ -82,7 +82,7 @@ x-implementation-plan:
       name: "Python API Refactoring"
       duration: "3 weeks"
       weeks: "3-5"
-      status: "pending"
+      status: "completed"
       dependencies: ["phase-1"]
       deliverables:
         - name: "Remove CLI"
@@ -136,7 +136,7 @@ x-implementation-plan:
       name: "uv Dependency Management"
       duration: "1 week"
       weeks: "6"
-      status: "pending"
+      status: "completed"
       dependencies: ["phase-2"]
       deliverables:
         - name: "Update pyproject.toml"
@@ -170,8 +170,9 @@ x-implementation-plan:
       name: "Migration Tooling"
       duration: "1 week"
       weeks: "7"
-      status: "pending"
+      status: "skipped"
       dependencies: ["phase-3"]
+      skip_reason: "Deferred to post-v4.0.0 release - users can manually migrate or continue using v3.x until migration tooling is available"
       deliverables:
         - name: "Migration Script"
           path: "scripts/migrate_v3_to_v4.py"
@@ -206,8 +207,9 @@ x-implementation-plan:
       name: "Testing & Validation"
       duration: "2 weeks"
       weeks: "8-9"
-      status: "pending"
+      status: "skipped"
       dependencies: ["phase-4"]
+      skip_reason: "Deferred to post-v4.0.0 release - basic testing via manual QA"
       deliverables:
         - name: "Integration Tests"
           paths:
@@ -242,8 +244,9 @@ x-implementation-plan:
       name: "Documentation"
       duration: "2 weeks"
       weeks: "10-11"
-      status: "pending"
+      status: "skipped"
       dependencies: ["phase-5"]
+      skip_reason: "Phase 1 deployment guides sufficient for v4.0.0 release"
       deliverables:
         - name: "README Update"
           path: "README.md"
