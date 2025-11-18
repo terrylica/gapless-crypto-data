@@ -777,7 +777,6 @@ uv run pre-commit run --all-files
 gapless-crypto-data/
 ├── src/gapless_crypto_data/        # Main package
 │   ├── __init__.py                 # Package exports
-│   ├── cli.py                      # CLI interface
 │   ├── collectors/                 # Data collection modules
 │   └── gap_filling/                # Gap detection/filling
 ├── tests/                          # Test suite
