@@ -76,7 +76,8 @@ fi
 
 # Test 3: ClickHouse Play UI accessible
 echo "[3/7] Checking ClickHouse Play UI..."
-if curl -sf "http://localhost:$HTTP_PORT/play" 2>&1 | grep -q "ClickHouse"; then
+PLAY_RESPONSE=$(curl -sf "http://localhost:$HTTP_PORT/play" 2>/dev/null || echo "")
+if echo "$PLAY_RESPONSE" | grep -q "ClickHouse"; then
     pass "ClickHouse Play UI accessible at http://localhost:$HTTP_PORT/play"
 else
     fail "ClickHouse Play UI not accessible"
@@ -84,7 +85,7 @@ fi
 
 # Test 4: CH-UI container running and accessible
 echo "[4/7] Checking CH-UI web interface..."
-if docker ps | grep -q "gapless-ch-ui"; then
+if docker ps --filter "name=ch-ui" --format "{{.Names}}" | grep -q "ch-ui"; then
     if curl -sf http://localhost:5521 > /dev/null 2>&1; then
         pass "CH-UI web interface accessible at http://localhost:5521"
     else
