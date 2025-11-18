@@ -1,5 +1,5 @@
 """
-Gapless Crypto Data v2.15.3 - USDT spot market data collection with zero gaps guarantee
+Gapless Crypto Data v4.0.0 - USDT spot market data collection with zero gaps guarantee
 
 Market Compatibility:
 - USDT SPOT PAIRS ONLY (BTCUSDT, ETHUSDT, SOLUSDT, etc.)
@@ -63,13 +63,12 @@ Usage:
     result = collector.collect_timeframe_data("1h")
     df = result["dataframe"]
 
-CLI Usage (DEPRECATED - Will be removed in v4.0.0):
-    ⚠️  The CLI is deprecated. Please use the Python API instead (see above).
+CLI Removed in v4.0.0:
+    ⚠️  The CLI was removed in v4.0.0. Please use the Python API instead (see above).
 
-    Legacy CLI (deprecated):
-        uv run gapless-crypto-data --symbol SOLUSDT --timeframes 1s,1m,5m,1h,4h,1d
-        uv run gapless-crypto-data --symbol BTCUSDT --timeframes 1s,6h,8h,12h,1d
-        uv run gapless-crypto-data --fill-gaps --directory ./data
+    For v3.x users upgrading:
+        See docs/development/CLI_MIGRATION_GUIDE.md for migration instructions.
+        All CLI functionality is available through the Python API.
 
 Supported Symbols (USDT Spot Only):
     BTCUSDT, ETHUSDT, SOLUSDT, ADAUSDT, DOTUSDT, LINKUSDT, MATICUSDT,
