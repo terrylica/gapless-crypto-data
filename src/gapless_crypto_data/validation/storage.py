@@ -337,7 +337,7 @@ class ValidationStorage:
             result = conn.execute(query, params).fetchall()
             columns = [desc[0] for desc in conn.description]
 
-            return [dict(zip(columns, row)) for row in result]
+            return [dict(zip(columns, row, strict=False)) for row in result]
 
     def query_by_date_range(
         self, start: datetime, end: datetime, symbol: Optional[str] = None
@@ -374,7 +374,7 @@ class ValidationStorage:
             result = conn.execute(query, params).fetchall()
             columns = [desc[0] for desc in conn.description]
 
-            return [dict(zip(columns, row)) for row in result]
+            return [dict(zip(columns, row, strict=False)) for row in result]
 
     def query_by_status(self, status: str) -> List[Dict[str, Any]]:
         """Query validations by summary status.
@@ -399,7 +399,7 @@ class ValidationStorage:
             ).fetchall()
             columns = [desc[0] for desc in conn.description]
 
-            return [dict(zip(columns, row)) for row in result]
+            return [dict(zip(columns, row, strict=False)) for row in result]
 
     def export_to_dataframe(
         self, symbol: Optional[str] = None, timeframe: Optional[str] = None

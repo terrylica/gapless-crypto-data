@@ -2,7 +2,9 @@
 
 ## Status
 
-Accepted
+**Superseded by [ADR-0005: ClickHouse Migration](0005-clickhouse-migration.md)** (2025-11-17)
+
+Originally: Accepted
 
 ## Context
 

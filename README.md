@@ -44,6 +44,23 @@ uv tool install gapless-crypto-data
 pip install gapless-crypto-data
 ```
 
+### Optional: Database Setup (ClickHouse)
+
+For persistent storage and advanced query capabilities, you can optionally set up ClickHouse:
+
+```bash
+# Start ClickHouse using Docker Compose
+docker-compose up -d
+
+# Verify ClickHouse is running
+docker-compose ps
+
+# View logs
+docker-compose logs -f clickhouse
+```
+
+See [Database Integration](#database-integration-optional) for complete setup guide and usage examples.
+
 ### Python API (Recommended)
 
 #### Function-based API
@@ -171,6 +188,189 @@ Gap Detection → UniversalGapFiller → Authentic API-First Validation
 AtomicCSVOperations → Final Gapless Dataset with Order Flow Metrics
 ```
 
+## 🗄️ Database Integration (Optional)
+
+**v4.0.0+**: ClickHouse database support for persistent storage, advanced queries, and multi-symbol analysis.
+
+**When to use**:
+- **File-based approach**: Simple workflows, single symbols, CSV output compatibility
+- **Database approach**: Multi-symbol analysis, time-series queries, aggregations, production pipelines
+
+### Quick Start with Docker Compose
+
+The repository includes a production-ready `docker-compose.yml` for local development:
+
+```bash
+# Start ClickHouse (runs in background)
+docker-compose up -d
+
+# Verify container is healthy
+docker-compose ps
+
+# View initialization logs
+docker-compose logs clickhouse
+
+# Access ClickHouse client (optional)
+docker exec -it gapless-crypto-data-clickhouse clickhouse-client
+```
+
+**What happens on first start**:
+1. Downloads ClickHouse 24.1-alpine image (~200 MB)
+2. Creates `ohlcv` table with ReplacingMergeTree engine (from `schema.sql`)
+3. Configures compression (DoubleDelta for timestamps, Gorilla for OHLCV)
+4. Sets up health checks and automatic restart
+
+**Schema auto-initialization**: The `schema.sql` file is automatically executed via Docker's `initdb.d` mechanism.
+
+### Basic Usage Examples
+
+#### Connection and Health Check
+
+```python
+from gapless_crypto_data.clickhouse import ClickHouseConnection
+
+# Connect to ClickHouse (reads from .env or uses defaults)
+with ClickHouseConnection() as conn:
+    # Verify connection
+    health = conn.health_check()
+    print(f"ClickHouse connected: {health}")
+
+    # Execute simple query
+    result = conn.execute("SELECT count() FROM ohlcv")
+    print(f"Total rows in database: {result[0][0]:,}")
+```
+
+#### Bulk Data Ingestion
+
+```python
+from gapless_crypto_data.clickhouse import ClickHouseConnection
+from gapless_crypto_data.collectors.clickhouse_bulk_loader import ClickHouseBulkLoader
+
+# Ingest historical data from Binance public repository
+with ClickHouseConnection() as conn:
+    loader = ClickHouseBulkLoader(conn, instrument_type="spot")
+
+    # Ingest single month (e.g., January 2024)
+    rows_inserted = loader.ingest_month("BTCUSDT", "1h", year=2024, month=1)
+    print(f"Inserted {rows_inserted:,} rows for BTCUSDT 1h (Jan 2024)")
+
+    # Ingest date range (e.g., Q1 2024)
+    total_rows = loader.ingest_date_range(
+        symbol="ETHUSDT",
+        timeframe="4h",
+        start_date="2024-01-01",
+        end_date="2024-03-31"
+    )
+    print(f"Inserted {total_rows:,} rows for ETHUSDT 4h (Q1 2024)")
+```
+
+**Zero-gap guarantee**: ClickHouse uses deterministic versioning (SHA256 hash) to handle duplicate ingestion safely. Re-running ingestion commands won't create duplicates.
+
+#### Querying Data
+
+```python
+from gapless_crypto_data.clickhouse import ClickHouseConnection
+from gapless_crypto_data.clickhouse_query import OHLCVQuery
+
+with ClickHouseConnection() as conn:
+    query = OHLCVQuery(conn)
+
+    # Get latest data (last 10 bars)
+    df = query.get_latest("BTCUSDT", "1h", limit=10)
+    print(f"Latest 10 bars:\n{df[['timestamp', 'close']]}")
+
+    # Get specific date range
+    df = query.get_range(
+        symbol="BTCUSDT",
+        timeframe="1h",
+        start_date="2024-01-01",
+        end_date="2024-01-31",
+        instrument_type="spot"
+    )
+    print(f"January 2024: {len(df):,} bars")
+
+    # Multi-symbol comparison
+    df = query.get_multi_symbol(
+        symbols=["BTCUSDT", "ETHUSDT", "SOLUSDT"],
+        timeframe="1d",
+        start_date="2024-01-01",
+        end_date="2024-12-31"
+    )
+    print(f"Multi-symbol dataset: {df.shape}")
+```
+
+**FINAL keyword**: All queries automatically use `FINAL` to ensure deduplicated results. This adds ~10-30% overhead but guarantees data correctness.
+
+#### Futures Support (ADR-0004)
+
+```python
+# Ingest futures data (12-column format with funding rate)
+with ClickHouseConnection() as conn:
+    loader = ClickHouseBulkLoader(conn, instrument_type="futures")
+    rows = loader.ingest_month("BTCUSDT", "1h", 2024, 1)
+    print(f"Futures data: {rows:,} rows")
+
+    # Query futures data (isolated from spot)
+    query = OHLCVQuery(conn)
+    df_spot = query.get_latest("BTCUSDT", "1h", instrument_type="spot", limit=10)
+    df_futures = query.get_latest("BTCUSDT", "1h", instrument_type="futures", limit=10)
+
+    print(f"Spot data: {len(df_spot)} bars")
+    print(f"Futures data: {len(df_futures)} bars")
+```
+
+**Spot/Futures isolation**: The `instrument_type` column ensures spot and futures data coexist without conflicts.
+
+### Configuration
+
+**Environment Variables** (`.env` file or system environment):
+
+```bash
+CLICKHOUSE_HOST=localhost        # ClickHouse server hostname
+CLICKHOUSE_PORT=9000             # Native protocol port (default: 9000)
+CLICKHOUSE_HTTP_PORT=8123        # HTTP interface port (default: 8123)
+CLICKHOUSE_USER=default          # Username (default: 'default')
+CLICKHOUSE_PASSWORD=             # Password (empty for local dev)
+CLICKHOUSE_DB=default            # Database name (default: 'default')
+```
+
+**Docker Compose defaults**: The included `docker-compose.yml` uses these defaults, no `.env` file required for local development.
+
+### Migration Guide
+
+**Migrating from v3.x (file-based) to v4.0.0 (ClickHouse)**:
+
+See [`docs/CLICKHOUSE_MIGRATION.md`](docs/CLICKHOUSE_MIGRATION.md) for:
+- Architecture changes (file-based → ClickHouse)
+- Code migration examples (drop-in replacement)
+- Deployment guide (Docker Compose, production)
+- Performance characteristics (ingestion, query, deduplication)
+- Troubleshooting common issues
+
+**Key Changes**:
+- Import paths: `gapless_crypto_data.query` → `gapless_crypto_data.clickhouse_query`
+- Connection: `QuestDBConnection` → `ClickHouseConnection`
+- Bulk loader: `QuestDBBulkLoader` → `ClickHouseBulkLoader`
+- API signatures: **Unchanged** (backwards compatible)
+
+**Rollback strategy**: v3.x file-based approach still supported in v4.0.0. Database integration is optional.
+
+### Production Deployment
+
+**Recommended setup**:
+
+1. **Persistent storage**: Mount volumes for data durability
+2. **Authentication**: Set `CLICKHOUSE_PASSWORD` for non-localhost deployments
+3. **TLS**: Enable TLS for remote connections
+4. **Monitoring**: ClickHouse exports Prometheus metrics on port 9363
+5. **Backups**: Use ClickHouse Backup tool or volume snapshots
+
+**Scaling**:
+- Single-node: Validated at 53.7M rows (ADR-0003), headroom to ~200M rows
+- Distributed: ClickHouse supports sharding and replication for larger datasets
+
+See ClickHouse documentation for production deployment best practices.
+
 ## 📝 CLI Options
 
 ### Data Collection
@@ -286,6 +486,128 @@ for gap in gaps:
 result = gap_filler.process_file("BTCUSDT_1h.csv", "1h")
 ```
 
+### Database Query Examples (v4.0.0+)
+
+For users leveraging ClickHouse database integration:
+
+#### Bulk Ingestion Pipeline
+
+```python
+from gapless_crypto_data.clickhouse import ClickHouseConnection
+from gapless_crypto_data.collectors.clickhouse_bulk_loader import ClickHouseBulkLoader
+
+# Multi-symbol bulk ingestion for backtesting datasets
+symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "ADAUSDT", "DOGEUSDT"]
+timeframes = ["1h", "4h", "1d"]
+
+with ClickHouseConnection() as conn:
+    loader = ClickHouseBulkLoader(conn, instrument_type="spot")
+
+    for symbol in symbols:
+        for timeframe in timeframes:
+            # Ingest Q1 2024 data
+            rows = loader.ingest_date_range(
+                symbol=symbol,
+                timeframe=timeframe,
+                start_date="2024-01-01",
+                end_date="2024-03-31"
+            )
+            print(f"{symbol} {timeframe}: {rows:,} rows ingested")
+
+# Zero-gap guarantee: Re-running this script won't create duplicates
+```
+
+#### Multi-Symbol Analysis
+
+```python
+from gapless_crypto_data.clickhouse import ClickHouseConnection
+from gapless_crypto_data.clickhouse_query import OHLCVQuery
+
+with ClickHouseConnection() as conn:
+    query = OHLCVQuery(conn)
+
+    # Get synchronized data for all symbols (same time range)
+    df = query.get_multi_symbol(
+        symbols=["BTCUSDT", "ETHUSDT", "SOLUSDT"],
+        timeframe="1h",
+        start_date="2024-01-01",
+        end_date="2024-01-31"
+    )
+
+    # Analyze cross-asset correlations
+    pivot = df.pivot_table(index="timestamp", columns="symbol", values="close")
+    correlation = pivot.corr()
+    print(f"Correlation matrix:\n{correlation}")
+
+    # Relative strength analysis
+    for symbol in ["BTCUSDT", "ETHUSDT", "SOLUSDT"]:
+        symbol_data = df[df["symbol"] == symbol]
+        returns = symbol_data["close"].pct_change().sum()
+        print(f"{symbol} total return: {returns:.2%}")
+```
+
+#### Advanced Time-Series Queries
+
+```python
+from gapless_crypto_data.clickhouse import ClickHouseConnection
+
+with ClickHouseConnection() as conn:
+    # Custom SQL for advanced analytics (ClickHouse functions)
+    query = """
+    SELECT
+        symbol,
+        timeframe,
+        toStartOfDay(timestamp) AS day,
+        avg(close) AS avg_price,
+        stddevPop(close) AS volatility,
+        sum(volume) AS total_volume,
+        count() AS bar_count
+    FROM ohlcv FINAL
+    WHERE symbol IN ('BTCUSDT', 'ETHUSDT')
+      AND timeframe = '1h'
+      AND timestamp >= '2024-01-01'
+      AND timestamp < '2024-02-01'
+    GROUP BY symbol, timeframe, day
+    ORDER BY day ASC, symbol ASC
+    """
+
+    result = conn.execute(query)
+
+    # Process results
+    for row in result:
+        symbol, timeframe, day, avg_price, volatility, volume, bars = row
+        print(f"{day} {symbol}: avg=${avg_price:.2f}, vol={volatility:.2f}, volume={volume:,.0f}")
+```
+
+#### Hybrid Approach (File + Database)
+
+Combine file-based collection with database querying:
+
+```python
+import gapless_crypto_data as gcd
+from gapless_crypto_data.clickhouse import ClickHouseConnection
+from gapless_crypto_data.collectors.clickhouse_bulk_loader import ClickHouseBulkLoader
+
+# Step 1: Collect to CSV files (22x faster, portable format)
+df = gcd.download("BTCUSDT", timeframe="1h", start="2024-01-01", end="2024-03-31")
+print(f"Downloaded {len(df):,} bars to CSV")
+
+# Step 2: Ingest CSV to ClickHouse for analysis
+with ClickHouseConnection() as conn:
+    loader = ClickHouseBulkLoader(conn)
+    loader.ingest_from_dataframe(df, symbol="BTCUSDT", timeframe="1h")
+
+    # Step 3: Run advanced queries
+    query = OHLCVQuery(conn)
+    gaps = query.detect_gaps("BTCUSDT", "1h", "2024-01-01", "2024-03-31")
+    print(f"Gap detection: {len(gaps)} gaps found")
+```
+
+**When to use hybrid approach**:
+- Initial data collection: Use file-based (faster, no database required)
+- Post-processing: Load into ClickHouse for aggregations, joins, time-series analytics
+- Archival: Keep CSV files for portability, use database for active analysis
+
 ## AI Agent Integration
 
 This package includes probe hooks (`gapless_crypto_data.__probe__`) that enable AI coding agents to discover functionality programmatically.
@@ -309,6 +631,7 @@ Provide insights about cryptocurrency data collection capabilities and usage pat
 - **UV Package Manager** - [Install UV](https://docs.astral.sh/uv/getting-started/installation/)
 - **Python 3.9+** - UV will manage Python versions automatically
 - **Git** - For repository cloning and version control
+- **Docker & Docker Compose** (Optional) - For ClickHouse database development
 
 ### Development Installation Workflow
 
@@ -346,6 +669,61 @@ uv run pytest
 
 # Quick data collection test
 uv run gapless-crypto-data --symbol BTCUSDT --timeframes 1h --start 2024-01-01 --end 2024-01-01 --output-dir ./test_data
+```
+
+#### Step 3a: Database Setup (Optional - ClickHouse)
+
+If you want to develop with ClickHouse database features:
+
+```bash
+# Start ClickHouse container
+docker-compose up -d
+
+# Verify ClickHouse is running and healthy
+docker-compose ps
+docker-compose logs clickhouse | grep "Ready for connections"
+
+# Test ClickHouse connection
+docker exec gapless-crypto-data-clickhouse clickhouse-client --query "SELECT 1"
+
+# View ClickHouse schema
+docker exec gapless-crypto-data-clickhouse clickhouse-client --query "SHOW CREATE TABLE ohlcv"
+```
+
+**What gets initialized**:
+- ClickHouse 24.1-alpine container on ports 9000 (native) and 8123 (HTTP)
+- `ohlcv` table with ReplacingMergeTree engine (from `schema.sql`)
+- Persistent volume for data (`clickhouse-data`)
+- Health checks and automatic restart
+
+**Test database ingestion**:
+
+```python
+# Create a test script: test_clickhouse.py
+from gapless_crypto_data.clickhouse import ClickHouseConnection
+from gapless_crypto_data.collectors.clickhouse_bulk_loader import ClickHouseBulkLoader
+
+with ClickHouseConnection() as conn:
+    # Health check
+    print(f"ClickHouse connected: {conn.health_check()}")
+
+    # Test ingestion (small dataset)
+    loader = ClickHouseBulkLoader(conn, instrument_type="spot")
+    rows = loader.ingest_month("BTCUSDT", "1d", year=2024, month=1)
+    print(f"Test ingestion: {rows} rows")
+
+# Run test
+# uv run python test_clickhouse.py
+```
+
+**Teardown**:
+
+```bash
+# Stop ClickHouse (keeps data)
+docker-compose down
+
+# Stop and delete all data (fresh start)
+docker-compose down -v
 ```
 
 #### Step 4: Set Up Pre-Commit Hooks (Mandatory)
