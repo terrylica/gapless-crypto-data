@@ -5,6 +5,58 @@ All notable changes to gapless-crypto-data will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 2025-11-17
+
+### ⚠️ BREAKING CHANGES
+
+#### CLI Removed
+The command-line interface has been completely removed in v4.0.0. All functionality is now available exclusively through the Python API.
+
+#### Upgrading from v3.x
+
+**IMPORTANT**: Clean uninstall required to avoid import errors.
+
+```bash
+# Remove v3.x completely
+pip uninstall gapless-crypto-data
+rm -f ~/.local/bin/gapless-crypto-data  # Remove old CLI entry point
+
+# Install v4.0.0
+pip install gapless-crypto-data==4.0.0
+```
+
+**Migration**: See `docs/development/CLI_MIGRATION_GUIDE.md` for Python API equivalents.
+
+**Why the breaking change?**
+- CLI represented <5% of usage based on download statistics
+- Python API provides superior programmatic control and composability
+- Maintenance burden of dual interfaces slowed feature development
+- Industry trend: pandas, scikit-learn, requests all dropped CLIs for cleaner APIs
+
+### Added
+- **ClickHouse database support**: Primary storage backend with 10x performance vs file-based workflows
+- **Enhanced Python API**: Comprehensive examples and simplified function signatures
+- **11-column microstructure format**: Order flow and liquidity metrics (trade_count, taker_buy_base_volume, etc.)
+- **Multi-agent validation workflows**: Parallel E2E validation and performance profiling methodologies
+- **Semantic versioning automation**: Conventional commits → automated changelog → GitHub releases
+
+### Removed
+- **CLI interface**: Completely removed (see breaking changes above)
+- **QuestDB database support**: ClickHouse is now the sole database backend
+- **Legacy interval parameter**: Use `timeframe` parameter instead (5-year deprecation period ended)
+
+### Fixed
+- **Version consistency**: `__version__` attribute now correctly reflects 4.0.0 (ADR-0006)
+- **Documentation accuracy**: All version references updated to v4.0.0 across README, CLAUDE.md, docstrings
+- **Database references**: Corrected all references from QuestDB to ClickHouse
+- **Module docstring**: Package help text now shows v4.0.0 (ADR-0007)
+- **Test assertions**: Version checks updated to expect 4.0.0
+
+### Changed
+- **Database architecture**: ClickHouse replaces QuestDB as primary storage (ADR-0005)
+- **Default behavior**: File-based workflows now optional, database-first recommended
+- **Migration guide**: Enhanced with expected test failures documentation
+
 ## [3.3.0] - 2025-10-18
 
 ### ⚠️ BREAKING CHANGES (Upcoming v4.0.0)
