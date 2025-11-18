@@ -299,6 +299,33 @@ tar -czf questdb_backup_$(date +%Y%m%d).tar.gz /path/to/questdb/data
 
 **Rollback**: If migration fails, keep QuestDB running and stay on v3.3.0 until issues resolved.
 
+### Expected Test Failures in v4.0.0
+
+After upgrading to v4.0.0, the following tests are expected to fail due to CLI removal:
+
+**Failing Test Files**:
+- `tests/test_cli.py` - Entire file (CLI removed in v4.0.0)
+- `tests/test_cli_integration.py` - CLI integration tests
+
+**Why Tests Fail**:
+The CLI interface was removed in v4.0.0 (pyproject.toml removed `[project.scripts]` section). Tests that invoke CLI commands or test CLI functionality will fail with import errors or missing command errors.
+
+**Action Required**:
+- **For maintainers**: Remove these test files in a follow-up PR
+- **For users**: These failures are expected and can be ignored if not using CLI features
+
+**Workaround**:
+Run tests while ignoring CLI test files:
+```bash
+pytest tests/ --ignore=tests/test_cli.py --ignore=tests/test_cli_integration.py
+```
+
+**Alternative**:
+Run only non-CLI tests:
+```bash
+pytest tests/ -k "not cli"
+```
+
 ## Configuration Changes
 
 ### Environment Variables
