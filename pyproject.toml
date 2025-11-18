@@ -1,6 +1,6 @@
 [project]
 name = "gapless-crypto-data"
-version = "3.3.0"
+version = "4.0.0"
 description = "Ultra-fast cryptocurrency data collection with zero gaps guarantee. 22x faster via Binance public repository with complete 13-timeframe support (1s-1d) and intelligent monthly-to-daily fallback. Provides 11-column microstructure format with order flow metrics."
 readme = { file = "README.md", content-type = "text/markdown" }
 authors = [
@@ -40,9 +40,7 @@ dependencies = [
     "pandas>=2.0.0",
     "pydantic>=2.0.0",  # Data validation and OpenAPI schema generation for validation reports
     "pyarrow>=16.0.0",  # Required by pandas for Parquet I/O (df.to_parquet/read_parquet engine)
-    "psycopg[binary]>=3.2.0",  # PostgreSQL wire protocol client for QuestDB queries (deprecated, will be removed in v5.0.0)
     "python-dotenv>=1.0.0",  # Environment variable management
-    "questdb>=2.0.0",  # QuestDB Python client for ILP ingestion (deprecated, will be removed in v5.0.0)
 ]
 
 [project.urls]
