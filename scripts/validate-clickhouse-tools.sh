@@ -33,12 +33,12 @@ TESTS_FAILED=0
 # Test result tracking
 pass() {
     echo -e "${GREEN}✅ PASS${NC}: $1"
-    ((TESTS_PASSED++))
+    TESTS_PASSED=$((TESTS_PASSED + 1))
 }
 
 fail() {
     echo -e "${RED}❌ FAIL${NC}: $1"
-    ((TESTS_FAILED++))
+    TESTS_FAILED=$((TESTS_FAILED + 1))
 }
 
 warn() {
@@ -116,17 +116,16 @@ fi
 
 # Test 7: clickhouse-local functionality
 echo "[7/7] Checking clickhouse-local file analysis..."
-# Create temporary test CSV
-TEST_CSV="/tmp/clickhouse_test_$$.csv"
-echo "a,b" > "$TEST_CSV"
-echo "1,2" >> "$TEST_CSV"
+# Create temporary test CSV inside container
+TEST_CSV="/tmp/clickhouse_test.csv"
+docker exec "$CH_CONTAINER" bash -c "echo 'a,b' > $TEST_CSV && echo '1,2' >> $TEST_CSV"
 
 if docker exec "$CH_CONTAINER" clickhouse-local --query "SELECT * FROM file('$TEST_CSV', CSV)" 2>&1 | grep -q "1"; then
     pass "clickhouse-local functional"
-    rm -f "$TEST_CSV"
+    docker exec "$CH_CONTAINER" rm -f "$TEST_CSV"
 else
     fail "clickhouse-local not working"
-    rm -f "$TEST_CSV"
+    docker exec "$CH_CONTAINER" rm -f "$TEST_CSV"
 fi
 
 # Summary
@@ -143,10 +142,10 @@ if [ "$TESTS_FAILED" -eq 0 ]; then
     echo ""
     echo "Available tools:"
     echo "  - CH-UI:             http://localhost:5521"
-    echo "  - ClickHouse Play:   http://localhost:8123/play"
-    echo "  - clickhouse-client: docker exec -it gapless-clickhouse clickhouse-client"
-    echo "  - chdig:             chdig --host localhost --port 9000"
-    echo "  - clickhouse-local:  docker exec gapless-clickhouse clickhouse-local"
+    echo "  - ClickHouse Play:   http://localhost:$HTTP_PORT/play"
+    echo "  - clickhouse-client: docker exec -it $CH_CONTAINER clickhouse-client"
+    echo "  - chdig:             chdig --host localhost --port \$(docker port $CH_CONTAINER 9000 | cut -d: -f2)"
+    echo "  - clickhouse-local:  docker exec $CH_CONTAINER clickhouse-local"
     echo ""
     exit 0
 else
