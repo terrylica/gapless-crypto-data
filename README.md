@@ -336,6 +336,41 @@ CLICKHOUSE_DB=default            # Database name (default: 'default')
 
 **Docker Compose defaults**: The included `docker-compose.yml` uses these defaults, no `.env` file required for local development.
 
+### Local Visualization Tools
+
+Comprehensive toolchain for ClickHouse data exploration and monitoring (100% open source):
+
+**Web Interfaces**:
+- **CH-UI** (modern TypeScript UI): http://localhost:5521
+  ```bash
+  docker-compose up -d ch-ui
+  ```
+- **ClickHouse Play** (built-in): http://localhost:8123/play
+
+**CLI Tools**:
+- **clickhouse-client** (official CLI with 70+ formats):
+  ```bash
+  docker exec -it gapless-clickhouse clickhouse-client
+  ```
+- **clickhouse-local** (file analysis without server):
+  ```bash
+  clickhouse-local --query "SELECT * FROM file('data.csv', CSV)"
+  ```
+
+**Performance Monitoring**:
+- **chdig** (TUI with flamegraph visualization):
+  ```bash
+  brew install chdig
+  chdig --host localhost --port 9000
+  ```
+
+**Validation**: Run automated validation suite:
+```bash
+bash scripts/validate-clickhouse-tools.sh
+```
+
+**Comprehensive guides**: See [`docs/development/`](docs/development/) for detailed usage guides, examples, and troubleshooting.
+
 ### Migration Guide
 
 **Migrating from v3.x (file-based) to v4.0.0 (ClickHouse)**:
