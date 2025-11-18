@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed (2025-11-18)
+Implemented (2025-11-18)
 
 ## Context
 
@@ -121,7 +121,7 @@ docker ps | grep gapless-ch-ui
 curl -s http://localhost:5521 | grep -q "CH-UI"
 ```
 
-**Rationale**: CH-UI expects ClickHouse at `http://clickhouse:8123` (internal Docker network). With standard ports, no configuration changes needed.
+**Rationale**: CH-UI is a frontend SPA running in the browser. Browsers cannot resolve Docker internal hostnames, requiring `http://localhost:8123` (exposed via port mapping) for connectivity.
 
 ### Phase 4: Validation
 

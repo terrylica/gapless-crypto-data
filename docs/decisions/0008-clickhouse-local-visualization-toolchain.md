@@ -81,7 +81,7 @@ services:
     ports:
       - "5521:5521"
     environment:
-      VITE_CLICKHOUSE_URL: http://clickhouse:8123
+      VITE_CLICKHOUSE_URL: http://localhost:8123
       VITE_CLICKHOUSE_USER: default
       VITE_CLICKHOUSE_PASS: ''
     depends_on:

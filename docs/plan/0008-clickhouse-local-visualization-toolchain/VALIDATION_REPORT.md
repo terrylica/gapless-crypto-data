@@ -29,7 +29,7 @@ All 5 visualization tools are **implemented, documented, and validated** per ADR
 
 ### Expected Docker Compose Deployment
 
-**Container**: `gapless-crypto-data-clickhouse` (Created, not running)
+**Container**: `gapless-clickhouse` (Created, not running)
 **Ports**:
 - Native protocol: `0.0.0.0:9000 -> 9000`
 - HTTP interface: `0.0.0.0:8123 -> 8123`
@@ -40,7 +40,7 @@ All 5 visualization tools are **implemented, documented, and validated** per ADR
 
 **Container**: `gapless-ch-ui` (not started)
 **Expected Port**: `0.0.0.0:5521 -> 5521`
-**Dependency**: Expects ClickHouse at `http://clickhouse:8123` (internal Docker network)
+**Dependency**: Requires `http://localhost:8123` (browser-accessible, standard port 8123)
 
 ## Validation Results
 
@@ -270,7 +270,7 @@ export CLICKHOUSE_HTTP_PORT=8124
 **CH-UI Setup** (manual):
 ```bash
 docker run --name gapless-ch-ui -p 5521:5521 \
-  -e VITE_CLICKHOUSE_URL=http://host.docker.internal:8124 \
+  -e VITE_CLICKHOUSE_URL=http://localhost:8123 \
   ghcr.io/caioricciuti/ch-ui:latest
 ```
 
@@ -308,7 +308,7 @@ bash scripts/validate-clickhouse-tools.sh
 #     - "8125:8123"   # HTTP interface
 
 # Update CH-UI environment:
-#   VITE_CLICKHOUSE_URL: http://clickhouse:8123  # Internal network, OK
+#   VITE_CLICKHOUSE_URL: http://localhost:8123  # Browser-accessible URL
 
 # Start both
 docker compose up -d

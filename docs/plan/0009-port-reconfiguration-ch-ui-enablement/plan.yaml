@@ -83,7 +83,7 @@ x-implementation-plan:
         - name: "Start CH-UI container"
           description: |
             Start CH-UI via docker-compose.yml.
-            Connects to ClickHouse at http://clickhouse:8123 (internal Docker network).
+            Connects to ClickHouse at http://localhost:8123 (browser-accessible URL).
           acceptance_criteria:
             - "Container started: docker compose up -d ch-ui"
             - "Container running: docker ps | grep gapless-ch-ui"

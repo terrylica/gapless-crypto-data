@@ -49,7 +49,7 @@ x-implementation-plan:
             - "Service name: ch-ui"
             - "Image: ghcr.io/caioricciuti/ch-ui:latest"
             - "Port: 5521:5521"
-            - "Environment: VITE_CLICKHOUSE_URL=http://clickhouse:8123"
+            - "Environment: VITE_CLICKHOUSE_URL=http://localhost:8123"
             - "Depends on: clickhouse service healthy"
             - "Network: gapless-network"
           validation_command: "docker-compose up -d ch-ui && curl -s http://localhost:5521"
