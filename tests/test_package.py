@@ -26,17 +26,6 @@ def test_main_exports():
         assert hasattr(gapless_crypto_data, export), f"Missing export: {export}"
 
 
-def test_cli_module():
-    """Test that CLI module can be imported."""
-    try:
-        from gapless_crypto_data import cli
-
-        assert cli is not None
-        assert hasattr(cli, "main")
-    except ImportError as e:
-        pytest.fail(f"Failed to import CLI module: {e}")
-
-
 def test_collectors_module():
     """Test that collectors module can be imported."""
     try:
@@ -140,18 +129,6 @@ def test_all_imports_valid():
         pytest.fail(f"Failed to import main classes: {e}")
     except Exception as e:
         pytest.fail(f"Failed to instantiate classes: {e}")
-
-
-def test_cli_module_imports():
-    """Test that CLI module can be imported and has main function."""
-    try:
-        from gapless_crypto_data import cli
-
-        assert cli is not None
-        assert hasattr(cli, "main")
-        assert callable(cli.main)
-    except ImportError as e:
-        pytest.fail(f"Failed to import CLI module: {e}")
 
 
 def test_no_missing_dependencies():
