@@ -98,10 +98,12 @@ class QuestDBBulkLoader:
             )
     """
 
-    # Binance Public Data Repository base URL
-    BASE_URL = "https://data.binance.vision/data/spot"
+    # Binance Public Data Repository base URLs
+    SPOT_BASE_URL = "https://data.binance.vision/data/spot"
+    FUTURES_BASE_URL = "https://data.binance.vision/data/futures/um"  # USDT-margined
 
     # Supported timeframes (Binance notation)
+    # All 16 Binance timeframes empirically validated (ADR-0003)
     SUPPORTED_TIMEFRAMES = [
         "1s",
         "1m",
@@ -116,23 +118,39 @@ class QuestDBBulkLoader:
         "8h",
         "12h",
         "1d",
+        "3d",  # Three-day (exotic timeframe)
+        "1w",  # Weekly (exotic timeframe)
+        "1mo",  # Monthly (exotic timeframe)
     ]
 
-    def __init__(self, connection: QuestDBConnection) -> None:
+    def __init__(self, connection: QuestDBConnection, instrument_type: str = "spot") -> None:
         """
         Initialize QuestDB bulk loader.
 
         Args:
             connection: Active QuestDB connection
+            instrument_type: Instrument type ("spot" or "futures"), defaults to "spot"
 
         Raises:
-            ValueError: If connection is invalid
+            ValueError: If connection is invalid or instrument_type is unsupported
         """
         if not isinstance(connection, QuestDBConnection):
             raise ValueError(f"Expected QuestDBConnection, got {type(connection).__name__}")
 
+        if instrument_type not in ("spot", "futures"):
+            raise ValueError(
+                f"Invalid instrument_type: '{instrument_type}'. Must be 'spot' or 'futures'"
+            )
+
         self.connection = connection
-        logger.info("QuestDB bulk loader initialized")
+        self.instrument_type = instrument_type
+
+        # Set base_url based on instrument_type
+        self.base_url = self.SPOT_BASE_URL if instrument_type == "spot" else self.FUTURES_BASE_URL
+
+        logger.info(
+            f"QuestDB bulk loader initialized (instrument_type={instrument_type}, base_url={self.base_url})"
+        )
 
     def _validate_symbol(self, symbol: str) -> str:
         """
@@ -256,7 +274,9 @@ class QuestDBBulkLoader:
         """
         Parse Binance CSV file to DataFrame.
 
-        Binance CSV format (11 columns):
+        Supports both spot and futures CSV formats:
+
+        Spot format (11 columns, no header):
         1. Open time (ms timestamp)
         2. Open
         3. High
@@ -269,45 +289,86 @@ class QuestDBBulkLoader:
         10. Taker buy base asset volume
         11. Taker buy quote asset volume
 
+        Futures format (12 columns, with header):
+        1. open_time (header row)
+        2. open
+        3. high
+        4. low
+        5. close
+        6. volume
+        7. close_time
+        8. quote_asset_volume
+        9. number_of_trades
+        10. taker_buy_base_asset_volume
+        11. taker_buy_quote_asset_volume
+        12. ignore (always empty)
+
         Args:
             csv_path: Path to CSV file
             symbol: Trading pair symbol
             timeframe: Timeframe string
 
         Returns:
-            DataFrame with OHLCV data
+            DataFrame with OHLCV data including instrument_type column
 
         Raises:
             pd.errors.ParserError: If CSV parsing fails
             ValueError: If column count is incorrect
         """
-        logger.info(f"Parsing CSV: {csv_path}")
+        logger.info(f"Parsing CSV: {csv_path} (instrument_type={self.instrument_type})")
 
         try:
-            df = pd.read_csv(
-                csv_path,
-                header=None,
-                index_col=False,  # Prevent pandas from using first column as index
-                names=[
-                    "open_time",
-                    "open",
-                    "high",
-                    "low",
-                    "close",
-                    "volume",
-                    "close_time",
-                    "quote_asset_volume",
-                    "number_of_trades",
-                    "taker_buy_base_asset_volume",
-                    "taker_buy_quote_asset_volume",
-                ],
-            )
+            # Auto-detect CSV format by checking first line
+            with open(csv_path, "r", encoding="utf-8") as f:
+                first_line = f.readline().strip()
 
-            # Validate column count
-            if len(df.columns) != 11:
-                raise ValueError(
-                    f"Expected 11 columns, got {len(df.columns)}. Columns: {df.columns.tolist()}"
+            has_header = first_line.startswith("open_time")  # Futures CSV has header
+
+            if has_header:
+                # Futures format: 12 columns with header
+                df = pd.read_csv(
+                    csv_path,
+                    header=0,  # First row is header
+                    index_col=False,
                 )
+
+                # Validate column count (expect 12 columns)
+                if len(df.columns) != 12:
+                    raise ValueError(
+                        f"Expected 12 columns for futures format, got {len(df.columns)}. "
+                        f"Columns: {df.columns.tolist()}"
+                    )
+
+                # Drop the "ignore" column (always empty in futures CSV)
+                df = df.drop(columns=["ignore"])
+
+            else:
+                # Spot format: 11 columns, no header
+                df = pd.read_csv(
+                    csv_path,
+                    header=None,
+                    index_col=False,
+                    names=[
+                        "open_time",
+                        "open",
+                        "high",
+                        "low",
+                        "close",
+                        "volume",
+                        "close_time",
+                        "quote_asset_volume",
+                        "number_of_trades",
+                        "taker_buy_base_asset_volume",
+                        "taker_buy_quote_asset_volume",
+                    ],
+                )
+
+                # Validate column count
+                if len(df.columns) != 11:
+                    raise ValueError(
+                        f"Expected 11 columns for spot format, got {len(df.columns)}. "
+                        f"Columns: {df.columns.tolist()}"
+                    )
 
             # Convert timestamps (ms → datetime)
             df["timestamp"] = pd.to_datetime(df["open_time"], unit="ms", utc=True)
@@ -316,12 +377,15 @@ class QuestDBBulkLoader:
             # Drop open_time (redundant with timestamp)
             df = df.drop(columns=["open_time"])
 
-            # Add symbol and timeframe columns
+            # Add metadata columns
             df["symbol"] = symbol
             df["timeframe"] = timeframe
             df["data_source"] = "cloudfront"
+            df["instrument_type"] = self.instrument_type  # NEW: Add instrument_type
 
-            logger.info(f"Parsed {len(df)} rows from CSV")
+            logger.info(
+                f"Parsed {len(df)} rows from CSV (format={'futures' if has_header else 'spot'})"
+            )
             return df
 
         except pd.errors.ParserError as e:
@@ -369,7 +433,12 @@ class QuestDBBulkLoader:
                 sender.dataframe(
                     df_ingest,
                     table_name="ohlcv",
-                    symbols=["symbol", "timeframe", "data_source"],  # Specify SYMBOL columns
+                    symbols=[
+                        "symbol",
+                        "timeframe",
+                        "data_source",
+                        "instrument_type",  # NEW: Include instrument_type as SYMBOL
+                    ],
                     at="timestamp",  # Designated timestamp column
                 )
 
@@ -414,7 +483,7 @@ class QuestDBBulkLoader:
 
         # Construct URL
         url = (
-            f"{self.BASE_URL}/monthly/klines/"
+            f"{self.base_url}/monthly/klines/"
             f"{symbol}/{timeframe}/{symbol}-{timeframe}-{year}-{month:02d}.zip"
         )
 

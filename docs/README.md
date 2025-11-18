@@ -15,7 +15,7 @@ This directory contains comprehensive documentation for the gapless-crypto-data 
 
 ### Development Documentation
 
-- [`PUBLISHING.md`](PUBLISHING.md) - Package publishing guidelines
+- [`development/PUBLISHING.md`](development/PUBLISHING.md) - Package publishing guidelines
 - [`CURRENT_ARCHITECTURE_STATUS.yaml`](CURRENT_ARCHITECTURE_STATUS.yaml) - Current system architecture
 - [`PYPI_PUBLISHING_CONFIGURATION.yaml`](PYPI_PUBLISHING_CONFIGURATION.yaml) - PyPI publishing configuration
 
@@ -44,7 +44,7 @@ For new users, we recommend starting with:
 For contributors and developers:
 
 1. **[Contributing Guidelines](../CONTRIBUTING.md)** - How to contribute
-2. **[Publishing Documentation](PUBLISHING.md)** - Release process
+2. **[Publishing Documentation](development/PUBLISHING.md)** - Release process
 3. **[Architecture Status](CURRENT_ARCHITECTURE_STATUS.yaml)** - Technical overview
 
 ## Support

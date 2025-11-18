@@ -33,6 +33,17 @@ Gapless Crypto Data is a high-performance cryptocurrency data collection tool pr
 - [CLI Migration Guide](/Users/terryli/eon/gapless-crypto-data/docs/development/CLI_MIGRATION_GUIDE.md) - v2.x to v3.x migration
 - [Publishing Guide](/Users/terryli/eon/gapless-crypto-data/docs/development/PUBLISHING.md) - PyPI publishing workflow
 
+### Validated Workflows
+
+**Multi-Agent Methodologies** - Extracted from production use (QuestDB v4.0.0 migration):
+
+- [`multi-agent-e2e-validation`](/Users/terryli/.claude/skills/multi-agent-e2e-validation/SKILL.md) - Parallel E2E validation workflow for database refactors (3-layer model: environment → data flow → query interface). Discovered 5 critical bugs (100% failure rate) before v4.0.0 release.
+- [`multi-agent-performance-profiling`](/Users/terryli/.claude/skills/multi-agent-performance-profiling/SKILL.md) - 5-agent parallel profiling workflow for bottleneck identification. Proved QuestDB ingests at 1.1M rows/sec (11x faster than target), revealing download as true bottleneck (90% of time).
+
+**When to use**: Database migrations, pipeline refactors, performance investigations, pre-release validation
+
+**Key principle**: Spawn multiple investigation agents in parallel using single message with multiple Task calls → integrate findings → prioritize fixes by severity/impact
+
 ## SDK Quality Standards
 
 **Primary Use Case**: Programmatic API consumption (`import gapless_crypto_data`) by downstream packages and AI coding agents

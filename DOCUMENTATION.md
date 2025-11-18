@@ -101,7 +101,7 @@ Complete documentation for gapless-crypto-data - ultra-fast cryptocurrency data 
 - [examples/cli_usage_examples.sh](examples/cli_usage_examples.sh) - CLI patterns ⚠️ **DEPRECATED**
   - Command-line usage examples (legacy)
   - Shell script integration (deprecated in v3.3.0)
-  - **Use Python API instead - see [CLI_MIGRATION_GUIDE.md](docs/CLI_MIGRATION_GUIDE.md)**
+  - **Use Python API instead - see [CLI_MIGRATION_GUIDE.md](docs/development/CLI_MIGRATION_GUIDE.md)**
 
 ### Intermediate Examples
 
@@ -195,7 +195,7 @@ Complete documentation for gapless-crypto-data - ultra-fast cryptocurrency data 
 
 ### Publishing & Release
 
-- [docs/PUBLISHING.md](docs/PUBLISHING.md) - PyPI publishing guide
+- [docs/development/PUBLISHING.md](docs/development/PUBLISHING.md) - PyPI publishing guide
   - Automated publishing with GitHub Actions
   - Trusted Publishing (OIDC) setup
   - Sigstore artifact signing
@@ -259,9 +259,8 @@ Complete version history with technical details, hard-learned lessons, and imple
 
 - [docs/milestones/MILESTONE_v2.14.0.yaml](docs/milestones/MILESTONE_v2.14.0.yaml) - DataFrame simplification
 
-**v2.12.x - v2.13.x Series** (GaplessDataFrame)
+**v2.12.x Series** (GaplessDataFrame)
 
-- [docs/milestones/MILESTONE_v2.13.0.yaml](docs/milestones/MILESTONE_v2.13.0.yaml) - DataFrame refinement
 - [docs/milestones/MILESTONE_v2.12.0.yaml](docs/milestones/MILESTONE_v2.12.0.yaml) - GaplessDataFrame implementation
 
 **v2.11.x Series** (Datetime Enhancement)
@@ -270,7 +269,6 @@ Complete version history with technical details, hard-learned lessons, and imple
 
 **v2.10.x Series** (Dependency Pruning)
 
-- [docs/milestones/MILESTONE_v2.10.1.yaml](docs/milestones/MILESTONE_v2.10.1.yaml) - Patch release
 - [docs/milestones/MILESTONE_v2.10.0.yaml](docs/milestones/MILESTONE_v2.10.0.yaml) - Dependency pruning & Parquet
 
 **v2.9.x Series** (Performance Optimization)
@@ -279,8 +277,6 @@ Complete version history with technical details, hard-learned lessons, and imple
 
 **v2.8.x Series** (Gap Filling Enhancement)
 
-- [docs/milestones/MILESTONE_v2.8.2.yaml](docs/milestones/MILESTONE_v2.8.2.yaml) - Final v2.8 release
-- [docs/milestones/MILESTONE_v2.8.1.yaml](docs/milestones/MILESTONE_v2.8.1.yaml) - Patch improvements
 - [docs/milestones/MILESTONE_v2.8.0.yaml](docs/milestones/MILESTONE_v2.8.0.yaml) - Gap filling enhancement
 
 **v2.7.x Series** (Quality Improvements)
@@ -289,20 +285,15 @@ Complete version history with technical details, hard-learned lessons, and imple
 
 **v2.6.x Series** (CLI Enhancement)
 
-- [docs/milestones/MILESTONE_v2.6.2.yaml](docs/milestones/MILESTONE_v2.6.2.yaml) - Final v2.6 release
 - [docs/milestones/MILESTONE_v2.6.1.yaml](docs/milestones/MILESTONE_v2.6.1.yaml) - Patch release
 - [docs/milestones/MILESTONE_v2.6.0.yaml](docs/milestones/MILESTONE_v2.6.0.yaml) - CLI enhancement
 
 **v2.5.x Series** (Validation & Checkpointing)
 
-- [docs/milestones/MILESTONE_v2.5.2.yaml](docs/milestones/MILESTONE_v2.5.2.yaml) - Final v2.5 release
-- [docs/milestones/MILESTONE_v2.5.1.yaml](docs/milestones/MILESTONE_v2.5.1.yaml) - Patch release
 - [docs/milestones/MILESTONE_v2.5.0.yaml](docs/milestones/MILESTONE_v2.5.0.yaml) - Validation & checkpointing
 
 **v2.4.x Series** (Gap Filling Integration)
 
-- [docs/milestones/MILESTONE_v2.4.2.yaml](docs/milestones/MILESTONE_v2.4.2.yaml) - Final v2.4 release
-- [docs/milestones/MILESTONE_v2.4.1.yaml](docs/milestones/MILESTONE_v2.4.1.yaml) - Patch release
 - [docs/milestones/MILESTONE_v2.4.0.yaml](docs/milestones/MILESTONE_v2.4.0.yaml) - Gap filling integration
 
 **v2.3.x Series** (Metadata Enhancement)
@@ -311,7 +302,6 @@ Complete version history with technical details, hard-learned lessons, and imple
 
 **v2.2.x Series** (Timestamp Format Support)
 
-- [docs/milestones/MILESTONE_v2.2.1.yaml](docs/milestones/MILESTONE_v2.2.1.yaml) - Final v2.2 release
 - [docs/milestones/MILESTONE_v2.2.0.yaml](docs/milestones/MILESTONE_v2.2.0.yaml) - Timestamp format support
 
 **v2.1.x Series** (UTC Timezone Fix)

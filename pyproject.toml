@@ -34,14 +34,15 @@ classifiers = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "clickhouse-driver>=0.2.9",  # ClickHouse native protocol client for bulk ingestion and queries
     "duckdb>=1.1.0",  # Single-file OLAP database for validation report persistence
     "httpx>=0.25.0",
     "pandas>=2.0.0",
     "pydantic>=2.0.0",  # Data validation and OpenAPI schema generation for validation reports
     "pyarrow>=16.0.0",  # Required by pandas for Parquet I/O (df.to_parquet/read_parquet engine)
-    "psycopg[binary]>=3.2.0",  # PostgreSQL wire protocol client for QuestDB queries
+    "psycopg[binary]>=3.2.0",  # PostgreSQL wire protocol client for QuestDB queries (deprecated, will be removed in v5.0.0)
     "python-dotenv>=1.0.0",  # Environment variable management
-    "questdb>=2.0.0",  # QuestDB Python client for ILP ingestion
+    "questdb>=2.0.0",  # QuestDB Python client for ILP ingestion (deprecated, will be removed in v5.0.0)
 ]
 
 [project.urls]

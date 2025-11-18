@@ -197,7 +197,7 @@ See `docs/plan/0001-questdb-refactor/plan.yaml` for detailed implementation time
 
 ## References
 
-- [QuestDB Performance Benchmarks](docs/research/questdb-docker-image-analysis.md)
+- [QuestDB Performance Benchmarks](../research/questdb-docker-image-analysis.md)
 - [Colima vs Docker Desktop](https://github.com/abiosoft/colima)
 - [QuestDB Official Documentation](https://questdb.com/docs/)
 - [uv Python Package Manager](https://github.com/astral-sh/uv)
