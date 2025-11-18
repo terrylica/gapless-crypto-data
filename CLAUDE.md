@@ -35,7 +35,7 @@ Gapless Crypto Data is a high-performance cryptocurrency data collection tool pr
 
 ### Validated Workflows
 
-**Multi-Agent Methodologies** - Extracted from production use (QuestDB v4.0.0 migration):
+**Multi-Agent Methodologies** - Extracted from production use (ClickHouse v4.0.0 migration):
 
 - [`multi-agent-e2e-validation`](/Users/terryli/.claude/skills/multi-agent-e2e-validation/SKILL.md) - Parallel E2E validation workflow for database refactors (3-layer model: environment → data flow → query interface). Discovered 5 critical bugs (100% failure rate) before v4.0.0 release.
 - [`multi-agent-performance-profiling`](/Users/terryli/.claude/skills/multi-agent-performance-profiling/SKILL.md) - 5-agent parallel profiling workflow for bottleneck identification. Proved QuestDB ingests at 1.1M rows/sec (11x faster than target), revealing download as true bottleneck (90% of time).
