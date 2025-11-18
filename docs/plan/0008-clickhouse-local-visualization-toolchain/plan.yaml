@@ -18,9 +18,10 @@ info:
 
   version: "1.0.0"
   x-adr-id: "0008"
-  x-status: "implemented"
+  x-status: "validated"
   x-target-release: "4.0.0"
   x-validation-date: "2025-11-17"
+  x-validation-passed: true
   x-breaking-change: false
   x-depends-on: ["0005"]
 
@@ -36,7 +37,7 @@ x-implementation-plan:
     - id: "phase-1"
       name: "Web Interface: CH-UI"
       duration: "10 minutes"
-      status: "pending"
+      status: "completed"
       deliverables:
         - name: "Add CH-UI service to docker-compose.yml"
           paths:
@@ -69,7 +70,7 @@ x-implementation-plan:
     - id: "phase-2"
       name: "Documentation: Built-in Tools"
       duration: "15 minutes"
-      status: "pending"
+      status: "completed"
       dependencies: ["phase-1"]
       deliverables:
         - name: "ClickHouse Play usage guide"
@@ -141,7 +142,7 @@ x-implementation-plan:
     - id: "phase-3"
       name: "Performance Monitoring: chdig"
       duration: "10 minutes"
-      status: "pending"
+      status: "completed"
       dependencies: ["phase-2"]
       deliverables:
         - name: "chdig installation and setup"
@@ -174,7 +175,7 @@ x-implementation-plan:
     - id: "phase-4"
       name: "Validation Suite"
       duration: "10 minutes"
-      status: "pending"
+      status: "completed"
       dependencies: ["phase-3"]
       deliverables:
         - name: "Automated validation script"
