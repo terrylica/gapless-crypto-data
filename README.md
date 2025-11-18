@@ -105,10 +105,10 @@ gap_filler = UniversalGapFiller()
 gaps = gap_filler.detect_all_gaps(csv_file, "1h")
 ```
 
-### CLI Usage (⚠️ Deprecated - Will be removed in v4.0.0)
+### CLI Removed in v4.0.0
 
-> **Deprecation Notice**: The CLI interface is deprecated and will be removed in v4.0.0.
-> Please use the Python API instead. See the [migration guide](#python-api-recommended) above.
+> **Breaking Change**: The CLI interface was removed in v4.0.0.
+> Please use the Python API instead (see examples above).
 
 ```bash
 # Collect data for multiple timeframes (all 13 timeframes supported)
