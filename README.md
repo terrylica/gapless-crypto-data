@@ -803,7 +803,6 @@ gapless-crypto-data/
 ├── src/
 │   └── gapless_crypto_data/
 │       ├── __init__.py              # Package exports
-│       ├── cli.py                   # Command-line interface
 │       ├── collectors/
 │       │   ├── __init__.py
 │       │   └── binance_public_data_collector.py
