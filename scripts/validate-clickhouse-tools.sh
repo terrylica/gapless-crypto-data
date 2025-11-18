@@ -52,24 +52,32 @@ echo ""
 
 # Test 1: Docker ClickHouse container running
 echo "[1/7] Checking ClickHouse container..."
-if docker ps | grep -q "gapless.*clickhouse"; then
-    pass "ClickHouse container running"
+CH_CONTAINER=$(docker ps --filter "name=clickhouse" --format "{{.Names}}" | head -1)
+if [ -n "$CH_CONTAINER" ]; then
+    pass "ClickHouse container running: $CH_CONTAINER"
 else
     fail "ClickHouse container not running (run: docker-compose up -d clickhouse)"
+    exit 1
+fi
+
+# Auto-detect HTTP port (handles both 8123 and 8124)
+HTTP_PORT=$(docker port "$CH_CONTAINER" 8123 2>/dev/null | cut -d: -f2)
+if [ -z "$HTTP_PORT" ]; then
+    HTTP_PORT=8123  # Default fallback
 fi
 
 # Test 2: ClickHouse HTTP interface
-echo "[2/7] Checking ClickHouse HTTP interface (port 8123)..."
-if curl -sf http://localhost:8123/ping > /dev/null 2>&1; then
-    pass "ClickHouse HTTP interface responding"
+echo "[2/7] Checking ClickHouse HTTP interface (port $HTTP_PORT)..."
+if curl -sf "http://localhost:$HTTP_PORT/ping" > /dev/null 2>&1; then
+    pass "ClickHouse HTTP interface responding on port $HTTP_PORT"
 else
-    fail "ClickHouse HTTP interface not responding (check: curl http://localhost:8123/ping)"
+    fail "ClickHouse HTTP interface not responding (check: curl http://localhost:$HTTP_PORT/ping)"
 fi
 
 # Test 3: ClickHouse Play UI accessible
 echo "[3/7] Checking ClickHouse Play UI..."
-if curl -sf http://localhost:8123/play 2>&1 | grep -q "ClickHouse"; then
-    pass "ClickHouse Play UI accessible at http://localhost:8123/play"
+if curl -sf "http://localhost:$HTTP_PORT/play" 2>&1 | grep -q "ClickHouse"; then
+    pass "ClickHouse Play UI accessible at http://localhost:$HTTP_PORT/play"
 else
     fail "ClickHouse Play UI not accessible"
 fi
@@ -88,7 +96,7 @@ fi
 
 # Test 5: clickhouse-client functionality
 echo "[5/7] Checking clickhouse-client CLI..."
-if docker exec gapless-clickhouse clickhouse-client --query "SELECT 1" 2>&1 | grep -q "1"; then
+if docker exec "$CH_CONTAINER" clickhouse-client --query "SELECT 1" 2>&1 | grep -q "1"; then
     pass "clickhouse-client functional (Docker exec)"
 else
     fail "clickhouse-client not working"
@@ -113,7 +121,7 @@ TEST_CSV="/tmp/clickhouse_test_$$.csv"
 echo "a,b" > "$TEST_CSV"
 echo "1,2" >> "$TEST_CSV"
 
-if docker exec gapless-clickhouse clickhouse-local --query "SELECT * FROM file('$TEST_CSV', CSV)" 2>&1 | grep -q "1"; then
+if docker exec "$CH_CONTAINER" clickhouse-local --query "SELECT * FROM file('$TEST_CSV', CSV)" 2>&1 | grep -q "1"; then
     pass "clickhouse-local functional"
     rm -f "$TEST_CSV"
 else
