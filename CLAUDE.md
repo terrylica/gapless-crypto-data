@@ -74,7 +74,7 @@ Gapless Crypto Data is a high-performance cryptocurrency data collection tool pr
 
 ## Current Architecture
 
-**Version**: v2.5.0 (validation v3.3.0+ with DuckDB persistence)
+**Version**: v4.0.0 (ClickHouse database with optional file-based workflows)
 
 **Canonical Reference**: `docs/CURRENT_ARCHITECTURE_STATUS.yaml`
 
