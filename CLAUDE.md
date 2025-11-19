@@ -30,7 +30,7 @@ Gapless Crypto Data is a high-performance cryptocurrency data collection tool pr
 
 - [Development Setup](/Users/terryli/eon/gapless-crypto-data/docs/development/SETUP.md) - Environment setup, IDE configuration, troubleshooting
 - [Development Commands](/Users/terryli/eon/gapless-crypto-data/docs/development/COMMANDS.md) - Testing, code quality, build, CI/CD
-- [CLI Migration Guide](/Users/terryli/eon/gapless-crypto-data/docs/development/CLI_MIGRATION_GUIDE.md) - v2.x to v3.x migration
+- [CLI Migration Guide](/Users/terryli/eon/gapless-crypto-data/docs/development/CLI_MIGRATION_GUIDE.md) - v3.x to v4.0.0 migration (CLI removed)
 - [Publishing Guide](/Users/terryli/eon/gapless-crypto-data/docs/development/PUBLISHING.md) - PyPI publishing workflow
 
 ### Validated Workflows
@@ -78,4 +78,4 @@ Gapless Crypto Data is a high-performance cryptocurrency data collection tool pr
 
 **Canonical Reference**: `docs/CURRENT_ARCHITECTURE_STATUS.yaml`
 
-**Production-Ready**: Core collection, intelligent resume (joblib Memory), memory streaming (Polars lazy), regression detection (PyOD ensemble), native multi-symbol CLI
+**Production-Ready**: Core collection, intelligent resume (joblib Memory), memory streaming (Polars lazy), regression detection (PyOD ensemble), ClickHouse database integration

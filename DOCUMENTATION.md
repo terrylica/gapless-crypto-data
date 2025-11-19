@@ -2,7 +2,7 @@
 
 Complete documentation for gapless-crypto-data - ultra-fast cryptocurrency data collection from Binance's public repository with zero-gap guarantee.
 
-**Version**: 3.2.0 | **Type**: Cryptocurrency Data Collection | **Compatibility**: UV-native Python SDK
+**Version**: 4.0.0 | **Type**: Cryptocurrency Data Collection | **Compatibility**: UV-native Python SDK
 
 ---
 
