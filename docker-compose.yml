@@ -3,7 +3,7 @@ version: '3.8'
 services:
   clickhouse:
     image: clickhouse/clickhouse-server:24.1-alpine
-    container_name: gapless-crypto-data-clickhouse
+    container_name: gapless-clickhouse
     ports:
       - "9000:9000"   # Native protocol (for clickhouse-driver)
       - "8123:8123"   # HTTP interface (for clickhouse-client)
@@ -69,7 +69,7 @@ networks:
 #
 # Initialize schema:
 #   Schema automatically created from schema.sql on first start (via initdb.d)
-#   Manual initialization: docker exec -i gapless-crypto-data-clickhouse clickhouse-client < src/gapless_crypto_data/clickhouse/schema.sql
+#   Manual initialization: docker exec -i gapless-clickhouse clickhouse-client < src/gapless_crypto_data/clickhouse/schema.sql
 #
 # Performance tuning:
 #   - ulimits: Increase file descriptor limit for ClickHouse (required for large datasets)
