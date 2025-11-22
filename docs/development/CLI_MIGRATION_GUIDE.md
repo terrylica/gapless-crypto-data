@@ -7,7 +7,7 @@ supersedes: []
 
 # CLI Migration Guide
 
-⚠️ **The CLI is deprecated and will be removed in v4.0.0.**
+⚠️ **The CLI was removed in v4.0.0.**
 
 This guide provides side-by-side examples to help you migrate from the deprecated CLI to the Python API.
 
@@ -407,11 +407,11 @@ if __name__ == '__main__':
 
 ## Migration Timeline
 
-- **v3.3.0** (Current): CLI deprecated with warnings
-- **v3.4.0 - v3.9.x** (2025 Q1-Q2): CLI continues to work with deprecation warnings
-- **v4.0.0** (2025 Q2): CLI removed completely
+- **v3.3.0**: CLI deprecated with warnings
+- **v3.4.0 - v3.9.x**: CLI continued to work with deprecation warnings
+- **v4.0.0** (Released): CLI removed completely
 
-We recommend migrating to the Python API as soon as possible to ensure compatibility with future releases.
+All users must now use the Python API for data collection and processing.
 
 ---
 
