@@ -158,7 +158,15 @@ Three-phase update to restore documentation-implementation alignment:
 - [x] Pushed tag to origin
 - [x] Created GitHub release with comprehensive notes
 - [x] Marked as prerelease (main-clickhouse branch)
-- [ ] PyPI publish evaluation (pending: see ADR-0011 for separate package strategy)
+- [x] PyPI publish evaluation (completed: keep gapless-crypto-data name, reject fork)
+
+### Phase 5: PyPI Publishing (Completed)
+
+- [x] Rejected ADR-0011 package fork strategy
+- [x] Created canonical `scripts/publish-to-pypi.sh` with CI detection guards
+- [x] Configured Doppler integration for secure PYPI_TOKEN management
+- [x] Published v4.0.0 to PyPI: https://pypi.org/project/gapless-crypto-data/4.0.0/
+- [x] Verified package availability and metadata
 
 ### Validation Checkpoints
 
@@ -207,7 +215,12 @@ After each file update:
   - Decision: Keep package name as `gapless-crypto-data` for v4.0.0
   - Rationale: Semver major version bump provides sufficient breaking change protection
   - No module rename or repository fork required
-- **Status**: All phases completed, ready for PyPI publish evaluation
+- **00:35**: Published v4.0.0 to PyPI
+  - Created canonical `scripts/publish-to-pypi.sh` with CI detection guards
+  - Used Doppler for secure credential management (PYPI_TOKEN)
+  - Successfully published: https://pypi.org/project/gapless-crypto-data/4.0.0/
+  - Verified package availability on PyPI
+- **Status**: All phases completed successfully, v4.0.0 released and published
 
 ---
 
