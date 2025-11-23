@@ -1,6 +1,6 @@
 [project]
 name = "gapless-crypto-data"
-version = "3.3.0"
+version = "4.0.1"
 description = "Ultra-fast cryptocurrency data collection with zero gaps guarantee. 22x faster via Binance public repository with complete 13-timeframe support (1s-1d) and intelligent monthly-to-daily fallback. Provides 11-column microstructure format with order flow metrics."
 readme = { file = "README.md", content-type = "text/markdown" }
 authors = [
@@ -51,9 +51,8 @@ Repository = "https://github.com/terrylica/gapless-crypto-data.git"
 Issues = "https://github.com/terrylica/gapless-crypto-data/issues"
 Changelog = "https://github.com/terrylica/gapless-crypto-data/blob/main/CHANGELOG.md"
 
-[project.scripts]
-# DEPRECATED: CLI will be removed in v4.0.0 - Use Python API instead
-gapless-crypto-data = "gapless_crypto_data.cli:main"
+# CLI was removed in v4.0.0 - Use Python API instead
+# See docs/development/CLI_MIGRATION_GUIDE.md for migration examples
 
 [build-system]
 requires = ["hatchling"]

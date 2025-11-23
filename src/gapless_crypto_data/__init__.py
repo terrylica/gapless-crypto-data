@@ -1,5 +1,5 @@
 """
-Gapless Crypto Data v2.15.3 - USDT spot market data collection with zero gaps guarantee
+Gapless Crypto Data v4.0.1 - USDT spot market data collection with zero gaps guarantee
 
 Market Compatibility:
 - USDT SPOT PAIRS ONLY (BTCUSDT, ETHUSDT, SOLUSDT, etc.)
@@ -76,7 +76,7 @@ Supported Symbols (USDT Spot Only):
     AVAXUSDT, ATOMUSDT, NEARUSDT, FTMUSDT, SANDUSDT, MANAUSDT, etc.
 """
 
-__version__ = "3.3.0"
+__version__ = "4.0.1"
 __author__ = "Eon Labs"
 __email__ = "terry@eonlabs.com"
 

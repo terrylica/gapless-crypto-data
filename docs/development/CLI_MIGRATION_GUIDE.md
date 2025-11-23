@@ -7,9 +7,9 @@ supersedes: []
 
 # CLI Migration Guide
 
-⚠️ **The CLI is deprecated and will be removed in v4.0.0.**
+❌ **The CLI was removed in v4.0.0.**
 
-This guide provides side-by-side examples to help you migrate from the deprecated CLI to the Python API.
+This guide provides side-by-side examples to help you migrate from the removed CLI to the Python API.
 
 ## Table of Contents
 
