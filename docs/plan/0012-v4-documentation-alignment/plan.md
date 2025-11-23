@@ -147,9 +147,18 @@ Three-phase update to restore documentation-implementation alignment:
 - [x] Run `yamllint docs/` (passed: no errors)
 - [x] Review all changes for promotional language
 - [x] Create conventional commit: `docs(v4): align all documentation with v4.0.0 implementation`
-- [ ] Push to origin main-clickhouse
-- [ ] Tag release with semantic-release
-- [ ] Update this plan with final completion status
+- [x] Push to origin main-clickhouse
+- [x] Create v4.0.0 tag and GitHub release (manual, version already at 4.0.0)
+- [x] Update this plan with final completion status
+
+### Phase 4: Release Management (Completed)
+
+- [x] Verified GitHub CLI authentication
+- [x] Created annotated v4.0.0 tag
+- [x] Pushed tag to origin
+- [x] Created GitHub release with comprehensive notes
+- [x] Marked as prerelease (main-clickhouse branch)
+- [ ] PyPI publish evaluation (pending: see ADR-0011 for separate package strategy)
 
 ### Validation Checkpoints
 
@@ -183,11 +192,18 @@ After each file update:
   - Documented intentional v2.10.0 generator version freeze
   - Explained test fixture stability rationale
   - Provided regeneration procedure
-- **00:15**: Created conventional commit 2338bad
+- **00:15**: Created conventional commit feced84
   - All changes committed atomically
   - Conventional commit format: `docs(v4): align all documentation...`
-  - 5 files changed, 540 insertions(+), 64 deletions(-)
-- **Status**: Phase 1-3 completed, ready to push and release
+  - 5 files changed, 552 insertions(+), 64 deletions(-)
+- **00:20**: Pushed to origin/main-clickhouse
+  - Git LFS objects synchronized
+  - Branch created on GitHub
+- **00:25**: Created v4.0.0 tag and GitHub release
+  - Tag: v4.0.0 (annotated with release notes)
+  - GitHub release: https://github.com/terrylica/gapless-crypto-data/releases/tag/v4.0.0
+  - Marked as prerelease (main-clickhouse branch)
+- **Status**: All phases completed successfully
 
 ---
 
