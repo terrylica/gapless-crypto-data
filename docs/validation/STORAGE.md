@@ -21,40 +21,41 @@ DuckDB-based persistent storage for CSV validation reports with SQL query interf
 
 #### Metadata Columns
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `validation_timestamp` | TIMESTAMP | When validation executed (UTC) |
-| `file_path` | VARCHAR | Absolute path to validated CSV file |
-| `file_size_mb` | DOUBLE | File size in megabytes |
-| `validator_version` | VARCHAR | CSVValidator version (default: '3.3.0') |
-| `symbol` | VARCHAR | Trading symbol (extracted from filename) |
-| `timeframe` | VARCHAR | Timeframe (e.g., '1h', '5m') |
+| Column                 | Type      | Description                              |
+| ---------------------- | --------- | ---------------------------------------- |
+| `validation_timestamp` | TIMESTAMP | When validation executed (UTC)           |
+| `file_path`            | VARCHAR   | Absolute path to validated CSV file      |
+| `file_size_mb`         | DOUBLE    | File size in megabytes                   |
+| `validator_version`    | VARCHAR   | CSVValidator version (default: '3.3.0')  |
+| `symbol`               | VARCHAR   | Trading symbol (extracted from filename) |
+| `timeframe`            | VARCHAR   | Timeframe (e.g., '1h', '5m')             |
 
 #### Core Results Columns
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `total_bars` | INTEGER | Total rows in CSV file |
-| `total_errors` | INTEGER | Count of validation errors |
-| `total_warnings` | INTEGER | Count of validation warnings |
-| `validation_summary` | VARCHAR | Summary status (e.g., "PERFECT", "GOOD - 2 warnings") |
-| `validation_duration_ms` | DOUBLE | Execution time in milliseconds |
+| Column                   | Type    | Description                                           |
+| ------------------------ | ------- | ----------------------------------------------------- |
+| `total_bars`             | INTEGER | Total rows in CSV file                                |
+| `total_errors`           | INTEGER | Count of validation errors                            |
+| `total_warnings`         | INTEGER | Count of validation warnings                          |
+| `validation_summary`     | VARCHAR | Summary status (e.g., "PERFECT", "GOOD - 2 warnings") |
+| `validation_duration_ms` | DOUBLE  | Execution time in milliseconds                        |
 
 #### Layer Results (JSON Columns)
 
 Nested data for detailed layer results:
 
-| Column | Type | Description |
-|--------|------|-------------|
+| Column                 | Type | Description                  |
+| ---------------------- | ---- | ---------------------------- |
 | `structure_validation` | JSON | Structure validation results |
-| `datetime_validation` | JSON | DateTime validation results |
-| `ohlcv_validation` | JSON | OHLCV validation results |
-| `coverage_validation` | JSON | Coverage validation results |
-| `anomaly_validation` | JSON | Anomaly detection results |
+| `datetime_validation`  | JSON | DateTime validation results  |
+| `ohlcv_validation`     | JSON | OHLCV validation results     |
+| `coverage_validation`  | JSON | Coverage validation results  |
+| `anomaly_validation`   | JSON | Anomaly detection results    |
 
 #### Flattened Metrics (for SQL Queries)
 
 **DateTime Metrics**:
+
 - `date_range_start` (TIMESTAMP) - First timestamp in data
 - `date_range_end` (TIMESTAMP) - Last timestamp in data
 - `duration_days` (DOUBLE) - Time span in days
@@ -62,24 +63,29 @@ Nested data for detailed layer results:
 - `chronological_order` (BOOLEAN) - Timestamps in order
 
 **Price Metrics**:
+
 - `price_min` (DOUBLE) - Minimum price
 - `price_max` (DOUBLE) - Maximum price
 
 **Volume Metrics**:
+
 - `volume_min` (DOUBLE) - Minimum volume
 - `volume_max` (DOUBLE) - Maximum volume
 - `volume_mean` (DOUBLE) - Average volume
 
 **Quality Metrics**:
+
 - `ohlc_errors` (INTEGER) - OHLC logic violations
 - `negative_zero_values` (INTEGER) - Invalid values count
 
 **Coverage Metrics**:
+
 - `expected_bars` (INTEGER) - Expected bar count
 - `actual_bars` (INTEGER) - Actual bar count
 - `coverage_percentage` (DOUBLE) - Coverage percentage
 
 **Anomaly Metrics**:
+
 - `price_outliers` (INTEGER) - Price outlier count
 - `volume_outliers` (INTEGER) - Volume outlier count
 - `suspicious_patterns` (INTEGER) - Suspicious pattern count
@@ -105,6 +111,7 @@ CREATE INDEX idx_validation_summary ON validation_reports(validation_summary);
 **Standard**: XDG Base Directory Specification
 
 **Platform**:
+
 - macOS/Linux: `$HOME/.cache/gapless-crypto-data/validation.duckdb`
 - Automatic directory creation if missing
 
@@ -119,6 +126,7 @@ storage.insert_report(report: ValidationReport) -> None
 Insert validation report into DuckDB.
 
 **Parameters**:
+
 - `report`: ValidationReport (Pydantic model)
 
 **Raises**: DuckDB exceptions on failure (no silent handling)
@@ -136,6 +144,7 @@ storage.query_recent(
 Query recent validation reports (newest first).
 
 **Parameters**:
+
 - `limit`: Maximum results
 - `symbol`: Filter by symbol (optional)
 - `timeframe`: Filter by timeframe (optional)
@@ -151,6 +160,7 @@ storage.query_by_status(status: str) -> List[Dict]
 Query validations by status substring.
 
 **Parameters**:
+
 - `status`: Status string (e.g., "PERFECT", "GOOD", "FAILED")
 
 **Returns**: List of matching validation reports
@@ -171,6 +181,7 @@ storage.query_by_date_range(
 Query validations within date range.
 
 **Parameters**:
+
 - `start`: Start datetime (inclusive)
 - `end`: End datetime (inclusive)
 - `symbol`: Filter by symbol (optional)
@@ -190,6 +201,7 @@ storage.export_to_dataframe(
 Export validation history to pandas DataFrame.
 
 **Parameters**:
+
 - `symbol`: Filter by symbol (optional)
 - `timeframe`: Filter by timeframe (optional)
 
@@ -206,6 +218,7 @@ storage.get_summary_stats() -> Dict[str, Any]
 Get aggregate statistics across all validations.
 
 **Returns**:
+
 ```python
 {
     'total_validations': int,
@@ -240,16 +253,19 @@ Get aggregate statistics across all validations.
 ## SLOs (Service Level Objectives)
 
 ### Correctness
+
 - **100% data preservation**: All validation results stored accurately
 - **Type safety**: Pydantic validation before persistence
 - **No data loss**: ACID transactions guarantee atomicity
 
 ### Observability
+
 - **Complete history**: All validations queryable
 - **SQL interface**: Flexible ad-hoc queries
 - **Export capability**: pandas DataFrame for analysis
 
 ### Maintainability
+
 - **Single file**: Easy backup and migration
 - **XDG-compliant**: Standard cache location
 - **Schema versioned**: Database schema tracked in code

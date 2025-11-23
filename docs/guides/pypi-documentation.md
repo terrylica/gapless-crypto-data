@@ -45,6 +45,7 @@ results = gcd.fill_gaps("./data")
 Fetch cryptocurrency data with simple function-based API.
 
 **Parameters:**
+
 - `symbol` (str): Trading pair symbol (e.g., "BTCUSDT", "ETHUSDT")
 - `interval` (str): Timeframe interval (e.g., "1m", "5m", "1h", "4h", "1d")
 - `limit` (int, optional): Maximum number of recent bars to return
@@ -53,9 +54,11 @@ Fetch cryptocurrency data with simple function-based API.
 - `output_dir` (str/Path, optional): Directory to save CSV files
 
 **Returns:**
+
 - `pandas.DataFrame`: Complete OHLCV data with microstructure columns
 
 **Examples:**
+
 ```python
 # Recent 1000 hourly bars
 df = gcd.fetch_data("BTCUSDT", "1h", limit=1000)
@@ -72,6 +75,7 @@ df = gcd.fetch_data("SOLUSDT", "1h", limit=500, output_dir="./crypto_data")
 Download cryptocurrency data (alias for fetch_data with familiar API patterns).
 
 **Parameters:**
+
 - `symbol` (str): Trading pair symbol
 - `interval` (str): Timeframe interval (default: "1h")
 - `start` (str, optional): Start date in YYYY-MM-DD format
@@ -79,9 +83,11 @@ Download cryptocurrency data (alias for fetch_data with familiar API patterns).
 - `output_dir` (str/Path, optional): Directory to save CSV files
 
 **Returns:**
+
 - `pandas.DataFrame`: Complete OHLCV and microstructure data
 
 **Examples:**
+
 ```python
 # Simple download with date range
 df = gcd.download("BTCUSDT", "1h", start="2024-01-01", end="2024-06-30")
@@ -95,9 +101,11 @@ df = gcd.download("ETHUSDT", "4h")
 Get list of supported USDT spot trading pairs.
 
 **Returns:**
+
 - `List[str]`: List of supported symbol strings
 
 **Examples:**
+
 ```python
 symbols = gcd.get_supported_symbols()
 print(f"Found {len(symbols)} supported symbols")
@@ -109,9 +117,11 @@ print(f"Bitcoin supported: {'BTCUSDT' in symbols}")
 Get list of supported timeframe intervals.
 
 **Returns:**
+
 - `List[str]`: List of timeframe strings
 
 **Examples:**
+
 ```python
 timeframes = gcd.get_supported_timeframes()
 print(f"Available timeframes: {timeframes}")
@@ -123,13 +133,16 @@ print(f"1-hour supported: {'1h' in timeframes}")
 Fill gaps in existing CSV data files.
 
 **Parameters:**
+
 - `directory` (str/Path): Directory containing CSV files to process
 - `symbols` (List[str], optional): Specific symbols to process (default: all found)
 
 **Returns:**
+
 - `dict`: Gap filling results with statistics
 
 **Examples:**
+
 ```python
 # Fill all gaps in directory
 results = gcd.fill_gaps("./data")
@@ -144,9 +157,11 @@ results = gcd.fill_gaps("./data", symbols=["BTCUSDT", "ETHUSDT"])
 Get library information and capabilities.
 
 **Returns:**
+
 - `dict`: Library metadata and capabilities
 
 **Examples:**
+
 ```python
 info = gcd.get_info()
 print(f"Version: {info['version']}")
@@ -159,19 +174,19 @@ All functions return pandas DataFrames with complete microstructure data:
 
 ### Column Reference
 
-| Column | Type | Description | Example |
-|--------|------|-------------|---------|
-| `date` | datetime | Open timestamp | `2024-01-01 12:00:00` |
-| `open` | float | Opening price | `42150.50` |
-| `high` | float | Highest price | `42200.00` |
-| `low` | float | Lowest price | `42100.25` |
-| `close` | float | Closing price | `42175.75` |
-| `volume` | float | Base asset volume | `15.250000` |
-| `close_time` | datetime | Close timestamp | `2024-01-01 12:59:59` |
-| `quote_asset_volume` | float | Quote asset volume | `643238.125` |
-| `number_of_trades` | int | Trade count | `1547` |
-| `taker_buy_base_asset_volume` | float | Taker buy base volume | `7.825000` |
-| `taker_buy_quote_asset_volume` | float | Taker buy quote volume | `329891.750` |
+| Column                         | Type     | Description            | Example               |
+| ------------------------------ | -------- | ---------------------- | --------------------- |
+| `date`                         | datetime | Open timestamp         | `2024-01-01 12:00:00` |
+| `open`                         | float    | Opening price          | `42150.50`            |
+| `high`                         | float    | Highest price          | `42200.00`            |
+| `low`                          | float    | Lowest price           | `42100.25`            |
+| `close`                        | float    | Closing price          | `42175.75`            |
+| `volume`                       | float    | Base asset volume      | `15.250000`           |
+| `close_time`                   | datetime | Close timestamp        | `2024-01-01 12:59:59` |
+| `quote_asset_volume`           | float    | Quote asset volume     | `643238.125`          |
+| `number_of_trades`             | int      | Trade count            | `1547`                |
+| `taker_buy_base_asset_volume`  | float    | Taker buy base volume  | `7.825000`            |
+| `taker_buy_quote_asset_volume` | float    | Taker buy quote volume | `329891.750`          |
 
 ### Microstructure Analysis
 
@@ -216,11 +231,13 @@ gaps = gap_filler.detect_all_gaps(filepath, "1h")
 ## Supported Assets & Timeframes
 
 ### Supported Symbols (USDT Spot Only)
+
 - **Major**: BTCUSDT, ETHUSDT, SOLUSDT, ADAUSDT, DOTUSDT
 - **Altcoins**: LINKUSDT, MATICUSDT, AVAXUSDT, ATOMUSDT, NEARUSDT
 - **And more**: All USDT-quoted spot pairs available on Binance
 
 ### Supported Timeframes
+
 - **Seconds**: 1s (ultra high-frequency)
 - **Minutes**: 1m, 3m, 5m, 15m, 30m
 - **Hours**: 1h, 2h, 4h, 6h, 8h, 12h
@@ -249,11 +266,11 @@ gapless-crypto-data --help
 
 ## Performance Benchmarks
 
-| Method | Collection Speed | Data Format | Gap Handling |
-|--------|-----------------|-------------|--------------|
-| **gapless-crypto-data** | **22x faster** | 11-column microstructure | Authentic API filling |
-| Traditional APIs | 1x baseline | Basic OHLCV | Manual handling |
-| Other tools | 2-5x faster | Limited format | Limited coverage |
+| Method                  | Collection Speed | Data Format              | Gap Handling          |
+| ----------------------- | ---------------- | ------------------------ | --------------------- |
+| **gapless-crypto-data** | **22x faster**   | 11-column microstructure | Authentic API filling |
+| Traditional APIs        | 1x baseline      | Basic OHLCV              | Manual handling       |
+| Other tools             | 2-5x faster      | Limited format           | Limited coverage      |
 
 ### Real-World Performance
 
@@ -284,12 +301,14 @@ except Exception as e:
 ## Data Availability
 
 ### Historical Coverage
+
 - **BTCUSDT/ETHUSDT**: From 2017-08-17
 - **SOLUSDT**: From 2020-08-11
 - **Most pairs**: From their listing date on Binance
 - **Current data**: Up to T-1 (yesterday), updated daily
 
 ### Safe Date Ranges
+
 ```python
 # Recent data (always available)
 df = gcd.download("BTCUSDT", "1h", start="2024-01-01", end="2024-06-30")
@@ -370,6 +389,7 @@ print(results.round(2))
 ### Common Issues
 
 **Empty DataFrame returned:**
+
 ```python
 # Check if symbol is supported
 symbols = gcd.get_supported_symbols()
@@ -381,6 +401,7 @@ df = gcd.fetch_data("BTCUSDT", "1h", start="2020-01-01")  # Use earlier start da
 ```
 
 **Network timeouts:**
+
 ```python
 # For large datasets, use smaller date ranges
 import pandas as pd
@@ -411,6 +432,7 @@ def fetch_large_dataset(symbol, timeframe, start, end, chunk_months=3):
 ```
 
 **Gap filling issues:**
+
 ```python
 # Check gap filling results
 results = gcd.fill_gaps("./data")
@@ -440,6 +462,7 @@ MIT License - see repository for full details.
 ---
 
 **Get started in 30 seconds:**
+
 ```python
 pip install gapless-crypto-data
 import gapless_crypto_data as gcd

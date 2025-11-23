@@ -12,6 +12,7 @@ Gapless Crypto Data is a cryptocurrency data collection tool providing authentic
 ## Purpose
 
 Collect complete historical cryptocurrency market data from Binance with:
+
 - **Zero-gap guarantee**: No missing timestamps in collected datasets
 - **Authentic data only**: Direct from Binance public repository and API (no synthetic data)
 - **11-column microstructure format**: OHLCV + order flow metrics
@@ -22,6 +23,7 @@ Collect complete historical cryptocurrency market data from Binance with:
 The system consists of six primary components:
 
 ### BinancePublicDataCollector
+
 - **Purpose**: Data collection from Binance's public data repository
 - **Performance**: 22x faster than API calls (CloudFront CDN vs REST API)
 - **Operations**: Monthly/daily ZIP download, extraction, processing
@@ -29,6 +31,7 @@ The system consists of six primary components:
 - **Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/collectors/binance_public_data_collector.py`
 
 ### UniversalGapFiller
+
 - **Purpose**: Gap detection and filling with authentic Binance API data
 - **Algorithm**: Timestamp sequence analysis with timeframe-aware gap detection
 - **Data source**: Binance REST API (authenticated or public endpoints)
@@ -36,6 +39,7 @@ The system consists of six primary components:
 - **Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/gap_filling/universal_gap_filler.py`
 
 ### CSVValidator
+
 - **Purpose**: 5-layer validation engine for data quality assurance
 - **Persistence**: DuckDB-based storage for validation reports
 - **AI Integration**: SQL query interface for AI coding agents
@@ -43,6 +47,7 @@ The system consists of six primary components:
 - **Details**: See [Validation Overview](/Users/terryli/eon/gapless-crypto-data/docs/validation/OVERVIEW.md)
 
 ### ValidationStorage
+
 - **Purpose**: DuckDB persistent storage for validation reports
 - **Schema**: 30+ columns with flattened metrics for SQL queries
 - **Storage**: `~/.cache/gapless-crypto-data/validation.duckdb` (XDG-compliant)
@@ -50,12 +55,14 @@ The system consists of six primary components:
 - **Details**: See [Validation Storage Specification](/Users/terryli/eon/gapless-crypto-data/docs/validation/STORAGE.md)
 
 ### AtomicCSVOperations
+
 - **Purpose**: Corruption-proof file operations with atomic guarantees
 - **Mechanism**: Temp file + validation + atomic rename
 - **Guarantee**: All-or-nothing writes (no partial file corruption)
 - **Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/gap_filling/safe_file_operations.py`
 
 ### SafeCSVMerger
+
 - **Purpose**: Safe merging of multiple CSV files with validation
 - **Operations**: Gap data integration, duplicate removal, chronological sorting
 - **Validation**: Automatic data integrity checks
@@ -101,6 +108,7 @@ Binance Public Repository (monthly/daily ZIPs)
 Output format: **11-column microstructure CSV**
 
 Columns:
+
 1. `date` (TIMESTAMP) - Open time in UTC
 2. `open` (DOUBLE) - Opening price
 3. `high` (DOUBLE) - Highest price in period
@@ -114,6 +122,7 @@ Columns:
 11. `taker_buy_quote_asset_volume` (DOUBLE) - Taker buy quote volume
 
 This format provides complete microstructure data for:
+
 - Price action analysis (OHLC)
 - Volume profiling
 - Order flow metrics (taker buy volumes)
@@ -124,12 +133,14 @@ See [Data Format Specification](/Users/terryli/eon/gapless-crypto-data/docs/arch
 ## System Boundaries
 
 **In Scope**:
+
 - Binance Spot market data collection
 - Historical data (1-second to 1-day timeframes)
 - Zero-gap guarantee for continuous datasets
 - Data validation and quality assurance
 
 **Out of Scope**:
+
 - Futures/derivatives market data
 - Real-time streaming (use Binance WebSocket API)
 - Data analysis or trading strategies
@@ -138,20 +149,24 @@ See [Data Format Specification](/Users/terryli/eon/gapless-crypto-data/docs/arch
 ## SLOs (Service Level Objectives)
 
 ### Availability
+
 - **Data Source**: Binance public repository (99.99% SLA via CloudFront)
 - **Dependencies**: Network connectivity, disk space
 
 ### Correctness
+
 - **Zero-gap guarantee**: All timestamps present within collection range
 - **Authentic data only**: Direct from Binance, no synthetic values
 - **Validation**: 5-layer validation engine with persistent reporting
 
 ### Observability
+
 - **Progress reporting**: Real-time collection status
 - **Validation reports**: DuckDB-based persistent history
 - **Error logging**: Complete exception trace with context
 
 ### Maintainability
+
 - **Single responsibility**: Each component has one primary purpose
 - **Separation of concerns**: Collection → Gap filling → Validation
 - **Test coverage**: 30+ comprehensive tests

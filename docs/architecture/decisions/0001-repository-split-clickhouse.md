@@ -14,6 +14,7 @@ The ClickHouse database integration represents a fundamentally different archite
 2. **Database-first (v4.x)**: ClickHouse primary storage, DuckDB validation, Python 3.12+ only, CLI removed
 
 These approaches serve different use cases and maintaining both in a single repository creates:
+
 - **Version confusion**: v3.x users don't need ClickHouse dependencies
 - **Maintenance overhead**: Different test suites, deployment workflows, documentation
 - **Breaking changes**: v4.0.0 breaks backward compatibility extensively
@@ -21,6 +22,7 @@ These approaches serve different use cases and maintaining both in a single repo
 ### Initial Approach Attempted
 
 Initially attempted to publish v4.0.0 with ClickHouse to PyPI as `gapless-crypto-data`:
+
 - Created main-clickhouse branch
 - Published v4.0.0 to PyPI (2025-01-22)
 - Created GitHub release and tag

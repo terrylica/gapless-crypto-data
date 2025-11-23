@@ -4,14 +4,16 @@ This file lists the people who have contributed to the gapless-crypto-data proje
 
 ## Project Maintainers
 
-**Terry Li** - *Project Lead & Primary Developer*
+**Terry Li** - _Project Lead & Primary Developer_
+
 - Email: terry@eonlabs.com
 - GitHub: [@terryli](https://github.com/terryli)
 - Organization: [Eon Labs](https://github.com/terrylica)
 
 ## Core Development Team
 
-**Eon Labs Team** - *Development & Maintenance*
+**Eon Labs Team** - _Development & Maintenance_
+
 - Organization: [Eon Labs](https://github.com/terrylica)
 - Focus: Quantitative trading infrastructure and machine learning for financial markets
 
@@ -22,6 +24,7 @@ This project welcomes contributions from the community. All contributors who sub
 ### How to Be Listed
 
 Contributors are automatically included when they:
+
 - Submit merged pull requests
 - Report and help resolve issues
 - Provide significant feedback or suggestions
@@ -39,6 +42,7 @@ Contributors are automatically included when they:
 ### Third-Party Libraries
 
 This project builds upon excellent open-source libraries:
+
 - **pandas** - Data manipulation and analysis
 - **httpx** - Async HTTP client for Python
 - **polars** - Fast DataFrames for Python

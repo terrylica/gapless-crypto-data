@@ -1,0 +1,52 @@
+[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.2.1.yaml | Cannot find file: File not found. Check if file exists and path is correct
+[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.4.2.yaml | Cannot find file: File not found. Check if file exists and path is correct
+[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.10.1.yaml | Cannot find file: File not found. Check if file exists and path is correct
+[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/PUBLISHING.md | Cannot find file: File not found. Check if file exists and path is correct
+[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/CLI_MIGRATION_GUIDE.md | Cannot find file: File not found. Check if file exists and path is correct
+[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.13.0.yaml | Cannot find file: File not found. Check if file exists and path is correct
+[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.6.2.yaml | Cannot find file: File not found. Check if file exists and path is correct
+[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.5.1.yaml | Cannot find file: File not found. Check if file exists and path is correct
+[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.8.2.yaml | Cannot find file: File not found. Check if file exists and path is correct
+[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.5.2.yaml | Cannot find file: File not found. Check if file exists and path is correct
+[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.8.1.yaml | Cannot find file: File not found. Check if file exists and path is correct
+[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.4.1.yaml | Cannot find file: File not found. Check if file exists and path is correct
+[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/examples | Cannot find file: File not found. Check if file exists and path is correct
+[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/PUBLISHING.md | Cannot find file: File not found. Check if file exists and path is correct
+# Summary
+
+| Status         | Count |
+|----------------|-------|
+| 🔍 Total       | 181   |
+| ✅ Successful  | 86    |
+| ⏳ Timeouts    | 0     |
+| 🔀 Redirected  | 0     |
+| 👻 Excluded    | 81    |
+| ❓ Unknown     | 0     |
+| 🚫 Errors      | 14    |
+| ⛔ Unsupported | 0     |
+
+## Errors per input
+
+### Errors in /Users/terryli/eon/gapless-crypto-data/docs/development/CLI_MIGRATION_GUIDE.md
+
+* [ERROR] <file:///Users/terryli/eon/gapless-crypto-data/docs/examples> | Cannot find file: File not found. Check if file exists and path is correct
+
+### Errors in /Users/terryli/eon/gapless-crypto-data/docs/README.md
+
+* [ERROR] <file:///Users/terryli/eon/gapless-crypto-data/docs/PUBLISHING.md> | Cannot find file: File not found. Check if file exists and path is correct
+
+### Errors in /Users/terryli/eon/gapless-crypto-data/DOCUMENTATION.md
+
+* [ERROR] <file:///Users/terryli/eon/gapless-crypto-data/docs/CLI_MIGRATION_GUIDE.md> | Cannot find file: File not found. Check if file exists and path is correct
+* [ERROR] <file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.2.1.yaml> | Cannot find file: File not found. Check if file exists and path is correct
+* [ERROR] <file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.4.1.yaml> | Cannot find file: File not found. Check if file exists and path is correct
+* [ERROR] <file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.4.2.yaml> | Cannot find file: File not found. Check if file exists and path is correct
+* [ERROR] <file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.5.1.yaml> | Cannot find file: File not found. Check if file exists and path is correct
+* [ERROR] <file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.5.2.yaml> | Cannot find file: File not found. Check if file exists and path is correct
+* [ERROR] <file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.6.2.yaml> | Cannot find file: File not found. Check if file exists and path is correct
+* [ERROR] <file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.8.1.yaml> | Cannot find file: File not found. Check if file exists and path is correct
+* [ERROR] <file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.8.2.yaml> | Cannot find file: File not found. Check if file exists and path is correct
+* [ERROR] <file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.10.1.yaml> | Cannot find file: File not found. Check if file exists and path is correct
+* [ERROR] <file:///Users/terryli/eon/gapless-crypto-data/docs/milestones/MILESTONE_v2.13.0.yaml> | Cannot find file: File not found. Check if file exists and path is correct
+* [ERROR] <file:///Users/terryli/eon/gapless-crypto-data/docs/PUBLISHING.md> | Cannot find file: File not found. Check if file exists and path is correct
+

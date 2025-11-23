@@ -24,6 +24,7 @@ Guide to collecting complete historical cryptocurrency market data from Binance 
 ## Dual Data Source Strategy
 
 ### Primary: Binance Public Data Repository
+
 - **Method**: Monthly ZIP file downloads via CloudFront CDN
 - **Performance**: 22x faster than direct API calls
 - **Data**: Complete historical OHLCV with order flow metrics
@@ -31,6 +32,7 @@ Guide to collecting complete historical cryptocurrency market data from Binance 
 - **Availability**: Monthly archives from 2017 to present
 
 ### Secondary: Binance API
+
 - **Purpose**: Gap filling for missing data
 - **Method**: REST API calls to Binance public endpoints
 - **Data**: Authentic real-time and historical data
@@ -47,10 +49,12 @@ output_dir/
 ```
 
 **File Naming**:
+
 - Pattern: `binance_spot_{SYMBOL}-{TIMEFRAME}_{START}-{END}_v{VERSION}.csv`
 - Example: `binance_spot_BTCUSDT-1h_20240101-20240131_v2.10.0.csv`
 
 **Metadata Sidecar**:
+
 - JSON file with collection statistics
 - Generation timestamp
 - Data source information
@@ -61,26 +65,31 @@ output_dir/
 ### Standard Collection
 
 Default collection (SOLUSDT, all timeframes):
+
 ```bash
 uv run gapless-crypto-data
 ```
 
 Custom symbol and timeframes:
+
 ```bash
 uv run gapless-crypto-data --symbol BTCUSDT --timeframes 1h,4h
 ```
 
 Multiple symbols (native multi-symbol support):
+
 ```bash
 uv run gapless-crypto-data --symbol BTCUSDT,ETHUSDT,SOLUSDT --timeframes 1h,4h
 ```
 
 Custom date range:
+
 ```bash
 uv run gapless-crypto-data --start 2023-01-01 --end 2023-12-31
 ```
 
 Custom output directory:
+
 ```bash
 uv run gapless-crypto-data --symbol BTCUSDT --timeframes 1h,4h --output-dir ./crypto_data
 ```
@@ -88,11 +97,13 @@ uv run gapless-crypto-data --symbol BTCUSDT --timeframes 1h,4h --output-dir ./cr
 ### Gap Filling Operations
 
 Manual gap filling for existing datasets:
+
 ```bash
 uv run gapless-crypto-data --fill-gaps --directory ./data
 ```
 
 Gap filling with specific filters:
+
 ```bash
 uv run gapless-crypto-data --fill-gaps --directory ./data --symbol BTCUSDT --timeframe 1h
 ```
@@ -116,11 +127,13 @@ collector.collect_data(
 ### Multi-Symbol Collection
 
 For multiple symbols, use CLI multi-symbol support (recommended):
+
 ```bash
 uv run gapless-crypto-data --symbol BTCUSDT,ETHUSDT --timeframes 1h,4h
 ```
 
 Or loop for complex per-symbol logic:
+
 ```python
 symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
 for symbol in symbols:
@@ -153,6 +166,7 @@ collector.collect_timeframe_data("1h")
 ## Supported Symbols
 
 Get list of supported symbols:
+
 ```python
 import gapless_crypto_data as gcd
 
@@ -161,6 +175,7 @@ print(symbols)
 ```
 
 **Common Symbols**:
+
 - BTCUSDT (Bitcoin)
 - ETHUSDT (Ethereum)
 - SOLUSDT (Solana)
@@ -169,12 +184,14 @@ print(symbols)
 ## Supported Timeframes
 
 Get list of supported timeframes:
+
 ```python
 timeframes = gcd.get_supported_timeframes()
 print(timeframes)
 ```
 
 **Available Timeframes**:
+
 - Ultra-high frequency: 1s
 - Minutes: 1m, 3m, 5m, 15m, 30m
 - Hours: 1h, 2h, 4h, 6h, 8h, 12h
@@ -200,12 +217,14 @@ collector = BinancePublicDataCollector(
 ### Step 2: Collect Timeframe Data
 
 Single timeframe:
+
 ```python
 result = collector.collect_timeframe_data("1h")
 print(f"Collected {result['dataframe'].shape[0]} bars")
 ```
 
 Multiple timeframes:
+
 ```python
 timeframes = ["1h", "4h", "1d"]
 results = collector.collect_multiple_timeframes(timeframes)
@@ -228,6 +247,7 @@ for file in output_files:
 ### Automatic Gap Detection
 
 Gap detection runs automatically during collection:
+
 - Analyzes timestamp sequences
 - Identifies missing periods
 - Reports gaps in output
@@ -235,6 +255,7 @@ Gap detection runs automatically during collection:
 ### Automatic Gap Filling
 
 Enable automatic gap filling:
+
 ```python
 collector = BinancePublicDataCollector(
     symbol="BTCUSDT",
@@ -245,6 +266,7 @@ collector = BinancePublicDataCollector(
 ### Manual Validation
 
 Validate collected data:
+
 ```python
 from gapless_crypto_data.validation import CSVValidator
 
@@ -259,11 +281,13 @@ print(f"Gaps: {report['datetime_validation']['gaps_found']}")
 ## Performance Characteristics
 
 **Collection Speed**: 22x faster than API-only approaches
+
 - Monthly ZIP downloads: ~2-5 seconds per file
 - CloudFront CDN: Global edge network
 - ETag caching: Bandwidth optimization for repeat downloads
 
 **Memory Usage**: ~100MB peak for full year collection
+
 - Streaming ZIP extraction
 - In-memory CSV processing
 - Efficient DataFrame operations
@@ -271,20 +295,24 @@ print(f"Gaps: {report['datetime_validation']['gaps_found']}")
 ## SLOs (Service Level Objectives)
 
 ### Availability
+
 - **Data Source**: Binance public repository (99.99% SLA via CloudFront)
 - **Dependencies**: Network connectivity, disk space
 
 ### Correctness
+
 - **Zero-gap guarantee**: All timestamps present within collection range
 - **Authentic data**: Direct from Binance (no synthetic values)
 - **Format validation**: 11-column microstructure format verified
 
 ### Observability
+
 - **Progress reporting**: Real-time collection status
 - **File generation**: Output files created with metadata
 - **Error logging**: Complete exception trace with context
 
 ### Maintainability
+
 - **Configuration**: Flexible via constructor parameters
 - **Output formats**: CSV (default), Parquet (optional)
 - **Test coverage**: Collection tests in `/Users/terryli/eon/gapless-crypto-data/tests/test_binance_collector.py`
@@ -294,6 +322,7 @@ print(f"Gaps: {report['datetime_validation']['gaps_found']}")
 ### Missing Data Periods
 
 If gaps detected:
+
 1. Check Binance public repository availability
 2. Use gap filling: `--fill-gaps --directory ./data`
 3. Verify date range is within Binance data availability
@@ -301,6 +330,7 @@ If gaps detected:
 ### Download Failures
 
 If downloads fail:
+
 1. Check network connectivity
 2. Verify symbol exists on Binance
 3. Check CloudFront CDN status
@@ -308,6 +338,7 @@ If downloads fail:
 ### Output Directory Errors
 
 If file write errors:
+
 1. Verify output directory exists and is writable
 2. Check disk space availability
 3. Ensure no file permission issues
