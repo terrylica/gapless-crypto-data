@@ -203,7 +203,11 @@ After each file update:
   - Tag: v4.0.0 (annotated with release notes)
   - GitHub release: https://github.com/terrylica/gapless-crypto-data/releases/tag/v4.0.0
   - Marked as prerelease (main-clickhouse branch)
-- **Status**: All phases completed successfully
+- **00:30**: Rejected ADR-0011 (PyPI package fork strategy)
+  - Decision: Keep package name as `gapless-crypto-data` for v4.0.0
+  - Rationale: Semver major version bump provides sufficient breaking change protection
+  - No module rename or repository fork required
+- **Status**: All phases completed, ready for PyPI publish evaluation
 
 ---
 

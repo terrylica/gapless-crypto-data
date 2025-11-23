@@ -2,7 +2,9 @@
 
 ## Status
 
-Proposed (2025-11-18)
+Rejected (2025-01-22)
+
+**Rejection rationale**: Maintaining package name continuity as `gapless-crypto-data` for v4.0.0. No package fork or module rename required. Major version bump (v3.x → v4.0.0) provides sufficient semver protection for breaking changes.
 
 ## Context
 
@@ -15,6 +17,7 @@ Current main-clickhouse branch (v4.0.0) contains ClickHouse integration incompat
 3. Allow parallel evolution of file-based (v3.x) and database-first (v4.x) approaches
 
 **Current State**:
+
 - **origin/main (v3.3.0)**: CSV-only collection, no database, Python 3.9-3.13, CLI present
 - **main-clickhouse (v4.0.0)**: ClickHouse integration, Python 3.12-3.13 only, CLI removed, 44 commits divergence
 - **Package collision**: Both branches would publish as `gapless-crypto-data` on PyPI
@@ -74,6 +77,7 @@ mv src/gapless_crypto_data src/gapless_crypto_clickhouse
 ```
 
 **Files requiring import updates** (~150 files):
+
 - All source files: `from gapless_crypto_data` → `from gapless_crypto_clickhouse`
 - All test files: Update imports
 - All examples: Update imports
@@ -82,6 +86,7 @@ mv src/gapless_crypto_data src/gapless_crypto_clickhouse
 ### Package Metadata Changes
 
 **pyproject.toml**:
+
 ```toml
 [project]
 name = "gapless-crypto-clickhouse"  # Changed from gapless-crypto-data
@@ -91,6 +96,7 @@ keywords = ["clickhouse", "cryptocurrency", "crypto", "binance", ...]
 ```
 
 **Dependencies**:
+
 - Keep: `clickhouse-driver`, `pandas`, `pyarrow`, `python-dotenv`
 - Remove: `duckdb` (validation only, not needed for minimal package)
 - Remove: `httpx` (not needed for ClickHouse-focused package)
@@ -98,6 +104,7 @@ keywords = ["clickhouse", "cryptocurrency", "crypto", "binance", ...]
 ### Publishing Infrastructure
 
 **PyPI Trusted Publishing** (OIDC authentication):
+
 1. Register at https://pypi.org/manage/account/publishing/
    - Package: `gapless-crypto-clickhouse`
    - Repository: `terrylica/gapless-crypto-clickhouse`
@@ -110,18 +117,21 @@ keywords = ["clickhouse", "cryptocurrency", "crypto", "binance", ...]
    - Validates: Build, installation, imports
 
 **GitHub Actions Workflows**:
+
 - `.github/workflows/publish.yml`: Production PyPI (on GitHub release)
 - `.github/workflows/publish-testpypi.yml`: TestPyPI validation (on push to main)
 
 ### Documentation Strategy
 
 **README.md positioning**:
+
 - Lead with "ClickHouse-based cryptocurrency data collection"
 - "When to use" decision matrix (database-first vs file-based)
 - Cross-reference to `gapless-crypto-data` for file-based workflows
 - No migration guides (fork for new users, not migration for existing users)
 
 **AI Discoverability**:
+
 - Update `llms.txt` with new package name, imports, URLs
 - Update `CLAUDE.md` project overview
 - Update `__probe__.py` metadata
@@ -131,24 +141,28 @@ keywords = ["clickhouse", "cryptocurrency", "crypto", "binance", ...]
 ### Automated Checks
 
 **Grep validation** (zero old references):
+
 ```bash
 grep -r "gapless-crypto-data" . --exclude-dir=.git --exclude-dir=.venv
 grep -r "gapless_crypto_data" . --exclude-dir=.git --exclude-dir=.venv
 ```
 
 **Import validation**:
+
 ```bash
 python -c "import gapless_crypto_clickhouse; print(gapless_crypto_clickhouse.__version__)"
 # Expected: 1.0.0
 ```
 
 **Test suite**:
+
 ```bash
 uv run pytest tests/ -v
 # Expected: All tests pass with new import paths
 ```
 
 **TestPyPI installation**:
+
 ```bash
 pip install -i https://test.pypi.org/simple/ gapless-crypto-clickhouse
 ```
