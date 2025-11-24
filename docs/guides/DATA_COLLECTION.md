@@ -345,8 +345,8 @@ If file write errors:
 
 ## Related Documentation
 
-- **Architecture Overview**: [docs/architecture/OVERVIEW.md](/Users/terryli/eon/gapless-crypto-data/docs/architecture/OVERVIEW.md)
-- **Data Format**: [docs/architecture/DATA_FORMAT.md](/Users/terryli/eon/gapless-crypto-data/docs/architecture/DATA_FORMAT.md)
-- **Python API Reference**: [python-api.md](/Users/terryli/eon/gapless-crypto-data/docs/guides/python-api.md)
-- **Gap Filling**: [GAP_FILLING.md](/Users/terryli/eon/gapless-crypto-data/docs/guides/GAP_FILLING.md) (planned)
-- **Validation**: [docs/validation/OVERVIEW.md](/Users/terryli/eon/gapless-crypto-data/docs/validation/OVERVIEW.md)
+- **Architecture Overview**: [docs/architecture/OVERVIEW.md](../../docs/architecture/OVERVIEW.md)
+- **Data Format**: [docs/architecture/DATA_FORMAT.md](../../docs/architecture/DATA_FORMAT.md)
+- **Python API Reference**: [python-api.md](../../docs/guides/python-api.md)
+- **Gap Filling**: [GAP_FILLING.md](../../docs/guides/GAP_FILLING.md) (planned)
+- **Validation**: [docs/validation/OVERVIEW.md](../../docs/validation/OVERVIEW.md)

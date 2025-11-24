@@ -138,7 +138,7 @@ else:
     print("Format validation passed")
 ```
 
-See [Validation Overview](/Users/terryli/eon/gapless-crypto-data/docs/validation/OVERVIEW.md) for complete validation specifications.
+See [Validation Overview](../../docs/validation/OVERVIEW.md) for complete validation specifications.
 
 ### File Naming Convention
 
@@ -190,7 +190,7 @@ collector = BinancePublicDataCollector(
 - Less human-readable than CSV
 - Metadata stored separately
 
-See [Parquet Implementation Specification](/Users/terryli/eon/gapless-crypto-data/docs/api/pruning-parquet-implementation.yaml) for details.
+See [Parquet Implementation Specification](../../docs/api/pruning-parquet-implementation.yaml) for details.
 
 ## SLOs (Service Level Objectives)
 
@@ -220,6 +220,6 @@ See [Parquet Implementation Specification](/Users/terryli/eon/gapless-crypto-dat
 
 ## Related Documentation
 
-- **Architecture Overview**: [OVERVIEW.md](/Users/terryli/eon/gapless-crypto-data/docs/architecture/OVERVIEW.md)
-- **Data Collection**: [docs/guides/DATA_COLLECTION.md](/Users/terryli/eon/gapless-crypto-data/docs/guides/DATA_COLLECTION.md)
-- **Validation**: [docs/validation/OVERVIEW.md](/Users/terryli/eon/gapless-crypto-data/docs/validation/OVERVIEW.md)
+- **Architecture Overview**: [OVERVIEW.md](../../docs/architecture/OVERVIEW.md)
+- **Data Collection**: [docs/guides/DATA_COLLECTION.md](../../docs/guides/DATA_COLLECTION.md)
+- **Validation**: [docs/validation/OVERVIEW.md](../../docs/validation/OVERVIEW.md)

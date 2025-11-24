@@ -482,6 +482,6 @@ Before creating pull request:
 
 ## Related Documentation
 
-- **Development Setup**: [SETUP.md](/Users/terryli/eon/gapless-crypto-data/docs/development/SETUP.md)
-- **SDK Quality Standards**: [docs/sdk-quality-standards.yaml](/Users/terryli/eon/gapless-crypto-data/docs/sdk-quality-standards.yaml)
-- **Architecture Overview**: [docs/architecture/OVERVIEW.md](/Users/terryli/eon/gapless-crypto-data/docs/architecture/OVERVIEW.md)
+- **Development Setup**: [SETUP.md](../../docs/development/SETUP.md)
+- **SDK Quality Standards**: [docs/sdk-quality-standards.yaml](../../docs/sdk-quality-standards.yaml)
+- **Architecture Overview**: [docs/architecture/OVERVIEW.md](../../docs/architecture/OVERVIEW.md)

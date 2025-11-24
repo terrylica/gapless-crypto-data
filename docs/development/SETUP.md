@@ -358,7 +358,7 @@ uv run pre-commit run --all-files
 
 ## Related Documentation
 
-- **Development Commands**: [COMMANDS.md](/Users/terryli/eon/gapless-crypto-data/docs/development/COMMANDS.md)
-- **CLI Migration Guide**: [CLI_MIGRATION_GUIDE.md](/Users/terryli/eon/gapless-crypto-data/docs/development/CLI_MIGRATION_GUIDE.md) (planned)
-- **Publishing Guide**: [PUBLISHING.md](/Users/terryli/eon/gapless-crypto-data/docs/development/PUBLISHING.md) (planned)
-- **SDK Quality Standards**: [docs/sdk-quality-standards.yaml](/Users/terryli/eon/gapless-crypto-data/docs/sdk-quality-standards.yaml)
+- **Development Commands**: [COMMANDS.md](../../docs/development/COMMANDS.md)
+- **CLI Migration Guide**: [CLI_MIGRATION_GUIDE.md](../../docs/development/CLI_MIGRATION_GUIDE.md) (planned)
+- **Publishing Guide**: [PUBLISHING.md](../../docs/development/PUBLISHING.md) (planned)
+- **SDK Quality Standards**: [docs/sdk-quality-standards.yaml](../../docs/sdk-quality-standards.yaml)

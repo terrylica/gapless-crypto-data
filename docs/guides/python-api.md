@@ -257,7 +257,7 @@ df = storage.export_to_dataframe()
 
 **Storage Location**: `~/.cache/gapless-crypto-data/validation.duckdb`
 
-See [Validation Query Patterns](/Users/terryli/eon/gapless-crypto-data/docs/validation/QUERY_PATTERNS.md) for complete query examples.
+See [Validation Query Patterns](../../docs/validation/QUERY_PATTERNS.md) for complete query examples.
 
 ## Atomic File Operations
 
@@ -306,7 +306,7 @@ collector.collect_timeframe_data("1h")
 
 **Trade-offs**: Requires PyArrow dependency, less human-readable
 
-See [Data Format Specification](/Users/terryli/eon/gapless-crypto-data/docs/architecture/DATA_FORMAT.md) for details.
+See [Data Format Specification](../../docs/architecture/DATA_FORMAT.md) for details.
 
 ## Data Analysis Patterns
 
@@ -432,7 +432,7 @@ uv run python examples/advanced_api_examples.py
 
 ## Related Documentation
 
-- **Data Collection Guide**: [DATA_COLLECTION.md](/Users/terryli/eon/gapless-crypto-data/docs/guides/DATA_COLLECTION.md)
-- **Validation Overview**: [docs/validation/OVERVIEW.md](/Users/terryli/eon/gapless-crypto-data/docs/validation/OVERVIEW.md)
-- **Query Patterns**: [docs/validation/QUERY_PATTERNS.md](/Users/terryli/eon/gapless-crypto-data/docs/validation/QUERY_PATTERNS.md)
-- **Data Format**: [docs/architecture/DATA_FORMAT.md](/Users/terryli/eon/gapless-crypto-data/docs/architecture/DATA_FORMAT.md)
+- **Data Collection Guide**: [DATA_COLLECTION.md](../../docs/guides/DATA_COLLECTION.md)
+- **Validation Overview**: [docs/validation/OVERVIEW.md](../../docs/validation/OVERVIEW.md)
+- **Query Patterns**: [docs/validation/QUERY_PATTERNS.md](../../docs/validation/QUERY_PATTERNS.md)
+- **Data Format**: [docs/architecture/DATA_FORMAT.md](../../docs/architecture/DATA_FORMAT.md)

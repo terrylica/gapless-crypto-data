@@ -44,7 +44,7 @@ The system consists of six primary components:
 - **Persistence**: DuckDB-based storage for validation reports
 - **AI Integration**: SQL query interface for AI coding agents
 - **Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/validation/csv_validator.py`
-- **Details**: See [Validation Overview](/Users/terryli/eon/gapless-crypto-data/docs/validation/OVERVIEW.md)
+- **Details**: See [Validation Overview](../../docs/validation/OVERVIEW.md)
 
 ### ValidationStorage
 
@@ -52,7 +52,7 @@ The system consists of six primary components:
 - **Schema**: 30+ columns with flattened metrics for SQL queries
 - **Storage**: `~/.cache/gapless-crypto-data/validation.duckdb` (XDG-compliant)
 - **Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/validation/storage.py`
-- **Details**: See [Validation Storage Specification](/Users/terryli/eon/gapless-crypto-data/docs/validation/STORAGE.md)
+- **Details**: See [Validation Storage Specification](../../docs/validation/STORAGE.md)
 
 ### AtomicCSVOperations
 
@@ -128,7 +128,7 @@ This format provides complete microstructure data for:
 - Order flow metrics (taker buy volumes)
 - Trade frequency analysis (number of trades)
 
-See [Data Format Specification](/Users/terryli/eon/gapless-crypto-data/docs/architecture/DATA_FORMAT.md) for detailed definitions.
+See [Data Format Specification](../../docs/architecture/DATA_FORMAT.md) for detailed definitions.
 
 ## System Boundaries
 
@@ -174,14 +174,14 @@ See [Data Format Specification](/Users/terryli/eon/gapless-crypto-data/docs/arch
 
 ## Architecture References
 
-- **Canonical Status**: [CURRENT_ARCHITECTURE_STATUS.yaml](/Users/terryli/eon/gapless-crypto-data/docs/CURRENT_ARCHITECTURE_STATUS.yaml)
-- **Core Components**: [CORE_COMPONENTS.md](/Users/terryli/eon/gapless-crypto-data/docs/architecture/CORE_COMPONENTS.md)
-- **Network Architecture**: [network.md](/Users/terryli/eon/gapless-crypto-data/docs/architecture/network.md)
-- **Data Flow Diagrams**: [docs/diagrams/](/Users/terryli/eon/gapless-crypto-data/docs/diagrams/)
+- **Canonical Status**: [CURRENT_ARCHITECTURE_STATUS.yaml](../../docs/CURRENT_ARCHITECTURE_STATUS.yaml)
+- **Core Components**: [CORE_COMPONENTS.md](../../docs/architecture/CORE_COMPONENTS.md)
+- **Network Architecture**: [network.md](../../docs/architecture/network.md)
+- **Data Flow Diagrams**: [docs/diagrams/](../../docs/diagrams)
 
 ## Related Documentation
 
-- **Data Collection Guide**: [docs/guides/DATA_COLLECTION.md](/Users/terryli/eon/gapless-crypto-data/docs/guides/DATA_COLLECTION.md)
-- **Gap Filling Operations**: [docs/guides/GAP_FILLING.md](/Users/terryli/eon/gapless-crypto-data/docs/guides/GAP_FILLING.md)
-- **Validation System**: [docs/validation/OVERVIEW.md](/Users/terryli/eon/gapless-crypto-data/docs/validation/OVERVIEW.md)
-- **Python API Reference**: [docs/api/quick-start.md](/Users/terryli/eon/gapless-crypto-data/docs/api/quick-start.md)
+- **Data Collection Guide**: [docs/guides/DATA_COLLECTION.md](../../docs/guides/DATA_COLLECTION.md)
+- **Gap Filling Operations**: [docs/guides/GAP_FILLING.md](../../docs/guides/GAP_FILLING.md)
+- **Validation System**: [docs/validation/OVERVIEW.md](../../docs/validation/OVERVIEW.md)
+- **Python API Reference**: [docs/api/quick-start.md](../../docs/api/quick-start.md)

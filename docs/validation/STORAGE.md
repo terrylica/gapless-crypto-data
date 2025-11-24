@@ -336,7 +336,7 @@ with duckdb.connect(str(db_path)) as conn:
 
 ## Related Documentation
 
-- **Validation Overview**: [OVERVIEW.md](/Users/terryli/eon/gapless-crypto-data/docs/validation/OVERVIEW.md)
-- **Query Patterns**: [QUERY_PATTERNS.md](/Users/terryli/eon/gapless-crypto-data/docs/validation/QUERY_PATTERNS.md)
+- **Validation Overview**: [OVERVIEW.md](../../docs/validation/OVERVIEW.md)
+- **Query Patterns**: [QUERY_PATTERNS.md](../../docs/validation/QUERY_PATTERNS.md)
 - **ValidationReport Model**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/validation/models.py`
 - **Test Suite**: `/Users/terryli/eon/gapless-crypto-data/tests/test_validation_storage.py`

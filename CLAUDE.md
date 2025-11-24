@@ -12,32 +12,32 @@ Gapless Crypto Data is a high-performance cryptocurrency data collection tool pr
 
 ### Architecture
 
-- [Architecture Overview](/Users/terryli/eon/gapless-crypto-data/docs/architecture/OVERVIEW.md) - Core components, data flow, SLOs
-- [Data Format Specification](/Users/terryli/eon/gapless-crypto-data/docs/architecture/DATA_FORMAT.md) - 11-column microstructure format
+- [Architecture Overview](./docs/architecture/OVERVIEW.md) - Core components, data flow, SLOs
+- [Data Format Specification](./docs/architecture/DATA_FORMAT.md) - 11-column microstructure format
 
 ### Usage Guides
 
-- [Data Collection Guide](/Users/terryli/eon/gapless-crypto-data/docs/guides/DATA_COLLECTION.md) - CLI usage, dual data source strategy, troubleshooting
-- [Python API Reference](/Users/terryli/eon/gapless-crypto-data/docs/guides/python-api.md) - Function-based and class-based APIs, complete examples
+- [Data Collection Guide](./docs/guides/DATA_COLLECTION.md) - CLI usage, dual data source strategy, troubleshooting
+- [Python API Reference](./docs/guides/python-api.md) - Function-based and class-based APIs, complete examples
 
 ### Validation System
 
-- [Validation Overview](/Users/terryli/eon/gapless-crypto-data/docs/validation/OVERVIEW.md) - 5-layer validation pipeline, DuckDB persistence
-- [ValidationStorage Specification](/Users/terryli/eon/gapless-crypto-data/docs/validation/STORAGE.md) - Database schema, API methods
-- [AI Agent Query Patterns](/Users/terryli/eon/gapless-crypto-data/docs/validation/QUERY_PATTERNS.md) - Common patterns for validation analysis
+- [Validation Overview](./docs/validation/OVERVIEW.md) - 5-layer validation pipeline, DuckDB persistence
+- [ValidationStorage Specification](./docs/validation/STORAGE.md) - Database schema, API methods
+- [AI Agent Query Patterns](./docs/validation/QUERY_PATTERNS.md) - Common patterns for validation analysis
 
 ### Development
 
-- [Development Setup](/Users/terryli/eon/gapless-crypto-data/docs/development/SETUP.md) - Environment setup, IDE configuration, troubleshooting
-- [Development Commands](/Users/terryli/eon/gapless-crypto-data/docs/development/COMMANDS.md) - Testing, code quality, build, CI/CD
-- [CLI Migration Guide](/Users/terryli/eon/gapless-crypto-data/docs/development/CLI_MIGRATION_GUIDE.md) - v2.x to v3.x migration
-- [Publishing Guide](/Users/terryli/eon/gapless-crypto-data/docs/development/PUBLISHING.md) - PyPI publishing workflow
+- [Development Setup](./docs/development/SETUP.md) - Environment setup, IDE configuration, troubleshooting
+- [Development Commands](./docs/development/COMMANDS.md) - Testing, code quality, build, CI/CD
+- [CLI Migration Guide](./docs/development/CLI_MIGRATION_GUIDE.md) - v2.x to v3.x migration
+- [Publishing Guide](./docs/development/PUBLISHING.md) - PyPI publishing workflow
 
 ## SDK Quality Standards
 
 **Primary Use Case**: Programmatic API consumption (`import gapless_crypto_data`) by downstream packages and AI coding agents
 
-**Specification**: [`docs/sdk-quality-standards.yaml`](/Users/terryli/eon/gapless-crypto-data/docs/sdk-quality-standards.yaml) - Machine-readable standards
+**Specification**: [`docs/sdk-quality-standards.yaml`](./docs/sdk-quality-standards.yaml) - Machine-readable standards
 
 **Key Abstractions**:
 

@@ -76,7 +76,7 @@ supersedes: []
 
 **Interface**: SQL query interface for flexible data exploration
 
-See [Storage Specification](/Users/terryli/eon/gapless-crypto-data/docs/validation/STORAGE.md) for complete schema details.
+See [Storage Specification](../../docs/validation/STORAGE.md) for complete schema details.
 
 ## Storage Backend
 
@@ -162,7 +162,7 @@ print(f"Total: {stats['total_validations']}")
 print(f"Avg errors: {stats['avg_errors']}")
 ```
 
-See [Query Patterns Guide](/Users/terryli/eon/gapless-crypto-data/docs/validation/QUERY_PATTERNS.md) for complete examples.
+See [Query Patterns Guide](../../docs/validation/QUERY_PATTERNS.md) for complete examples.
 
 ## Design Principles
 
@@ -289,7 +289,7 @@ correlation = df[["coverage_percentage", "total_errors"]].corr()
 
 ## Related Documentation
 
-- **Storage Specification**: [STORAGE.md](/Users/terryli/eon/gapless-crypto-data/docs/validation/STORAGE.md)
-- **Query Patterns**: [QUERY_PATTERNS.md](/Users/terryli/eon/gapless-crypto-data/docs/validation/QUERY_PATTERNS.md)
-- **Architecture Overview**: [docs/architecture/OVERVIEW.md](/Users/terryli/eon/gapless-crypto-data/docs/architecture/OVERVIEW.md)
-- **Test Suite**: [tests/test_validation_storage.py](/Users/terryli/eon/gapless-crypto-data/tests/test_validation_storage.py)
+- **Storage Specification**: [STORAGE.md](../../docs/validation/STORAGE.md)
+- **Query Patterns**: [QUERY_PATTERNS.md](../../docs/validation/QUERY_PATTERNS.md)
+- **Architecture Overview**: [docs/architecture/OVERVIEW.md](../../docs/architecture/OVERVIEW.md)
+- **Test Suite**: [tests/test_validation_storage.py](../../tests/test_validation_storage.py)
