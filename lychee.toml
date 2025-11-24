@@ -1,0 +1,17 @@
+# Lychee Link Checker Configuration
+# Created: 2025-01-23
+# Refs: ADR-0002 (Lychee Link Validation and Broken Link Remediation)
+
+# Output verbosity and format
+verbose = "info"
+format = "detailed"
+
+# Cache configuration
+cache = true
+max_cache_age = "7d"
+
+# Exclude paths (user decision: exclude tmp/ and sample_data/)
+exclude_path = ["tmp/", "src/gapless_crypto_data/sample_data/"]
+
+# File extensions to check
+include_verbatim = true
