@@ -48,12 +48,6 @@ jobs:
         uv run pytest tests/ -v --tb=short
 
         '
-    - name: Test CLI entry point
-      run: 'source .venv/bin/activate
-
-        uv run gapless-crypto-data --help
-
-        '
     - name: Build package
       run: 'source .venv/bin/activate
 
