@@ -1,0 +1,27 @@
+{
+  "name": "gapless-crypto-data-release",
+  "version": "0.0.0-semantically-released",
+  "private": true,
+  "description": "Release automation for gapless-crypto-data (Python package)",
+  "scripts": {
+    "release": "semantic-release",
+    "release:dry": "semantic-release --dry-run",
+    "release:no-ci": "semantic-release --no-ci"
+  },
+  "devDependencies": {
+    "semantic-release": "^24.2.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.1",
+    "@semantic-release/release-notes-generator": "^14.0.1",
+    "conventional-changelog-conventionalcommits": "^8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/terrylica/gapless-crypto-data.git"
+  },
+  "author": "terrylica",
+  "license": "MIT"
+}
