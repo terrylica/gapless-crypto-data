@@ -1,98 +1,83 @@
+# Publish to PyPI on GitHub Release
+# ADR-0005: No tests/linting - run locally before release
+#
+# Triggered by: GitHub Release publish event
+# Purpose: Build and publish Python package to PyPI with Sigstore signing
+
 name: Publish to PyPI
+
 on:
   release:
-    types:
-      - published
+    types: [published]
+
 env:
   UV_SYSTEM_PYTHON: 1
+
 jobs:
   build:
     name: Build distribution packages
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
-    - name: Install UV
-      run: curl -LsSf https://astral.sh/uv/install.sh | sh
-    - name: Add UV to PATH
-      run: echo "$HOME/.local/bin" >> $GITHUB_PATH
-    - name: Install dependencies
-      run: 'uv venv
+      - uses: actions/checkout@v4
 
-        source .venv/bin/activate
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
-        uv sync --dev
+      - name: Install UV
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
-        '
-    - name: Validate file encoding
-      run: "echo \"Checking file encoding (UTF-8/ASCII required)...\"\nfind src/ tests/\
-        \ examples/ -name \"*.py\" -o -name \"*.md\" \\\n  -o -name \"*.txt\" -o -name\
-        \ \"*.toml\" -o -name \"*.yml\" \\\n  -o -name \"*.yaml\" 2>/dev/null | \\\
-        \nxargs file --mime-encoding | grep -v -E \"(utf-8|us-ascii)\" && {\n  echo\
-        \ \"\u274C Non-UTF-8/ASCII files found!\"\n  exit 1\n} || {\n  echo \"\u2705\
-        \ All project text files are properly encoded\"\n}\n"
-    - name: Lint with ruff
-      run: 'source .venv/bin/activate
+      - name: Add UV to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-        uv run ruff check .
+      - name: Build package
+        run: |
+          uv venv
+          source .venv/bin/activate
+          uv build
 
-        uv run ruff format --check .
+      - name: Store distribution packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
 
-        '
-    - name: Run tests
-      run: 'source .venv/bin/activate
-
-        uv run pytest tests/ -v --tb=short
-
-        '
-    - name: Build package
-      run: 'source .venv/bin/activate
-
-        uv build
-
-        '
-    - name: Store the distribution packages
-      uses: actions/upload-artifact@v4
-      with:
-        name: python-package-distributions
-        path: dist/
   publish-to-pypi:
     name: Publish to PyPI
-    needs:
-    - build
+    needs: [build]
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
       id-token: write
       contents: read
     steps:
-    - name: Download all the dists
-      uses: actions/download-artifact@v4
-      with:
-        name: python-package-distributions
-        path: dist/
-    - name: Publish distribution packages to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        verbose: true
+      - name: Download distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          verbose: true
+
   sign-artifacts:
-    name: Sign artifacts with Sigstore
-    needs:
-    - publish-to-pypi
+    name: Sign with Sigstore
+    needs: [publish-to-pypi]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-      contents: write  # Required to attach signatures to GitHub release
+      contents: write
     steps:
-    - name: Download all the dists
-      uses: actions/download-artifact@v4
-      with:
-        name: python-package-distributions
-        path: dist/
-    - name: Sign the dists with Sigstore
-      uses: sigstore/gh-action-sigstore-python@v3.0.1
-      with:
-        inputs: ./dist/*.tar.gz ./dist/*.whl
+      - name: Download distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Sign with Sigstore
+        uses: sigstore/gh-action-sigstore-python@v3.0.1
+        with:
+          inputs: ./dist/*.tar.gz ./dist/*.whl
