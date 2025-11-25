@@ -24,6 +24,10 @@ test-env/
 coverage.json
 htmlcov/
 
+# Type checking and testing caches
+.mypy_cache/
+.pytest_cache/
+
 # .Sessions folder - never delete
 .sessions/
 !.sessions/.gitignore
