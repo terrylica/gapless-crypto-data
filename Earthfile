@@ -18,12 +18,12 @@ RUN pip install --no-cache-dir uv
 
 deps:
     COPY pyproject.toml uv.lock ./
-    RUN uv sync --frozen --no-dev
+    RUN uv sync --frozen --no-dev --no-install-project
     SAVE ARTIFACT .venv
 
 deps-dev:
     COPY pyproject.toml uv.lock ./
-    RUN uv sync --frozen
+    RUN uv sync --frozen --no-install-project
     SAVE ARTIFACT .venv
 
 # =============================================================================
