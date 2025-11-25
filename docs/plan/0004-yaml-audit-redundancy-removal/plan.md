@@ -1,8 +1,8 @@
 ---
 adr-id: "0004"
-status: "in-progress"
+status: "completed"
 created: "2025-11-24"
-updated: "2025-11-24"
+updated: "2025-11-25"
 ---
 
 # Implementation Plan: YAML Documentation Audit and Redundancy Removal
@@ -50,10 +50,10 @@ updated: "2025-11-24"
 
 1. ✅ ADR-0004 documenting decision rationale
 2. ✅ This plan (docs/plan/0004-yaml-audit-redundancy-removal/plan.md)
-3. ⏳ 24+ files deleted (23 milestones + inventory + stale API files)
-4. ⏳ v3.x milestones archived
-5. ⏳ All accuracy issues fixed (8 issues across 5 files)
-6. ⏳ 2 commits pushed to origin/main
+3. ✅ 27 files deleted (23 milestones + inventory + 2 API plans + v3.x moves)
+4. ✅ v3.x milestones archived to docs/milestones/archive/
+5. ✅ All accuracy issues fixed (8 issues across 5 files)
+6. ✅ 2 commits pushed to origin/main
 
 ---
 
@@ -214,6 +214,13 @@ updated: "2025-11-24"
 ### 2025-11-24 Implementation Phase
 
 - **Started**: Creating ADR-0004 and plan
+
+### 2025-11-25 Implementation Complete
+
+- **Commit 1** (`8540bf6`): Deleted 27 files, archived v3.x milestones (6,943 deletions)
+- **Commit 2** (`4c1a2da`): Fixed all accuracy issues (8 fixes across 5 files)
+- **Validation**: Lychee link validation passed for ADR-0004 scope
+- **YAML reduction**: ~8,000 → ~1,700 lines (79% reduction)
 
 ---
 
