@@ -2,7 +2,7 @@
 
 Complete documentation for gapless-crypto-data - ultra-fast cryptocurrency data collection from Binance's public repository with zero-gap guarantee.
 
-**Version**: 3.2.0 | **Type**: Cryptocurrency Data Collection | **Compatibility**: UV-native Python SDK
+**Version**: 4.0.1 | **Type**: Cryptocurrency Data Collection | **Compatibility**: UV-native Python SDK
 
 ---
 
@@ -206,12 +206,6 @@ Complete documentation for gapless-crypto-data - ultra-fast cryptocurrency data 
   - Environment variables
   - Security configuration
 
-### Build Documentation
-
-- [UV_BUILD_SUCCESS.md](UV_BUILD_SUCCESS.md) - UV build success
-  - UV build system validation
-  - Build configuration
-
 ### Milestone Planning
 
 - [docs/MILESTONE_v3.0.0.yaml](docs/MILESTONE_v3.0.0.yaml) - v3.0.0 milestone
@@ -223,14 +217,6 @@ Complete documentation for gapless-crypto-data - ultra-fast cryptocurrency data 
   - Quality targets
 
 ### Audit Documentation
-
-- [CONFORMITY_AUDIT_REPORT.md](CONFORMITY_AUDIT_REPORT.md) - Conformity audit
-  - Code quality assessment
-  - Standards compliance
-
-- [dead_code_audit_plan.md](dead_code_audit_plan.md) - Dead code audit
-  - Dead code detection strategy
-  - Cleanup plan
 
 - [docs/audit/comprehensive-audit-plan.yaml](docs/audit/comprehensive-audit-plan.yaml) - Audit plan
   - Comprehensive audit strategy
@@ -330,16 +316,6 @@ Complete version history with technical details, hard-learned lessons, and imple
   - Documentation-specific changes
   - Structural improvements
 
-### Release Notes
-
-- [RELEASE_NOTES.md](RELEASE_NOTES.md) - Detailed release notes
-  - Version-specific features
-  - Migration guides
-
-- [RELEASE_NOTES_SHORT.md](RELEASE_NOTES_SHORT.md) - Short release notes
-  - Quick version summaries
-  - Key highlights only
-
 ---
 
 ## Documentation Statistics
@@ -387,4 +363,4 @@ Complete version history with technical details, hard-learned lessons, and imple
 
 ---
 
-**Last Updated**: 2025-10-18 (v3.2.0)
+**Last Updated**: 2025-11-24 (v4.0.1)
