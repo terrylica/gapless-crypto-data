@@ -43,11 +43,13 @@ completed: "2025-01-22"
 ### Background
 
 **Repository Split Decision** (ADR-0001):
+
 - ClickHouse implementation moved to `~/eon/gapless-crypto-clickhouse`
 - This repository (`gapless-crypto-data`) continues file-based CSV collection
 - v4.0.0 was published to PyPI in error with ClickHouse references (yanked 2025-01-22)
 
 **CLI Deprecation Timeline**:
+
 - v3.3.0 (2025-10-18): CLI deprecated with warnings
 - v4.0.0 (planned): CLI removal
 - v4.0.1 (this release): Actual CLI removal implementation
@@ -55,17 +57,20 @@ completed: "2025-01-22"
 ### Problem Statement
 
 v4.0.0 was published to PyPI containing:
+
 - ClickHouse database integration (moved to separate repo)
 - Database-first architecture (not appropriate for this repo)
 - Incorrect implementation for gapless-crypto-data package
 
 **Actions Taken**:
+
 1. ✅ Yanked v4.0.0 from PyPI (2025-01-22)
 2. ✅ Deleted v4.0.0 tag and GitHub release
 3. ✅ Deleted main-clickhouse branch
 4. ✅ Created ADR-0001 documenting repository split
 
 **Current State**:
+
 - Repository at v3.3.0 on main branch
 - Code updated to v4.0.1 (commits ready)
 - Need to release v4.0.1 as correct v4.x implementation
@@ -91,7 +96,7 @@ v4.0.0 was published to PyPI containing:
 ### Phase 1: Code Changes ✅
 
 - [x] Remove CLI entry point from pyproject.toml
-- [x] Update version to 4.0.1 in pyproject.toml and __init__.py
+- [x] Update version to 4.0.1 in pyproject.toml and **init**.py
 - [x] Update CLI deprecation notices to past tense (README, CLI_MIGRATION_GUIDE)
 - [x] Update cli.py main() to exit with removal error
 - [x] Add CHANGELOG entry for v4.0.1
@@ -160,16 +165,19 @@ v4.0.0 was published to PyPI containing:
 ## Risk Assessment
 
 ### Low Risk
+
 - Python API unchanged (fully backward compatible)
 - File-based architecture unchanged
 - No new dependencies
 
 ### Medium Risk
+
 - CLI removal (breaking change)
   - **Mitigation**: Deprecated since v3.3.0, comprehensive migration guide
   - **Impact**: Users still on CLI must migrate to Python API
 
 ### Negligible Risk
+
 - PyPI v4.0.0 already yanked
 - Version number gap (v4.0.0 → v4.0.1) documented in CHANGELOG
 
