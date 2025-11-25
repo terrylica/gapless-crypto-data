@@ -37,3 +37,10 @@ htmlcov/
 .lychee-results.txt
 .lychee-results.json
 .lychee-results.md
+
+# Node.js (semantic-release)
+node_modules/
+package-lock.json
+
+# Earthly logs and artifacts
+logs/
