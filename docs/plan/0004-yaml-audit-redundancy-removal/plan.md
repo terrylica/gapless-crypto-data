@@ -64,15 +64,18 @@ updated: "2025-11-25"
 **Discovered via 3-agent parallel DCTL survey** (2025-11-24):
 
 **Agent 1 (Inventory)**: Found 31 YAML files totaling ~8,000 lines
+
 - 73% is historical milestone documentation (v2.x series)
 - Project is at v4.0.1, making v2.x milestones obsolete
 
 **Agent 2 (Accuracy)**: Found 8 inaccuracies
+
 - 2 CRITICAL: CLAUDE.md version/features wrong
 - 4 HIGH: CURRENT_ARCHITECTURE_STATUS and SDK_QUALITY_STANDARDS outdated
 - 2 MEDIUM: Minor discrepancies
 
 **Agent 3 (Redundancy)**: Found major redundancies
+
 - DOCUMENTATION_INVENTORY.yaml superseded by SSOT file
 - 23 v2.x milestone files are historical-only
 - Stale planning files for completed releases
@@ -80,14 +83,17 @@ updated: "2025-11-25"
 ### Files Inventory
 
 **To Delete (24 files, ~6,300 lines)**:
+
 - docs/milestones/MILESTONE_v2.0.0.yaml through v2.15.1.yaml (23 files)
 - docs/DOCUMENTATION_INVENTORY.yaml (1 file)
 
 **To Archive (2 files)**:
+
 - docs/MILESTONE_v3.0.0.yaml → docs/milestones/archive/
 - docs/MILESTONE_v3.1.0.yaml → docs/milestones/archive/
 
 **To Fix (5 files, 8 issues)**:
+
 - CLAUDE.md (2 issues: lines 66, 70)
 - docs/CURRENT_ARCHITECTURE_STATUS.yaml (2 issues: lines 26, 59-67)
 - docs/SDK_QUALITY_STANDARDS.yaml (2 issues: lines 20-24, 31-46)
@@ -97,6 +103,7 @@ updated: "2025-11-25"
 ### Technical Constraints
 
 **User Decisions** (from clarification loop):
+
 - v2.x milestones: Delete entirely (not archive)
 - v3.x milestones: Archive (not delete)
 - DOCUMENTATION_INVENTORY.yaml: Delete
@@ -227,6 +234,7 @@ updated: "2025-11-25"
 ## Commit Messages
 
 **Commit 1**: Deletions and archives
+
 ```
 chore(yaml): remove 24 redundant files and archive v3.x milestones
 
@@ -241,6 +249,7 @@ Refs: ADR-0004
 ```
 
 **Commit 2**: Accuracy fixes
+
 ```
 fix(docs): correct version references and feature status
 

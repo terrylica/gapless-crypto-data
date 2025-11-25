@@ -78,30 +78,36 @@ completed: "2025-11-24"
 **Discovered via 6-agent parallel DCTL survey** (2025-11-24):
 
 **Root Directory Clutter** (31 files):
+
 - 3 completed audit reports from Sept 2025 (100% done, findings in current docs)
 - 2 outdated release notes (v3.0.0 and v2.16.0 content, current is v4.0.1)
 - tmp/ directory with 468 KB of v4.0.0 migration artifacts
 
 **Critical .gitignore Gaps**:
+
 - .mypy_cache/ (110 MB) - NOT ignored, at risk of accidental commit
 - .pytest_cache/ (68 KB) - NOT ignored
 
 **Critical Config Errors** (P0 - breaks automation):
+
 1. cliff-release-notes.toml:19 - References wrong repo ("rangebar" instead of "gapless-crypto-data")
 2. cliff.toml:8 - References wrong project ("RangeBar" instead of "Gapless Crypto Data")
 3. .cz.toml - Duplicate commitizen config with wrong Cargo.toml reference
 4. publish.yml:51-55 - Tests removed CLI (CLI removed in v4.0.0)
 
 **Outdated Version References**:
+
 - DOCUMENTATION.md line 5: Shows v3.2.0 (current is v4.0.1)
 - DOCUMENTATION.md line 390: Shows v3.2.0 and 2025-10-18 date
 
 **Naming Inconsistency**:
+
 - sdk-quality-standards.yaml - Only kebab-case YAML in root docs/ (should be UPPERCASE_SNAKE_CASE)
 
 ### Technical Constraints
 
 **User Decisions** (from clarification loop):
+
 - Priority: Root directory cleanup over other housekeeping
 - tmp/ policy: Delete all subdirectories (findings incorporated into ADRs)
 - Audit reports: Delete (not archive) - findings captured in current docs
@@ -113,6 +119,7 @@ completed: "2025-11-24"
 - Commit strategy: 5 granular commits
 
 **Scope** (included):
+
 - ✅ Root directory file cleanup
 - ✅ Configuration error fixes
 - ✅ .gitignore updates for Python caches
@@ -120,6 +127,7 @@ completed: "2025-11-24"
 - ✅ Critical naming consistency
 
 **Scope** (excluded):
+
 - ❌ Markdown file naming (python-api.md, pypi-documentation.md, etc.) - 92% consistent, keep as-is
 - ❌ tmp/ to .gitignore - directory being deleted entirely
 - ❌ .claude/ to .gitignore - project-specific, not needed
@@ -129,6 +137,7 @@ completed: "2025-11-24"
 ### Current State Analysis
 
 **Files to Delete** (8 total):
+
 1. CONFORMITY_AUDIT_REPORT.md (224 lines, Sept 25 2025, 100% complete)
 2. dead_code_audit_plan.md (121 lines, Sept 25 2025, 26/26 variables removed)
 3. UV_BUILD_SUCCESS.md (106 lines, build validation complete)
@@ -140,15 +149,18 @@ completed: "2025-11-24"
 9. tmp/pypi-package-split/ (16 KB, investigation complete, findings in ADR-0011)
 
 **Config Files to Fix** (4 total):
+
 1. cliff-release-notes.toml - Line 19
 2. cliff.toml - Line 8
 3. .cz.toml - DELETE entire file
 4. .github/workflows/publish.yml - Lines 51-55
 
 **Documentation to Update** (1 file):
+
 1. DOCUMENTATION.md - Lines 5 and 390
 
 **File to Rename** (1 file):
+
 1. docs/sdk-quality-standards.yaml → docs/SDK_QUALITY_STANDARDS.yaml
 
 ### Success Criteria
@@ -289,6 +301,7 @@ completed: "2025-11-24"
 ## Commit Messages
 
 **Commit 1**: Update .gitignore
+
 ```
 chore(gitignore): add Python cache directories
 
@@ -301,6 +314,7 @@ Refs: ADR-0003
 ```
 
 **Commit 2**: Fix config errors
+
 ```
 fix(config): correct repository and project names in automation
 
@@ -315,6 +329,7 @@ Refs: ADR-0003
 ```
 
 **Commit 3**: Clean root directory
+
 ```
 chore(cleanup): remove completed audits and obsolete documentation
 
@@ -336,6 +351,7 @@ Refs: ADR-0003
 ```
 
 **Commit 4**: Update version
+
 ```
 docs(version): update DOCUMENTATION.md to v4.0.1
 
@@ -348,6 +364,7 @@ Refs: ADR-0003
 ```
 
 **Commit 5**: Standardize naming
+
 ```
 refactor(naming): standardize SDK standards YAML to UPPERCASE convention
 

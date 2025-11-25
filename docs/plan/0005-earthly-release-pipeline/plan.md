@@ -70,13 +70,14 @@ updated: "2025-11-25"
 
 **Current State Analysis** (2025-11-25):
 
-| Workflow | Issues |
-|----------|--------|
-| ci.yml | Contains tests + linting (POLICY VIOLATION) |
+| Workflow    | Issues                                      |
+| ----------- | ------------------------------------------- |
+| ci.yml      | Contains tests + linting (POLICY VIOLATION) |
 | publish.yml | Contains tests + linting (POLICY VIOLATION) |
-| release.yml | Uses deprecated actions/create-release@v1 |
+| release.yml | Uses deprecated actions/create-release@v1   |
 
 **User Requirements** (from conversation):
+
 - Earthly as canonical pipeline
 - semantic-release for versioning
 - Pushover alerts linking to GitHub Release
@@ -86,15 +87,18 @@ updated: "2025-11-25"
 ### Technical Constraints
 
 **Doppler Secrets Required**:
+
 - `PUSHOVER_USER_KEY`: Pushover user identifier
 - `PUSHOVER_API_TOKEN`: Pushover application token
 - `GH_TOKEN`: GitHub token for semantic-release (may use GITHUB_TOKEN)
 
 **Earthly Requirements**:
+
 - Earthly CLI installed locally
 - Docker/Colima running for containerized builds
 
 **semantic-release Requirements**:
+
 - Node.js for npx execution
 - Conventional commit history
 
@@ -168,20 +172,24 @@ updated: "2025-11-25"
 - **Commit 3** (`a403ffd`): Pushover scripts + .gitignore updates
 
 **Files created**:
+
 - `Earthfile` - Build, release-stats, pushover-notify targets
 - `.releaserc.json` - semantic-release configuration
 - `package.json` - Node.js dependencies for semantic-release
 - `scripts/test-pushover.sh` - Local Pushover testing script
 
 **Files modified**:
+
 - `.github/workflows/publish.yml` - Removed tests/linting
 - `.github/workflows/release.yml` - Modern actions + Earthly + Pushover
 - `.gitignore` - Added node_modules, logs
 
 **Files deleted**:
+
 - `.github/workflows/ci.yml` - Policy violation (tests in CI)
 
 **User actions required**:
+
 - Add `PUSHOVER_USER_KEY` to Doppler (claude-config/prd)
 - Add `PUSHOVER_API_TOKEN` to Doppler (claude-config/prd)
 - Run `npm install` to install semantic-release dependencies
@@ -192,6 +200,7 @@ updated: "2025-11-25"
 ## Commit Messages
 
 **Commit 1**: Earthfile and semantic-release
+
 ```
 feat(ci): add Earthly pipeline and semantic-release configuration
 
@@ -203,6 +212,7 @@ Refs: ADR-0005
 ```
 
 **Commit 2**: GitHub Actions refactoring
+
 ```
 refactor(ci): remove tests from GitHub Actions per local-first policy
 
@@ -216,6 +226,7 @@ Refs: ADR-0005
 ```
 
 **Commit 3**: Pushover integration
+
 ```
 feat(ci): add Pushover notifications for release events
 

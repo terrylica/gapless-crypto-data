@@ -50,6 +50,7 @@ Current CI/CD infrastructure has multiple issues:
 **Chosen option: Option 1 (Earthly + semantic-release + Pushover)**
 
 Rationale:
+
 - Earthly provides reproducible local-first pipeline
 - semantic-release eliminates manual versioning errors
 - Pushover alerts provide immediate release visibility
@@ -67,9 +68,9 @@ Rationale:
 ### Negative
 
 - **New dependency**: Earthly CLI required for local development
-  - *Mitigation*: Simple installation via Homebrew
+  - _Mitigation_: Simple installation via Homebrew
 - **Learning curve**: Team must learn Earthly syntax
-  - *Mitigation*: Well-documented Earthfile with comments
+  - _Mitigation_: Well-documented Earthfile with comments
 
 ### Neutral
 
@@ -81,12 +82,14 @@ Rationale:
 See: `docs/plan/0005-earthly-release-pipeline/plan.md`
 
 **Commit Strategy**:
+
 1. Add Earthfile with release-validation targets
 2. Add semantic-release configuration
 3. Update GitHub Actions to use Earthly
 4. Add Pushover notification integration
 
 **Validation**:
+
 - Local Earthly execution passes
 - GitHub Actions workflow succeeds
 - Pushover notification received on release

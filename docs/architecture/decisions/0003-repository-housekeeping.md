@@ -18,6 +18,7 @@ After v4.0.1 release and ClickHouse migration (ADR-0001), the repository accumul
 - **Naming inconsistencies**: sdk-quality-standards.yaml uses kebab-case while convention is UPPERCASE_SNAKE_CASE
 
 **Investigation Methodology**: Multi-agent DCTL (Dynamically Created Todo List) survey across 6 perspectives:
+
 1. Root directory structure
 2. Configuration files
 3. Temporary/build artifacts
@@ -35,6 +36,7 @@ After v4.0.1 release and ClickHouse migration (ADR-0001), the repository accumul
 ## Considered Options
 
 ### Option 1: Comprehensive Cleanup (SELECTED)
+
 - Fix all P0 config errors immediately
 - Delete completed audit reports (findings captured in current docs)
 - Delete tmp/ directory entirely (findings incorporated into ADRs)
@@ -43,12 +45,14 @@ After v4.0.1 release and ClickHouse migration (ADR-0001), the repository accumul
 - Fix naming inconsistency
 
 ### Option 2: Conservative Cleanup
+
 - Archive audit reports to docs/audit/ instead of deleting
 - Archive tmp/ findings to docs/validation/archives/
 - Skip config fixes (defer to separate task)
 - Keep version references as-is
 
 ### Option 3: Minimal Cleanup
+
 - Only add .gitignore entries
 - Keep all files for historical reference
 - Skip config fixes and version updates
@@ -58,6 +62,7 @@ After v4.0.1 release and ClickHouse migration (ADR-0001), the repository accumul
 **Chosen option: Option 1 (Comprehensive Cleanup)**
 
 Rationale:
+
 - CHANGELOG.md is canonical version history (no need for duplicate RELEASE_NOTES)
 - Completed audits (Sept 2025) are historical snapshots; current state in docs/CURRENT_ARCHITECTURE_STATUS.yaml
 - tmp/ artifacts from v4.0.0 migration already incorporated into ADR-0001
@@ -77,9 +82,9 @@ Rationale:
 ### Negative
 
 - **Historical data loss**: Audit reports and tmp/ investigation artifacts permanently deleted
-  - *Mitigation*: All findings already incorporated into ADRs and current documentation
+  - _Mitigation_: All findings already incorporated into ADRs and current documentation
 - **Minor risk**: Deleting tmp/ before verifying all findings extracted
-  - *Mitigation*: ADR-0001 (repository split), ADR-0008 (clickhouse viz), ADR-0011 (PyPI fork rejection) capture key findings
+  - _Mitigation_: ADR-0001 (repository split), ADR-0008 (clickhouse viz), ADR-0011 (PyPI fork rejection) capture key findings
 
 ### Neutral
 
@@ -91,6 +96,7 @@ Rationale:
 See: `docs/plan/0003-repository-housekeeping/plan.md`
 
 **Commit Strategy** (5 commits):
+
 1. Update .gitignore (.mypy_cache/, .pytest_cache/)
 2. Fix config errors (cliff.toml, cliff-release-notes.toml, publish.yml, delete .cz.toml)
 3. Delete root files (3 audits + 2 release notes + tmp/)
@@ -98,6 +104,7 @@ See: `docs/plan/0003-repository-housekeeping/plan.md`
 5. Rename sdk-quality-standards.yaml → SDK_QUALITY_STANDARDS.yaml
 
 **Validation**:
+
 - Git status confirms clean tree
 - Lychee link validation passes
 - CHANGELOG generation works (cliff.toml fix verified)
