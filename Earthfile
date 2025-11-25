@@ -69,7 +69,7 @@ pushover-notify:
     ARG --required VERSION
     ARG --required RELEASE_URL
     ARG --required PUSHOVER_USER_KEY
-    ARG --required PUSHOVER_API_TOKEN
+    ARG --required PUSHOVER_APP_TOKEN
     ARG TITLE="gapless-crypto-data Release"
     ARG PRIORITY=0
 
@@ -77,9 +77,9 @@ pushover-notify:
     RUN apk add --no-cache curl
 
     # Send Pushover notification
-    RUN --no-cache --secret PUSHOVER_USER_KEY --secret PUSHOVER_API_TOKEN \
+    RUN --no-cache --secret PUSHOVER_USER_KEY --secret PUSHOVER_APP_TOKEN \
         curl -s \
-        --form-string "token=$PUSHOVER_API_TOKEN" \
+        --form-string "token=$PUSHOVER_APP_TOKEN" \
         --form-string "user=$PUSHOVER_USER_KEY" \
         --form-string "title=$TITLE" \
         --form-string "message=Version $VERSION released successfully" \
@@ -96,7 +96,7 @@ release-validate:
     ARG --required VERSION
     ARG --required RELEASE_URL
     ARG PUSHOVER_USER_KEY
-    ARG PUSHOVER_API_TOKEN
+    ARG PUSHOVER_APP_TOKEN
 
     # Build package
     BUILD +build
@@ -105,12 +105,12 @@ release-validate:
     BUILD +release-stats --VERSION=$VERSION --RELEASE_URL=$RELEASE_URL
 
     # Send notification (if credentials provided)
-    IF [ -n "$PUSHOVER_USER_KEY" ] && [ -n "$PUSHOVER_API_TOKEN" ]
+    IF [ -n "$PUSHOVER_USER_KEY" ] && [ -n "$PUSHOVER_APP_TOKEN" ]
         BUILD +pushover-notify \
             --VERSION=$VERSION \
             --RELEASE_URL=$RELEASE_URL \
             --PUSHOVER_USER_KEY=$PUSHOVER_USER_KEY \
-            --PUSHOVER_API_TOKEN=$PUSHOVER_API_TOKEN
+            --PUSHOVER_APP_TOKEN=$PUSHOVER_APP_TOKEN
     END
 
 # =============================================================================

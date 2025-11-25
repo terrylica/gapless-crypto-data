@@ -9,8 +9,8 @@
 # Prerequisites:
 #   - Doppler CLI: brew install dopplerhq/cli/doppler
 #   - Doppler auth: doppler login
-#   - PUSHOVER_USER_KEY in Doppler (claude-config/prd)
-#   - PUSHOVER_API_TOKEN in Doppler (claude-config/prd)
+#   - PUSHOVER_USER_KEY in Doppler (notifications/prd)
+#   - PUSHOVER_APP_TOKEN in Doppler (notifications/prd)
 # =============================================================================
 
 set -euo pipefail
@@ -26,22 +26,22 @@ NC='\033[0m'
 
 echo -e "${YELLOW}Testing Pushover notification...${NC}"
 
-# Get credentials from Doppler
-PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY --project claude-config --config prd --plain 2>/dev/null) || {
+# Get credentials from Doppler (notifications project)
+PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY --project notifications --config prd --plain 2>/dev/null) || {
     echo -e "${RED}ERROR: PUSHOVER_USER_KEY not found in Doppler${NC}"
-    echo "Add with: doppler secrets set PUSHOVER_USER_KEY='your-user-key' --project claude-config --config prd"
+    echo "Add with: doppler secrets set PUSHOVER_USER_KEY='your-user-key' --project notifications --config prd"
     exit 1
 }
 
-PUSHOVER_API_TOKEN=$(doppler secrets get PUSHOVER_API_TOKEN --project claude-config --config prd --plain 2>/dev/null) || {
-    echo -e "${RED}ERROR: PUSHOVER_API_TOKEN not found in Doppler${NC}"
-    echo "Add with: doppler secrets set PUSHOVER_API_TOKEN='your-api-token' --project claude-config --config prd"
+PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_APP_TOKEN --project notifications --config prd --plain 2>/dev/null) || {
+    echo -e "${RED}ERROR: PUSHOVER_APP_TOKEN not found in Doppler${NC}"
+    echo "Add with: doppler secrets set PUSHOVER_APP_TOKEN='your-app-token' --project notifications --config prd"
     exit 1
 }
 
 # Send test notification
 RESPONSE=$(curl -s \
-    --form-string "token=$PUSHOVER_API_TOKEN" \
+    --form-string "token=$PUSHOVER_APP_TOKEN" \
     --form-string "user=$PUSHOVER_USER_KEY" \
     --form-string "title=gapless-crypto-data Test" \
     --form-string "message=Test notification for version $VERSION" \
