@@ -430,7 +430,7 @@ x-ssot-architecture:
         examples:
           - "DATA_COLLECTION.md → python-api.md, OVERVIEW.md, DATA_FORMAT.md"
           - "STORAGE.md → QUERY_PATTERNS.md, OVERVIEW.md"
-          - "SETUP.md → COMMANDS.md, sdk-quality-standards.yaml"
+          - "SETUP.md → COMMANDS.md, SDK_QUALITY_STANDARDS.yaml"
         benefit: "Progressive disclosure through natural navigation paths"
 
       slo_sections_added:

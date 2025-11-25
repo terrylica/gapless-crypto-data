@@ -361,4 +361,4 @@ uv run pre-commit run --all-files
 - **Development Commands**: [COMMANDS.md](../../docs/development/COMMANDS.md)
 - **CLI Migration Guide**: [CLI_MIGRATION_GUIDE.md](../../docs/development/CLI_MIGRATION_GUIDE.md) (planned)
 - **Publishing Guide**: [PUBLISHING.md](../../docs/development/PUBLISHING.md) (planned)
-- **SDK Quality Standards**: [docs/sdk-quality-standards.yaml](../../docs/sdk-quality-standards.yaml)
+- **SDK Quality Standards**: [docs/SDK_QUALITY_STANDARDS.yaml](../../docs/SDK_QUALITY_STANDARDS.yaml)

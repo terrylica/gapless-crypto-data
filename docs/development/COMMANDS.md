@@ -483,5 +483,5 @@ Before creating pull request:
 ## Related Documentation
 
 - **Development Setup**: [SETUP.md](../../docs/development/SETUP.md)
-- **SDK Quality Standards**: [docs/sdk-quality-standards.yaml](../../docs/sdk-quality-standards.yaml)
+- **SDK Quality Standards**: [docs/SDK_QUALITY_STANDARDS.yaml](../../docs/SDK_QUALITY_STANDARDS.yaml)
 - **Architecture Overview**: [docs/architecture/OVERVIEW.md](../../docs/architecture/OVERVIEW.md)

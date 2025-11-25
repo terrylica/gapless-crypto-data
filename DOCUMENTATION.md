@@ -143,7 +143,7 @@ Complete documentation for gapless-crypto-data - ultra-fast cryptocurrency data 
 
 ### SDK Quality Standards
 
-- [docs/sdk-quality-standards.yaml](docs/sdk-quality-standards.yaml) - SDK quality specification
+- [docs/SDK_QUALITY_STANDARDS.yaml](docs/SDK_QUALITY_STANDARDS.yaml) - SDK quality specification
   - Type safety standards (PEP 561)
   - Exception hierarchy
   - AI discoverability
