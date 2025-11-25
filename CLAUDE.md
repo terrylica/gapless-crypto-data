@@ -37,7 +37,7 @@ Gapless Crypto Data is a high-performance cryptocurrency data collection tool pr
 
 **Primary Use Case**: Programmatic API consumption (`import gapless_crypto_data`) by downstream packages and AI coding agents
 
-**Specification**: [`docs/sdk-quality-standards.yaml`](./docs/sdk-quality-standards.yaml) - Machine-readable standards
+**Specification**: [`docs/SDK_QUALITY_STANDARDS.yaml`](./docs/SDK_QUALITY_STANDARDS.yaml) - Machine-readable standards
 
 **Key Abstractions**:
 
@@ -63,8 +63,8 @@ Gapless Crypto Data is a high-performance cryptocurrency data collection tool pr
 
 ## Current Architecture
 
-**Version**: v2.5.0 (validation v3.3.0+ with DuckDB persistence)
+**Version**: v4.0.1 (validation v3.3.0+ with DuckDB persistence)
 
 **Canonical Reference**: `docs/CURRENT_ARCHITECTURE_STATUS.yaml`
 
-**Production-Ready**: Core collection, intelligent resume (joblib Memory), memory streaming (Polars lazy), regression detection (PyOD ensemble), native multi-symbol CLI
+**Production-Ready**: Core collection, intelligent resume (JSON checkpointing), CSV and Parquet output formats, zero-gap guarantee via dual-source validation

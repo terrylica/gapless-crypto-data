@@ -164,16 +164,6 @@ Complete documentation for gapless-crypto-data - ultra-fast cryptocurrency data 
   - Parquet format implementation
   - Dependency pruning strategy
 
-### Stabilization Plans
-
-- [docs/api/v3.0.0-stabilization-plan.yaml](docs/api/v3.0.0-stabilization-plan.yaml) - v3.0.0 stabilization
-  - Production readiness roadmap
-  - API stability guarantees
-
-- [docs/api/v3.1.0-test-quality-plan.yaml](docs/api/v3.1.0-test-quality-plan.yaml) - Test quality plan
-  - Test coverage strategy
-  - Quality metrics targets
-
 ---
 
 ## Development
@@ -206,15 +196,13 @@ Complete documentation for gapless-crypto-data - ultra-fast cryptocurrency data 
   - Environment variables
   - Security configuration
 
-### Milestone Planning
+### Archived Milestones
 
-- [docs/MILESTONE_v3.0.0.yaml](docs/MILESTONE_v3.0.0.yaml) - v3.0.0 milestone
-  - Production stabilization goals
-  - Implementation timeline
+Historical milestone documentation archived for reference:
 
-- [docs/MILESTONE_v3.1.0.yaml](docs/MILESTONE_v3.1.0.yaml) - v3.1.0 milestone
-  - Feature roadmap
-  - Quality targets
+- [docs/milestones/archive/](docs/milestones/archive/) - Archived v3.x milestones
+  - v3.0.0, v3.1.0 milestone specifications
+  - v2.x milestones removed (history preserved in git)
 
 ### Audit Documentation
 
@@ -232,72 +220,9 @@ Complete documentation for gapless-crypto-data - ultra-fast cryptocurrency data 
 
 **Deep technical documentation and machine-readable specifications.**
 
-### Historical Milestones (OpenAPI 3.1.1 Format)
+### Historical Milestones
 
-Complete version history with technical details, hard-learned lessons, and implementation rationale.
-
-**v2.15.x Series** (Latest v2 Branch)
-
-- [docs/milestones/MILESTONE_v2.15.1.yaml](docs/milestones/MILESTONE_v2.15.1.yaml) - Latest v2 series
-- [docs/milestones/MILESTONE_v2.15.0.yaml](docs/milestones/MILESTONE_v2.15.0.yaml) - AI agent integration
-
-**v2.14.x Series** (DataFrame Simplification)
-
-- [docs/milestones/MILESTONE_v2.14.0.yaml](docs/milestones/MILESTONE_v2.14.0.yaml) - DataFrame simplification
-
-**v2.12.x - v2.13.x Series** (GaplessDataFrame)
-
-- [docs/milestones/MILESTONE_v2.12.0.yaml](docs/milestones/MILESTONE_v2.12.0.yaml) - GaplessDataFrame implementation
-
-**v2.11.x Series** (Datetime Enhancement)
-
-- [docs/milestones/MILESTONE_v2.11.0.yaml](docs/milestones/MILESTONE_v2.11.0.yaml) - Datetime index enhancement
-
-**v2.10.x Series** (Dependency Pruning)
-
-- [docs/milestones/MILESTONE_v2.10.0.yaml](docs/milestones/MILESTONE_v2.10.0.yaml) - Dependency pruning & Parquet
-
-**v2.9.x Series** (Performance Optimization)
-
-- [docs/milestones/MILESTONE_v2.9.0.yaml](docs/milestones/MILESTONE_v2.9.0.yaml) - Performance optimization
-
-**v2.8.x Series** (Gap Filling Enhancement)
-
-- [docs/milestones/MILESTONE_v2.8.0.yaml](docs/milestones/MILESTONE_v2.8.0.yaml) - Gap filling enhancement
-
-**v2.7.x Series** (Quality Improvements)
-
-- [docs/milestones/MILESTONE_v2.7.0.yaml](docs/milestones/MILESTONE_v2.7.0.yaml) - Quality improvements
-
-**v2.6.x Series** (CLI Enhancement)
-
-- [docs/milestones/MILESTONE_v2.6.1.yaml](docs/milestones/MILESTONE_v2.6.1.yaml) - Patch release
-- [docs/milestones/MILESTONE_v2.6.0.yaml](docs/milestones/MILESTONE_v2.6.0.yaml) - CLI enhancement
-
-**v2.5.x Series** (Validation & Checkpointing)
-
-- [docs/milestones/MILESTONE_v2.5.0.yaml](docs/milestones/MILESTONE_v2.5.0.yaml) - Validation & checkpointing
-
-**v2.4.x Series** (Gap Filling Integration)
-
-- [docs/milestones/MILESTONE_v2.4.0.yaml](docs/milestones/MILESTONE_v2.4.0.yaml) - Gap filling integration
-
-**v2.3.x Series** (Metadata Enhancement)
-
-- [docs/milestones/MILESTONE_v2.3.0.yaml](docs/milestones/MILESTONE_v2.3.0.yaml) - Metadata enhancement
-
-**v2.2.x Series** (Timestamp Format Support)
-
-- [docs/milestones/MILESTONE_v2.2.0.yaml](docs/milestones/MILESTONE_v2.2.0.yaml) - Timestamp format support
-
-**v2.1.x Series** (UTC Timezone Fix)
-
-- [docs/milestones/MILESTONE_v2.1.0.yaml](docs/milestones/MILESTONE_v2.1.0.yaml) - UTC timezone fix
-
-**v2.0.x Series** (Multi-Symbol Support)
-
-- [docs/milestones/MILESTONE_v2.0.1.yaml](docs/milestones/MILESTONE_v2.0.1.yaml) - Patch release
-- [docs/milestones/MILESTONE_v2.0.0.yaml](docs/milestones/MILESTONE_v2.0.0.yaml) - Multi-symbol support
+v2.x milestone files have been removed (history preserved in git). See [CHANGELOG.md](CHANGELOG.md) for complete version history.
 
 ---
 

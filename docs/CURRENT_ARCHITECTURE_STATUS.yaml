@@ -23,7 +23,7 @@ components:
 
 # CURRENT ARCHITECTURE STATUS (2025-09-17)
 x-current-status:
-  canonical_version: "v3.0.0"
+  canonical_version: "v4.0.1"
   architecture_phase: "OPTIMIZED"
 
   implemented_capabilities:
@@ -57,14 +57,12 @@ x-current-status:
         - "Backward compatibility with CSV as default"
 
     cli_interface:
-      status: "PRODUCTION_READY"
-      description: "Traditional argparse CLI with multi-symbol support"
+      status: "REMOVED_IN_V4.0.0"
+      description: "CLI removed in v4.0.0. Use Python API. See docs/development/CLI_MIGRATION_GUIDE.md"
       technical_specs:
-        - "Traditional argparse interface with standard Python patterns"
-        - "Comma-separated multi-symbol support"
-        - "16 timeframe options with validation"
-        - "Custom date ranges and output directories"
-        - "Sequential processing with progress reporting"
+        - "Removed in v4.0.0 - use Python API instead"
+        - "Migration guide: docs/development/CLI_MIGRATION_GUIDE.md"
+        - "API functions: fetch_data(), download(), fill_gaps()"
 
     dual_parameter_api:
       status: "PRODUCTION_READY"
@@ -175,12 +173,11 @@ x-current-status:
     integration_verified: true
 
   documentation_status:
-    current_milestone: "docs/MILESTONE_v3.0.0.yaml"
+    archived_milestones: "docs/milestones/archive/"
     architecture_status: "docs/CURRENT_ARCHITECTURE_STATUS.yaml"
-    api_enhancement_spec: "docs/api-dual-parameter-enhancement.yaml"
+    api_enhancement_spec: "docs/api/dual-parameter-enhancement.yaml"
     project_guide: "CLAUDE.md"
     user_documentation: "README.md"
-    implementation_plan: "docs/api/v3.0.0-stabilization-plan.yaml"
 
     outdated_references_pruned: true
     canonical_source_established: true
@@ -196,8 +193,8 @@ x-evolution-guidance:
   deprecated_concepts:
     - "Parallel processing (replaced by sequential with better UX)"
     - "Performance benchmarking (replaced by regression detection)"
-    - "Custom checkpointing (replaced by SOTA joblib integration)"
-    - "Evidently dependency (replaced by PyOD + SciPy integration)"
+    - "Custom checkpointing (replaced by JSON state persistence)"
+    - "CLI interface (removed in v4.0.0 - use Python API)"
     - "Empty exchanges module (unused, removed for clarity)"
 
   reference_updates_required:
@@ -208,8 +205,7 @@ x-evolution-guidance:
 
     canonical_references:
       - "docs/CURRENT_ARCHITECTURE_STATUS.yaml (this file)"
-      - "docs/MILESTONE_v3.0.0.yaml (v3.0.0 stabilization details)"
-      - "docs/api/v3.0.0-stabilization-plan.yaml (implementation plan)"
+      - "docs/milestones/archive/ (historical milestones)"
       - "CLAUDE.md (project-specific development guidance)"
 
   maintenance_pattern:

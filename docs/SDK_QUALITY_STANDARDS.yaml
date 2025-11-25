@@ -17,19 +17,21 @@ standards:
       - module: gapless_crypto_data.api
         disallow_untyped_defs: true
         intent: Enforce type safety on primary SDK entry point
-        status: pending
+        status: implemented
+        version_implemented: "4.0.0"
       - module: gapless_crypto_data.__probe__
         disallow_untyped_defs: true
         intent: Enforce type safety on AI agent introspection hooks
-        status: pending
+        status: implemented
+        version_implemented: "4.0.0"
 
   structured_exceptions:
     base_exception:
       class: GaplessCryptoDataError
       location: src/gapless_crypto_data/exceptions.py
       intent: AI-parseable error details via .details dict attribute
-      status: pending
-      version_planned: 3.2.0
+      status: implemented
+      version_implemented: "4.0.0"
 
     specialized_exceptions:
       - DataCollectionError: Binance data collection failures
@@ -42,8 +44,8 @@ standards:
       location: /llms.txt
       standard: "Emerging 2025 convention (Cursor, Claude Code, GitHub Copilot)"
       content_intent: Package capabilities, quickstart, key file locations
-      status: pending
-      version_planned: 3.2.0
+      status: implemented
+      version_implemented: "4.0.0"
 
     probe_module:
       location: src/gapless_crypto_data/__probe__.py
