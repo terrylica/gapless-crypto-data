@@ -1,7 +1,7 @@
 [project]
 name = "gapless-crypto-data"
 version = "4.0.1"
-description = "Ultra-fast cryptocurrency data collection with zero gaps guarantee. 22x faster via Binance public repository with complete 13-timeframe support (1s-1d) and intelligent monthly-to-daily fallback. Provides 11-column microstructure format with order flow metrics."
+description = "Cryptocurrency OHLCV data collection with gap-free guarantee. Retrieves microstructure-enriched kline data from Binance Public Data Repository with automatic gap detection and filling."
 readme = { file = "README.md", content-type = "text/markdown" }
 authors = [
     { name = "Eon Labs", email = "terry@eonlabs.com" }
@@ -13,11 +13,8 @@ license = { text = "MIT" }
 keywords = [
     "cryptocurrency", "crypto", "binance", "data", "collection",
     "trading", "OHLCV", "gap-filling", "financial-data", "time-series",
-    "microstructure", "order-flow", "liquidity", "taker-volume", "authentic-data",
-    "api", "pandas", "download", "fetch-data", "function-based", "ccxt",
-    "timeframe", "interval", "dual-parameter", "backward-compatibility",
-    "ultra-high-frequency", "1s-1d", "13-timeframes", "monthly-daily-fallback",
-    "zero-gaps", "22x-faster", "performance", "gapless"
+    "microstructure", "order-flow", "liquidity", "taker-volume",
+    "api", "pandas", "klines", "ccxt", "timeframe", "gapless"
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",

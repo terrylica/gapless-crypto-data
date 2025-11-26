@@ -1,11 +1,11 @@
 # Gapless Crypto Data
 
 [![PyPI version](https://img.shields.io/pypi/v/gapless-crypto-data.svg)](https://pypi.org/project/gapless-crypto-data/)
-[![GitHub release](https://img.shields.io/github/v/release/terrylica/gapless-crypto-data.svg)](https://github.com/terrylica/gapless-crypto-data/releases/latest)
 [![Python Versions](https://img.shields.io/pypi/pyversions/gapless-crypto-data.svg)](https://pypi.org/project/gapless-crypto-data/)
+[![Downloads](https://img.shields.io/pypi/dm/gapless-crypto-data.svg)](https://pypi.org/project/gapless-crypto-data/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Binance cryptocurrency data collection with zero-gap guarantee. Provides microstructure format through Binance public data repository with intelligent monthly-to-daily fallback.
+Cryptocurrency OHLCV data collection with gap-free guarantee. Retrieves microstructure-enriched kline data from Binance Public Data Repository with automatic gap detection and filling.
 
 ## Installation
 
@@ -22,44 +22,40 @@ pip install gapless-crypto-data
 ```python
 import gapless_crypto_data as gcd
 
-# Fetch data with date range
+# Fetch historical data
 df = gcd.download("BTCUSDT", timeframe="1h", start="2024-01-01", end="2024-06-30")
 
-# Fetch data with limit
+# Fetch recent data with limit
 df = gcd.fetch_data("ETHUSDT", timeframe="4h", limit=1000)
 
 # Get available symbols and timeframes
 symbols = gcd.get_supported_symbols()
 timeframes = gcd.get_supported_timeframes()
 
-# Fill gaps in existing data
+# Fill gaps in existing data directory
 results = gcd.fill_gaps("./data")
 ```
 
 ## Data Format
 
-Returns pandas DataFrames with microstructure columns. See [DATA_FORMAT.md](docs/architecture/DATA_FORMAT.md) for specification.
+Returns pandas DataFrames with microstructure columns:
 
-```python
-df = gcd.download("BTCUSDT", timeframe="1h", start="2024-01-01", end="2024-06-30")
-print(df.columns.tolist())
-# ['date', 'open', 'high', 'low', 'close', 'volume',
-#  'close_time', 'quote_asset_volume', 'number_of_trades',
-#  'taker_buy_base_asset_volume', 'taker_buy_quote_asset_volume']
-```
+| Column | Type | Description |
+|--------|------|-------------|
+| `date` | datetime64 | Period open timestamp |
+| `open`, `high`, `low`, `close` | float64 | OHLC prices |
+| `volume` | float64 | Base asset volume |
+| `close_time` | datetime64 | Period close timestamp |
+| `quote_asset_volume` | float64 | Quote asset volume |
+| `number_of_trades` | int64 | Trade count |
+| `taker_buy_base_asset_volume` | float64 | Taker buy volume (base) |
+| `taker_buy_quote_asset_volume` | float64 | Taker buy volume (quote) |
+
+See [Data Format Specification](https://github.com/terrylica/gapless-crypto-data/blob/main/docs/architecture/DATA_FORMAT.md) for column semantics and constraints.
 
 ## Supported Timeframes
 
-All Binance spot timeframes supported:
-
-| Category | Timeframes |
-|----------|------------|
-| Sub-minute | `1s` |
-| Minutes | `1m`, `3m`, `5m`, `15m`, `30m` |
-| Hours | `1h`, `2h`, `4h`, `6h`, `8h`, `12h` |
-| Daily | `1d` |
-
-Query programmatically: `gcd.get_supported_timeframes()`
+All Binance spot kline intervals: `1s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `6h`, `8h`, `12h`, `1d`
 
 ## API Reference
 
@@ -68,16 +64,16 @@ Query programmatically: `gcd.get_supported_timeframes()`
 ```python
 import gapless_crypto_data as gcd
 
-# Data collection
-df = gcd.download(symbol, timeframe, start, end)  # Date range
-df = gcd.fetch_data(symbol, timeframe, limit)     # Recent data
+# Primary collection function
+df = gcd.download(symbol, timeframe, start, end)
+df = gcd.fetch_data(symbol, timeframe, limit=None, start=None, end=None)
+
+# Gap filling
+results = gcd.fill_gaps(directory, symbols=None)
 
 # Discovery
 symbols = gcd.get_supported_symbols()
 timeframes = gcd.get_supported_timeframes()
-
-# Gap management
-results = gcd.fill_gaps(directory, symbols=None)
 ```
 
 ### Class-based API
@@ -85,46 +81,47 @@ results = gcd.fill_gaps(directory, symbols=None)
 ```python
 from gapless_crypto_data import BinancePublicDataCollector, UniversalGapFiller
 
-# Custom collection
+# Data collection with full control
 collector = BinancePublicDataCollector(
     symbol="BTCUSDT",
     start_date="2024-01-01",
-    end_date="2024-06-30"
+    end_date="2024-12-31"
 )
 result = collector.collect_timeframe_data("1h")
+df = result["dataframe"]
 
-# Gap filling
+# Gap detection and filling
 gap_filler = UniversalGapFiller()
-gaps = gap_filler.detect_all_gaps(csv_file, "1h")
+gaps = gap_filler.detect_all_gaps(csv_file, timeframe)
+result = gap_filler.process_file(csv_file, timeframe)
 ```
 
-See [Python API Guide](docs/guides/python-api.md) for complete reference.
+Full API documentation: [Python API Reference](https://github.com/terrylica/gapless-crypto-data/blob/main/docs/guides/python-api.md)
+
+## Data Sources
+
+| Source | Method | Use Case |
+|--------|--------|----------|
+| Binance Public Data Repository | Monthly/daily ZIP archives | Historical bulk collection |
+| Binance REST API | Per-request klines | Gap filling, recent data |
+
+Collection strategy: Repository archives for bulk historical data, API for gaps and recent periods. See [Data Collection Guide](https://github.com/terrylica/gapless-crypto-data/blob/main/docs/guides/DATA_COLLECTION.md).
 
 ## AI Agent Integration
 
-Probe hooks for programmatic discovery:
+Programmatic discovery via `__probe__` module:
 
 ```python
 import gapless_crypto_data
 probe = gapless_crypto_data.__probe__
 
-probe.discover_api()      # Function signatures
-probe.get_capabilities()  # Symbols, timeframes
-probe.get_task_graph()    # Workflow dependencies
+# API discovery
+probe.discover_api()
+probe.get_capabilities()
+probe.get_task_graph()
 ```
 
-See [llms.txt](/llms.txt) for AI agent instructions.
-
-## Documentation
-
-| Topic | Location |
-|-------|----------|
-| Architecture | [docs/architecture/OVERVIEW.md](docs/architecture/OVERVIEW.md) |
-| Data Format | [docs/architecture/DATA_FORMAT.md](docs/architecture/DATA_FORMAT.md) |
-| Python API | [docs/guides/python-api.md](docs/guides/python-api.md) |
-| Data Collection | [docs/guides/DATA_COLLECTION.md](docs/guides/DATA_COLLECTION.md) |
-| Validation | [docs/validation/OVERVIEW.md](docs/validation/OVERVIEW.md) |
-| Development | [docs/development/SETUP.md](docs/development/SETUP.md) |
+See [Probe Usage](https://github.com/terrylica/gapless-crypto-data/blob/main/PROBE_USAGE_EXAMPLE.md) for AI agent integration patterns.
 
 ## Development
 
@@ -142,41 +139,42 @@ uv run pre-commit install
 
 | Task | Command |
 |------|---------|
-| Test | `uv run pytest` |
+| Run tests | `uv run pytest` |
 | Format | `uv run ruff format .` |
 | Lint | `uv run ruff check --fix .` |
 | Type check | `uv run mypy src/` |
 | Build | `uv build` |
 
-See [Development Commands](docs/development/COMMANDS.md) for complete reference.
+### Project Structure
+
+```
+src/gapless_crypto_data/
+├── __init__.py          # Package exports
+├── api.py               # Function-based API
+├── __probe__.py         # AI agent discovery
+├── collectors/          # Data collection
+├── gap_filling/         # Gap detection/filling
+└── validation/          # Data validation
+```
+
+Full development guide: [Development Setup](https://github.com/terrylica/gapless-crypto-data/blob/main/docs/development/SETUP.md)
 
 ## Architecture
 
-**Data Sources**:
-- Binance Public Data Repository (primary)
-- Binance API (gap filling)
+- **BinancePublicDataCollector**: Bulk data retrieval from public repository
+- **UniversalGapFiller**: Gap detection and API-based filling
+- **AtomicCSVOperations**: Corruption-proof file operations
+- **ValidationStorage**: DuckDB-backed validation persistence
 
-**Core Components**:
-- `BinancePublicDataCollector`: Data collection engine
-- `UniversalGapFiller`: Gap detection and filling
-- `AtomicCSVOperations`: Corruption-proof file operations
-
-See [Architecture Overview](docs/architecture/OVERVIEW.md) for details.
-
-## Requirements
-
-- Python 3.9+
-- pandas >= 2.0.0
-- httpx >= 0.28.0
+Architecture documentation: [Overview](https://github.com/terrylica/gapless-crypto-data/blob/main/docs/architecture/OVERVIEW.md)
 
 ## License
 
-MIT License - see [LICENSE](LICENSE).
+MIT License - see [LICENSE](https://github.com/terrylica/gapless-crypto-data/blob/main/LICENSE)
 
-## Specifications
+## Links
 
-Machine-readable specifications:
-
-- [SDK_QUALITY_STANDARDS.yaml](docs/SDK_QUALITY_STANDARDS.yaml)
-- [CURRENT_ARCHITECTURE_STATUS.yaml](docs/CURRENT_ARCHITECTURE_STATUS.yaml)
-- [SSOT_DOCUMENTATION_ARCHITECTURE.yaml](docs/SSOT_DOCUMENTATION_ARCHITECTURE.yaml)
+- [PyPI Package](https://pypi.org/project/gapless-crypto-data/)
+- [GitHub Repository](https://github.com/terrylica/gapless-crypto-data)
+- [Issue Tracker](https://github.com/terrylica/gapless-crypto-data/issues)
+- [Changelog](https://github.com/terrylica/gapless-crypto-data/blob/main/CHANGELOG.md)
