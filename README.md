@@ -40,16 +40,16 @@ results = gcd.fill_gaps("./data")
 
 Returns pandas DataFrames with microstructure columns:
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `date` | datetime64 | Period open timestamp |
-| `open`, `high`, `low`, `close` | float64 | OHLC prices |
-| `volume` | float64 | Base asset volume |
-| `close_time` | datetime64 | Period close timestamp |
-| `quote_asset_volume` | float64 | Quote asset volume |
-| `number_of_trades` | int64 | Trade count |
-| `taker_buy_base_asset_volume` | float64 | Taker buy volume (base) |
-| `taker_buy_quote_asset_volume` | float64 | Taker buy volume (quote) |
+| Column                         | Type       | Description              |
+| ------------------------------ | ---------- | ------------------------ |
+| `date`                         | datetime64 | Period open timestamp    |
+| `open`, `high`, `low`, `close` | float64    | OHLC prices              |
+| `volume`                       | float64    | Base asset volume        |
+| `close_time`                   | datetime64 | Period close timestamp   |
+| `quote_asset_volume`           | float64    | Quote asset volume       |
+| `number_of_trades`             | int64      | Trade count              |
+| `taker_buy_base_asset_volume`  | float64    | Taker buy volume (base)  |
+| `taker_buy_quote_asset_volume` | float64    | Taker buy volume (quote) |
 
 See [Data Format Specification](https://github.com/terrylica/gapless-crypto-data/blob/main/docs/architecture/DATA_FORMAT.md) for column semantics and constraints.
 
@@ -100,10 +100,10 @@ Full API documentation: [Python API Reference](https://github.com/terrylica/gapl
 
 ## Data Sources
 
-| Source | Method | Use Case |
-|--------|--------|----------|
+| Source                         | Method                     | Use Case                   |
+| ------------------------------ | -------------------------- | -------------------------- |
 | Binance Public Data Repository | Monthly/daily ZIP archives | Historical bulk collection |
-| Binance REST API | Per-request klines | Gap filling, recent data |
+| Binance REST API               | Per-request klines         | Gap filling, recent data   |
 
 Collection strategy: Repository archives for bulk historical data, API for gaps and recent periods. See [Data Collection Guide](https://github.com/terrylica/gapless-crypto-data/blob/main/docs/guides/DATA_COLLECTION.md).
 
@@ -137,13 +137,13 @@ uv run pre-commit install
 
 ### Commands
 
-| Task | Command |
-|------|---------|
-| Run tests | `uv run pytest` |
-| Format | `uv run ruff format .` |
-| Lint | `uv run ruff check --fix .` |
-| Type check | `uv run mypy src/` |
-| Build | `uv build` |
+| Task       | Command                     |
+| ---------- | --------------------------- |
+| Run tests  | `uv run pytest`             |
+| Format     | `uv run ruff format .`      |
+| Lint       | `uv run ruff check --fix .` |
+| Type check | `uv run mypy src/`          |
+| Build      | `uv build`                  |
 
 ### Project Structure
 
