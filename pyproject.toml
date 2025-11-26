@@ -1,6 +1,6 @@
 [project]
 name = "gapless-crypto-data"
-version = "4.0.2"
+version = "4.0.3"
 description = "Cryptocurrency OHLCV data collection with gap-free guarantee. Retrieves microstructure-enriched kline data from Binance Public Data Repository with automatic gap detection and filling."
 readme = { file = "README.md", content-type = "text/markdown" }
 authors = [
