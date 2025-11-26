@@ -1,82 +1,40 @@
 """
-Gapless Crypto Data v4.0.1 - USDT spot market data collection with zero gaps guarantee
+Gapless Crypto Data - Binance USDT spot market OHLCV collection with gap-free guarantee.
 
-Market Compatibility:
-- USDT SPOT PAIRS ONLY (BTCUSDT, ETHUSDT, SOLUSDT, etc.)
-- NO futures, perpetuals, or derivatives support
-- NO non-USDT pairs (BTC/ETH, etc.)
-- NO margin trading data
+Scope:
+    - USDT spot pairs only (BTCUSDT, ETHUSDT, SOLUSDT, etc.)
+    - No futures, perpetuals, derivatives, or margin data
 
-Core Features:
-- Data collection via Binance public data repository (22x performance vs API calls)
-- Full 11-column microstructure format with order flow and liquidity metrics
-- Zero gaps guarantee through authentic API-first validation
-- UV-based Python tooling
-- Atomic file operations
-- Complete 13-timeframe support (1s, 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d)
-- Ultra-high frequency (1s) to daily (1d) data collection
-- Intelligent monthly-to-daily fallback for seamless recent data access
-- Gap detection and filling with authentic data only
-- CCXT-compatible dual parameter support (timeframe/interval)
-- Backward compatibility with 5-year deprecation period
+Capabilities:
+    - Bulk historical data via Binance Public Data Repository
+    - Microstructure-enriched kline format (OHLCV + order flow metrics)
+    - Gap detection and API-based filling
+    - All Binance spot kline intervals supported
 
 Data Source:
-    Binance Spot Market: https://data.binance.vision/data/spot/monthly/klines/
-    Market Type: SPOT only (no futures/derivatives)
-    Supported Pairs: USDT-quoted spot pairs exclusively
+    https://data.binance.vision/data/spot/monthly/klines/
 
 Usage:
-    # Function-based API
     import gapless_crypto_data as gcd
 
-    # Fetch recent data as standard pandas DataFrame
+    # Fetch data
     df = gcd.fetch_data("BTCUSDT", timeframe="1h", limit=1000)
-
-    # Standard pandas operations for analysis
-    returns = df['close'].pct_change()                     # Returns calculation
-    rolling_vol = df['close'].rolling(20).std()            # Rolling volatility
-    max_drawdown = (df['close'] / df['close'].cummax() - 1).min()  # Drawdown
-
-    # Resampling with pandas
-    df_resampled = df.set_index('date').resample('4H').agg({
-        'open': 'first', 'high': 'max', 'low': 'min',
-        'close': 'last', 'volume': 'sum'
-    })
-
-    # Backward compatibility (legacy interval parameter)
-    df = gcd.fetch_data("BTCUSDT", interval="1h", limit=1000)  # DeprecationWarning
-
-    # Download with date range
     df = gcd.download("ETHUSDT", timeframe="4h", start="2024-01-01", end="2024-06-30")
 
-    # Get available symbols and timeframes
+    # Discovery
     symbols = gcd.get_supported_symbols()
     timeframes = gcd.get_supported_timeframes()
 
-    # Fill gaps in existing data
+    # Gap filling
     results = gcd.fill_gaps("./data")
 
-    # Class-based API (for complex workflows)
+    # Class-based API
     from gapless_crypto_data import BinancePublicDataCollector, UniversalGapFiller
-
     collector = BinancePublicDataCollector()
     result = collector.collect_timeframe_data("1h")
-    df = result["dataframe"]
-
-CLI Usage (DEPRECATED - Will be removed in v4.0.0):
-    ⚠️  The CLI is deprecated. Please use the Python API instead (see above).
-
-    Legacy CLI (deprecated):
-        uv run gapless-crypto-data --symbol SOLUSDT --timeframes 1s,1m,5m,1h,4h,1d
-        uv run gapless-crypto-data --symbol BTCUSDT --timeframes 1s,6h,8h,12h,1d
-        uv run gapless-crypto-data --fill-gaps --directory ./data
-
-Supported Symbols (USDT Spot Only):
-    BTCUSDT, ETHUSDT, SOLUSDT, ADAUSDT, DOTUSDT, LINKUSDT, MATICUSDT,
-    AVAXUSDT, ATOMUSDT, NEARUSDT, FTMUSDT, SANDUSDT, MANAUSDT, etc.
 """
 
-__version__ = "4.0.1"
+__version__ = "4.0.2"
 __author__ = "Eon Labs"
 __email__ = "terry@eonlabs.com"
 

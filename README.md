@@ -55,7 +55,12 @@ See [Data Format Specification](https://github.com/terrylica/gapless-crypto-data
 
 ## Supported Timeframes
 
-All Binance spot kline intervals: `1s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `6h`, `8h`, `12h`, `1d`
+All Binance spot kline intervals. Query dynamically:
+
+```python
+import gapless_crypto_data as gcd
+print(gcd.get_supported_timeframes())
+```
 
 ## API Reference
 
