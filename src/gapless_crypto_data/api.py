@@ -30,6 +30,27 @@ import pandas as pd
 from .collectors.binance_public_data_collector import BinancePublicDataCollector
 from .gap_filling.universal_gap_filler import UniversalGapFiller
 
+# Timestamp columns requiring datetime64 conversion
+TIMESTAMP_COLUMNS = ("date", "close_time")
+
+
+def _ensure_datetime_types(df: pd.DataFrame) -> pd.DataFrame:
+    """Ensure timestamp columns are datetime64 type, not strings.
+
+    Applies pd.to_datetime() to timestamp columns. Idempotent - safe to call
+    on DataFrames that already have datetime types.
+
+    Args:
+        df: DataFrame with potential string timestamp columns
+
+    Returns:
+        DataFrame with datetime64 timestamp columns
+    """
+    for col in TIMESTAMP_COLUMNS:
+        if col in df.columns:
+            df[col] = pd.to_datetime(df[col])
+    return df
+
 
 def get_supported_symbols() -> List[str]:
     """Get list of supported USDT spot trading pairs.
@@ -263,8 +284,9 @@ def _perform_gap_filling(
                 f"✅ Auto-filled {gap_result['gaps_filled']}/{gap_result['gaps_detected']} "
                 f"gap(s) with authentic Binance API data"
             )
-            # Reload DataFrame with filled gaps
+            # Reload DataFrame with filled gaps and restore datetime types
             df = pd.read_csv(csv_file, comment="#")
+            df = _ensure_datetime_types(df)
         else:
             logger.warning(
                 f"⚠️  Detected {gap_result['gaps_detected']} gap(s) but could not fill them. "
