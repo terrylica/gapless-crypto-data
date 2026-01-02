@@ -2,6 +2,35 @@
 
 All notable changes to gapless-crypto-data will be documented in this file.
 
+## [5.0.0](https://github.com/terrylica/gapless-crypto-data/compare/v4.0.1...v5.0.0) (2026-01-02)
+
+### ⚠ BREAKING CHANGES
+
+* **ci:** CI no longer runs tests. Run `uv run pytest` locally before push.
+
+Refs: ADR-0005
+
+### Features
+
+* **ci:** add Earthly pipeline and semantic-release configuration ([a45a321](https://github.com/terrylica/gapless-crypto-data/commit/a45a32144ac0b0f663e8425253b78a9f9f58f9d3))
+* **ci:** add Pushover notification scripts and update gitignore ([a403ffd](https://github.com/terrylica/gapless-crypto-data/commit/a403ffd3501a850690de77875fe32ec5f557f6c0))
+
+### Bug Fixes
+
+* **api:** ensure datetime64 types after CSV reload ([2a3afbc](https://github.com/terrylica/gapless-crypto-data/commit/2a3afbc8568bd268fb6c01811249cfb690b7ee4a)), closes [#90](https://github.com/terrylica/gapless-crypto-data/issues/90)
+* **ci:** add --no-install-project flag to Earthly deps targets ([a7b776e](https://github.com/terrylica/gapless-crypto-data/commit/a7b776e69ef45cf4479f3851a097d1adf87a7f7c))
+* **ci:** use correct Doppler secret names for Pushover ([54c3e4e](https://github.com/terrylica/gapless-crypto-data/commit/54c3e4e122a151359418b7b6c97d1e15e7c7865d))
+* **config:** correct repository and project names in automation ([44b1b27](https://github.com/terrylica/gapless-crypto-data/commit/44b1b27d5b9b0dfb461bde3a6b127b51092a1318))
+* **docs:** correct version references and feature status ([4c1a2da](https://github.com/terrylica/gapless-crypto-data/commit/4c1a2da4d2041fa80de3b1876d7b7e39b9ec69c7))
+* **docs:** fix broken links and standardize file paths ([30e332e](https://github.com/terrylica/gapless-crypto-data/commit/30e332eeb24e5aba478ab05ff19438f3715c1fd5))
+
+### Refactoring
+
+* **ci:** remove tests from GitHub Actions per local-first policy ([9e149c7](https://github.com/terrylica/gapless-crypto-data/commit/9e149c7b16093cd235583db91b4bd9e5ae723f0a))
+* **docs:** apply AOD/IOI principles and remove magic numbers ([2bc7b58](https://github.com/terrylica/gapless-crypto-data/commit/2bc7b58909d976295583e4980e8b030d053bbb0e))
+* **docs:** apply AOD/IOI principles to README ([cb810dd](https://github.com/terrylica/gapless-crypto-data/commit/cb810dd1961beb1f272d03e0d724a6e473be98ff))
+* **naming:** standardize SDK standards YAML to UPPERCASE convention ([5b47371](https://github.com/terrylica/gapless-crypto-data/commit/5b47371068575956eec6c6c0c9c6d51640c69182))
+
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
