@@ -1,6 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/semantic-release.json",
   "branches": ["main"],
+  "repositoryUrl": "git@github.com:terrylica/gapless-crypto-data.git",
   "tagFormat": "v${version}",
   "plugins": [
     [
@@ -47,14 +48,14 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "sed -i.bak 's/^version = \".*\"/version = \"${nextRelease.version}\"/' pyproject.toml && rm -f pyproject.toml.bak",
+        "prepareCmd": "sed -i.bak 's/^version = \".*\"/version = \"${nextRelease.version}\"/' pyproject.toml && rm -f pyproject.toml.bak && sed -i.bak 's/^__version__ = \".*\"/__version__ = \"${nextRelease.version}\"/' src/gapless_crypto_data/__init__.py && rm -f src/gapless_crypto_data/__init__.py.bak",
         "publishCmd": "echo 'Version ${nextRelease.version} prepared for release'"
       }
     ],
     [
       "@semantic-release/git",
       {
-        "assets": ["CHANGELOG.md", "pyproject.toml"],
+        "assets": ["CHANGELOG.md", "pyproject.toml", "src/gapless_crypto_data/__init__.py"],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],
