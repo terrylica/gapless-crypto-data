@@ -1,40 +1,20 @@
 """
-Gapless Crypto Data - Binance USDT spot market OHLCV collection with gap-free guarantee.
+gapless-crypto-data: Zero-gaps cryptocurrency OHLCV data from Binance.
 
-Scope:
-    - USDT spot pairs only (BTCUSDT, ETHUSDT, SOLUSDT, etc.)
-    - No futures, perpetuals, derivatives, or margin data
+Supports both Spot and USDT-M Futures markets.
 
-Capabilities:
-    - Bulk historical data via Binance Public Data Repository
-    - Microstructure-enriched kline format (OHLCV + order flow metrics)
-    - Gap detection and API-based filling
-    - All Binance spot kline intervals supported
-
-Data Source:
-    https://data.binance.vision/data/spot/monthly/klines/
-
-Usage:
+Examples:
+    # Fetch spot data
     import gapless_crypto_data as gcd
+    df = gcd.fetch_data("BTCUSDT", market_type="spot", timeframe="1h")
 
-    # Fetch data
-    df = gcd.fetch_data("BTCUSDT", timeframe="1h", limit=1000)
-    df = gcd.download("ETHUSDT", timeframe="4h", start="2024-01-01", end="2024-06-30")
+    # Fetch futures data
+    df = gcd.fetch_data("BTCUSDT", market_type="futures", timeframe="1h")
 
-    # Discovery
-    symbols = gcd.get_supported_symbols()
-    timeframes = gcd.get_supported_timeframes()
-
-    # Gap filling
-    results = gcd.fill_gaps("./data")
-
-    # Class-based API
-    from gapless_crypto_data import BinancePublicDataCollector, UniversalGapFiller
-    collector = BinancePublicDataCollector()
-    result = collector.collect_timeframe_data("1h")
+Breaking change in v6.0.0: market_type parameter is now required.
 """
 
-__version__ = "5.0.0"
+__version__ = "6.0.0"
 __author__ = "Eon Labs"
 __email__ = "terry@eonlabs.com"
 
