@@ -1141,7 +1141,7 @@ class BinancePublicDataCollector:
         end_date_str = datetime.strptime(data[-1][0], "%Y-%m-%d %H:%M:%S").strftime("%Y%m%d")
         version = "v2.10.0"  # Updated version for Parquet support
         file_extension = self.output_format
-        filename = f"binance_spot_{self.symbol}-{timeframe}_{start_date_str}-{end_date_str}_{version}.{file_extension}"
+        filename = f"{self.market_type.filename_prefix}{self.symbol}-{timeframe}_{start_date_str}-{end_date_str}_{version}.{file_extension}"
         filepath = self.output_dir / filename
 
         # Ensure output directory exists

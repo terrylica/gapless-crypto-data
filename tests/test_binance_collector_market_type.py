@@ -66,3 +66,27 @@ class TestBinanceCollectorMarketType:
         )
 
         assert collector.market_type == MarketType.FUTURES
+
+
+class TestBinanceCollectorFilenames:
+    """Tests for market-type-aware filename generation."""
+
+    def test_spot_filename_prefix(self) -> None:
+        """Spot files have 'binance_spot_' prefix."""
+        collector = BinancePublicDataCollector(
+            market_type=MarketType.SPOT,
+            symbol="BTCUSDT",
+            start_date="2024-01-01",
+            end_date="2024-01-31",
+        )
+        assert collector.market_type.filename_prefix == "binance_spot_"
+
+    def test_futures_filename_prefix(self) -> None:
+        """Futures files have 'binance_futures_' prefix."""
+        collector = BinancePublicDataCollector(
+            market_type=MarketType.FUTURES,
+            symbol="BTCUSDT",
+            start_date="2024-01-01",
+            end_date="2024-01-31",
+        )
+        assert collector.market_type.filename_prefix == "binance_futures_"
