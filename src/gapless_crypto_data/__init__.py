@@ -64,6 +64,7 @@ from .exceptions import (
 )
 from .gap_filling.safe_file_operations import AtomicCSVOperations, SafeCSVMerger
 from .gap_filling.universal_gap_filler import UniversalGapFiller
+from .market_types import MarketType
 
 __all__ = [
     # Simple function-based API (recommended for most users)
@@ -89,4 +90,6 @@ __all__ = [
     "GapFillingError",
     # AI agent probe hooks
     "__probe__",
+    # Market type enum (v6.0.0)
+    "MarketType",
 ]

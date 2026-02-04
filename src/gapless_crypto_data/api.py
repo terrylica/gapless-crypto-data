@@ -54,20 +54,24 @@ def _ensure_datetime_types(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_supported_symbols() -> List[str]:
-    """Get list of supported USDT spot trading pairs.
+    """Get list of supported trading pairs.
+
+    .. deprecated::
+        This function is deprecated and will be removed in v7.0.0.
+        Symbol validation is no longer performed. Use any valid Binance symbol.
 
     Returns:
-        List of supported symbol strings (e.g., ["BTCUSDT", "ETHUSDT", ...])
-
-    Examples:
-        >>> symbols = get_supported_symbols()
-        >>> print(f"Found {len(symbols)} supported symbols")
-        >>> print(f"Bitcoin: {'BTCUSDT' in symbols}")
-        Found 6 supported symbols
-        Bitcoin: True
+        Empty list (function deprecated)
     """
-    collector = BinancePublicDataCollector()
-    return list(collector.known_symbols.keys())
+    import warnings
+
+    warnings.warn(
+        "get_supported_symbols() is deprecated and will be removed in v7.0.0. "
+        "Symbol validation is no longer performed. Use any valid Binance symbol.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return []
 
 
 def get_supported_timeframes() -> List[str]:
