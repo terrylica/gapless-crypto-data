@@ -473,6 +473,7 @@ def fetch_data(
 
 def download(
     symbol: Union[str, SupportedSymbol],
+    market_type: str,
     timeframe: Optional[Union[str, SupportedTimeframe]] = None,
     start: Optional[str] = None,
     end: Optional[str] = None,
@@ -490,6 +491,8 @@ def download(
 
     Args:
         symbol: Trading pair symbol (e.g., "BTCUSDT")
+        market_type: Market type - 'spot' for spot market, 'futures' for USDT-M futures.
+            Required parameter with no default.
         timeframe: Timeframe interval (default: "1h" if neither specified)
         start: Start date in YYYY-MM-DD format
         end: End date in YYYY-MM-DD format
@@ -501,22 +504,34 @@ def download(
     Returns:
         pd.DataFrame with complete OHLCV and microstructure data (gapless by default)
 
+    Raises:
+        TypeError: If market_type is not provided.
+        ValueError: If market_type is not 'spot' or 'futures'.
+
     Examples:
         # Simple data download (automatically fills gaps)
-        df = download("BTCUSDT", "1h", start="2024-01-01", end="2024-06-30")
+        df = download("BTCUSDT", "spot", "1h", start="2024-01-01", end="2024-06-30")
+
+        # Futures market data
+        df = download("BTCUSDT", "futures", "1h", start="2024-01-01", end="2024-06-30")
 
         # Disable auto-fill if you want raw Vision archive data
-        df = download("ETHUSDT", "4h", auto_fill_gaps=False)
+        df = download("ETHUSDT", "spot", "4h", auto_fill_gaps=False)
 
         # Legacy interval parameter
-        df = download("BTCUSDT", interval="1h")
+        df = download("BTCUSDT", "spot", interval="1h")
     """
+    # Validate market_type (required parameter)
+    if market_type is None:
+        raise TypeError("market_type is required. Use 'spot' or 'futures'.")
+
     # Apply default if neither parameter specified
     if timeframe is None and interval is None:
         timeframe = "1h"
 
     return fetch_data(
         symbol=symbol,
+        market_type=market_type,
         timeframe=timeframe,
         start=start,
         end=end,

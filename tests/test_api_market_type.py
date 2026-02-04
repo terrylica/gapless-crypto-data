@@ -71,3 +71,32 @@ class TestMarketTypeParameter:
         # The error should mention the invalid value
         error_msg = str(exc_info.value).lower()
         assert "invalid" in error_msg or "market" in error_msg
+
+
+class TestDownloadMarketType:
+    """Tests for market_type parameter in download()."""
+
+    def test_market_type_required(self):
+        """download raises TypeError when market_type is missing."""
+        from gapless_crypto_data import download
+
+        with pytest.raises(TypeError) as exc_info:
+            download(symbol="BTCUSDT", timeframe="1h")
+        # Python raises TypeError for missing required positional argument
+        assert "market_type" in str(exc_info.value)
+
+    def test_market_type_passed_to_fetch_data(self):
+        """download passes market_type to fetch_data."""
+        from gapless_crypto_data import download
+
+        try:
+            download(
+                symbol="BTCUSDT",
+                market_type="futures",
+                timeframe="1d",
+                start="2024-01-01",
+                end="2024-01-01",
+            )
+        except Exception as e:
+            # Should not be a market_type validation error
+            assert "market_type" not in str(e).lower()
