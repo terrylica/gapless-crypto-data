@@ -28,6 +28,7 @@ from ..gap_filling.universal_gap_filler import UniversalGapFiller
 from ..utils.etag_cache import ETagCache
 from ..utils.timeframe_constants import TIMEFRAME_TO_MINUTES
 from ..utils.timestamp_format_analyzer import TimestampFormatAnalyzer
+from ..market_types import MarketType
 from ..validation.csv_validator import CSVValidator
 
 
@@ -153,6 +154,7 @@ class BinancePublicDataCollector:
 
     def __init__(
         self,
+        market_type: MarketType,
         symbol: str = "SOLUSDT",
         start_date: str = "2020-08-15",
         end_date: str = "2025-03-20",
@@ -162,6 +164,10 @@ class BinancePublicDataCollector:
         """Initialize the Binance Public Data Collector.
 
         Args:
+            market_type (MarketType): Market type for data collection.
+                MarketType.SPOT for spot market data.
+                MarketType.FUTURES for USDT-M futures market data.
+                Required parameter (no default).
             symbol (str, optional): Trading pair symbol in USDT format.
                 Must be alphanumeric (A-Z, 0-9) only. Path characters (/, \\, .)
                 and special characters are rejected for security.
@@ -215,6 +221,9 @@ class BinancePublicDataCollector:
             ...     output_format="parquet"
             ... )
         """
+        # Store market type
+        self.market_type = market_type
+
         # Validate and assign symbol (SEC-01, SEC-02, SEC-03)
         self.symbol = self._validate_symbol(symbol)
 
@@ -234,7 +243,7 @@ class BinancePublicDataCollector:
                 f"Invalid date range: end_date ({self.end_date.strftime('%Y-%m-%d')}) "
                 f"is before start_date ({self.start_date.strftime('%Y-%m-%d')})"
             )
-        self.base_url = "https://data.binance.vision/data/spot/monthly/klines"
+        self.base_url = f"https://data.binance.vision/data/{market_type.base_path}/monthly/klines"
 
         # Initialize ETag cache for bandwidth optimization (90% reduction on re-runs)
         self.etag_cache = ETagCache()
