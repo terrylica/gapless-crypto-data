@@ -17,6 +17,7 @@ import pytest
 from gapless_crypto_data.collectors.binance_public_data_collector import (
     BinancePublicDataCollector,
 )
+from gapless_crypto_data.market_types import MarketType
 
 
 class TestETagCaching:
@@ -24,13 +25,13 @@ class TestETagCaching:
 
     def test_etag_cache_initialization(self):
         """Test that ETag cache is initialized on collector creation."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
         assert hasattr(collector, "etag_cache")
         assert collector.etag_cache is not None
 
     def test_etag_cache_directory_creation(self):
         """Test that cache directory is created properly."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
         # Cache should have a cache_dir attribute
         assert hasattr(collector.etag_cache, "cache_dir")
         assert isinstance(collector.etag_cache.cache_dir, Path)
@@ -41,7 +42,7 @@ class TestGapAnalysis:
 
     def test_perform_gap_analysis_no_data(self):
         """Test gap analysis with empty dataset."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
         result = collector._perform_gap_analysis([], "1h")
 
         assert result["analysis_performed"] is True
@@ -51,7 +52,7 @@ class TestGapAnalysis:
 
     def test_perform_gap_analysis_single_row(self):
         """Test gap analysis with insufficient data (< 2 rows)."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
         single_row_data = [["2024-01-01 00:00:00", 100, 105, 95, 102, 1000]]
 
         result = collector._perform_gap_analysis(single_row_data, "1h")
@@ -62,7 +63,7 @@ class TestGapAnalysis:
 
     def test_perform_gap_analysis_continuous_data(self):
         """Test gap analysis with continuous data (no gaps)."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         # Create continuous hourly data
         continuous_data = [
@@ -81,7 +82,7 @@ class TestGapAnalysis:
 
     def test_perform_gap_analysis_with_gaps(self):
         """Test gap analysis with data containing gaps."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         # Create data with gaps (missing 2:00 and 3:00)
         gapped_data = [
@@ -110,7 +111,7 @@ class TestGapAnalysis:
 
     def test_perform_gap_analysis_different_timeframes(self):
         """Test gap analysis with different timeframes (5m, 15m, 4h)."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         # Test 5-minute timeframe
         five_min_data = [
@@ -141,7 +142,7 @@ class TestDataHashCalculation:
 
     def test_calculate_data_hash_consistent(self):
         """Test that hash calculation is consistent for same data."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         test_data = [
             ["2024-01-01 00:00:00", 100, 105, 95, 102, 1000],
@@ -157,7 +158,7 @@ class TestDataHashCalculation:
 
     def test_calculate_data_hash_different_data(self):
         """Test that different data produces different hashes."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         data1 = [["2024-01-01 00:00:00", 100, 105, 95, 102, 1000]]
         data2 = [["2024-01-01 00:00:00", 101, 105, 95, 102, 1000]]  # Different open price
@@ -169,7 +170,7 @@ class TestDataHashCalculation:
 
     def test_calculate_data_hash_empty_data(self):
         """Test hash calculation with empty data."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         empty_hash = collector._calculate_data_hash([])
 
@@ -182,7 +183,7 @@ class TestMetadataGeneration:
 
     def test_generate_metadata_structure(self):
         """Test that metadata has all required fields."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         test_data = [
             [
@@ -250,7 +251,7 @@ class TestMetadataGeneration:
 
     def test_generate_metadata_empty_data(self):
         """Test metadata generation with empty dataset."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         metadata = collector.generate_metadata("1h", [], {})
 
@@ -258,7 +259,7 @@ class TestMetadataGeneration:
 
     def test_generate_metadata_statistics(self):
         """Test that statistics are calculated correctly."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         test_data = [
             [
@@ -305,7 +306,7 @@ class TestMetadataGeneration:
 
     def test_generate_metadata_data_integrity(self):
         """Test data integrity section in metadata."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         test_data = [
             [
@@ -342,7 +343,9 @@ class TestDataSaving:
     def test_save_data_csv_format(self):
         """Test saving data in CSV format."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            collector = BinancePublicDataCollector(output_dir=tmpdir, output_format="csv")
+            collector = BinancePublicDataCollector(
+                market_type=MarketType.SPOT, output_dir=tmpdir, output_format="csv"
+            )
 
             test_data = [
                 [
@@ -401,7 +404,9 @@ class TestDataSaving:
     def test_save_data_parquet_format(self):
         """Test saving data in Parquet format."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            collector = BinancePublicDataCollector(output_dir=tmpdir, output_format="parquet")
+            collector = BinancePublicDataCollector(
+                market_type=MarketType.SPOT, output_dir=tmpdir, output_format="parquet"
+            )
 
             test_data = [
                 [
@@ -460,7 +465,7 @@ class TestDataSaving:
     def test_save_data_empty_dataset(self):
         """Test saving empty dataset returns None."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            collector = BinancePublicDataCollector(output_dir=tmpdir)
+            collector = BinancePublicDataCollector(market_type=MarketType.SPOT, output_dir=tmpdir)
 
             filepath = collector.save_data("1h", [], {})
 
@@ -470,7 +475,9 @@ class TestDataSaving:
         """Test that save_data creates output directory if it doesn't exist."""
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = Path(tmpdir) / "nested" / "output"
-            collector = BinancePublicDataCollector(output_dir=str(output_path))
+            collector = BinancePublicDataCollector(
+                market_type=MarketType.SPOT, output_dir=str(output_path)
+            )
 
             test_data = [
                 [
@@ -506,7 +513,7 @@ class TestTimeframeExtraction:
 
     def test_extract_timeframe_from_filename_valid(self):
         """Test extracting valid timeframes from filenames."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         test_cases = [
             ("BTCUSDT-1h_2024-01-01.csv", "1h"),
@@ -523,7 +530,7 @@ class TestTimeframeExtraction:
 
     def test_extract_timeframe_from_filename_default(self):
         """Test default timeframe when none found in filename."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         # Filename with no timeframe
         result = collector._extract_timeframe_from_filename("BTCUSDT_data.csv")
@@ -537,19 +544,21 @@ class TestOutputFormatValidation:
     def test_invalid_output_format_rejected(self):
         """Test that invalid output formats are rejected."""
         with pytest.raises(ValueError, match="output_format must be"):
-            BinancePublicDataCollector(output_format="json")
+            BinancePublicDataCollector(market_type=MarketType.SPOT, output_format="json")
 
         with pytest.raises(ValueError, match="output_format must be"):
-            BinancePublicDataCollector(output_format="xlsx")
+            BinancePublicDataCollector(market_type=MarketType.SPOT, output_format="xlsx")
 
     def test_valid_output_formats_accepted(self):
         """Test that valid output formats are accepted."""
         # CSV format
-        collector_csv = BinancePublicDataCollector(output_format="csv")
+        collector_csv = BinancePublicDataCollector(market_type=MarketType.SPOT, output_format="csv")
         assert collector_csv.output_format == "csv"
 
         # Parquet format
-        collector_parquet = BinancePublicDataCollector(output_format="parquet")
+        collector_parquet = BinancePublicDataCollector(
+            market_type=MarketType.SPOT, output_format="parquet"
+        )
         assert collector_parquet.output_format == "parquet"
 
 
@@ -559,7 +568,10 @@ class TestMonthlyURLGeneration:
     def test_generate_monthly_urls_single_month(self):
         """Test URL generation for single month."""
         collector = BinancePublicDataCollector(
-            symbol="BTCUSDT", start_date="2024-01-01", end_date="2024-01-31"
+            market_type=MarketType.SPOT,
+            symbol="BTCUSDT",
+            start_date="2024-01-01",
+            end_date="2024-01-31",
         )
 
         urls = collector.generate_monthly_urls("1h")
@@ -575,7 +587,10 @@ class TestMonthlyURLGeneration:
     def test_generate_monthly_urls_multi_month(self):
         """Test URL generation spanning multiple months."""
         collector = BinancePublicDataCollector(
-            symbol="ETHUSDT", start_date="2024-01-01", end_date="2024-03-31"
+            market_type=MarketType.SPOT,
+            symbol="ETHUSDT",
+            start_date="2024-01-01",
+            end_date="2024-03-31",
         )
 
         urls = collector.generate_monthly_urls("1h")
@@ -588,7 +603,10 @@ class TestMonthlyURLGeneration:
     def test_generate_monthly_urls_year_boundary(self):
         """Test URL generation across year boundary."""
         collector = BinancePublicDataCollector(
-            symbol="SOLUSDT", start_date="2023-11-01", end_date="2024-02-28"
+            market_type=MarketType.SPOT,
+            symbol="SOLUSDT",
+            start_date="2023-11-01",
+            end_date="2024-02-28",
         )
 
         urls = collector.generate_monthly_urls("1h")
@@ -605,7 +623,7 @@ class TestHeaderDetection:
 
     def test_detect_header_with_header_row(self):
         """Test detection when CSV has header row."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         # CSV with header row (non-numeric first field)
         csv_with_header = [
@@ -619,7 +637,7 @@ class TestHeaderDetection:
 
     def test_detect_header_without_header_row(self):
         """Test detection when CSV has no header (pure data)."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         # CSV without header (numeric timestamp in first row)
         csv_no_header = [
@@ -633,7 +651,7 @@ class TestHeaderDetection:
 
     def test_detect_header_empty_data(self):
         """Test header detection with empty data."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         has_header = collector._detect_header_intelligent([])
 
@@ -641,7 +659,7 @@ class TestHeaderDetection:
 
     def test_detect_header_insufficient_columns(self):
         """Test header detection with insufficient columns."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         # Less than 6 columns
         insufficient_data = [["timestamp", "open", "high"]]
@@ -652,7 +670,7 @@ class TestHeaderDetection:
 
     def test_detect_header_invalid_timestamp(self):
         """Test header detection with invalid timestamp (indicates header)."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         # First field is not a valid timestamp
         csv_with_text = [

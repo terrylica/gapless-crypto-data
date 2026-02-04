@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 from gapless_crypto_data import BinancePublicDataCollector
+from gapless_crypto_data.market_types import MarketType
 
 
 def test_output_dir_bug_fix():
@@ -15,6 +16,7 @@ def test_output_dir_bug_fix():
         test_output_dir.mkdir(parents=True, exist_ok=True)
 
         collector = BinancePublicDataCollector(
+            market_type=MarketType.SPOT,
             symbol="BTCUSDT",
             start_date="2024-01-01",
             end_date="2024-01-01",
@@ -49,6 +51,7 @@ def test_dataframe_return_functionality():
         test_output_dir.mkdir(parents=True, exist_ok=True)
 
         collector = BinancePublicDataCollector(
+            market_type=MarketType.SPOT,
             symbol="BTCUSDT",
             start_date="2024-01-01",
             end_date="2024-01-01",
@@ -118,6 +121,7 @@ def test_backwards_compatibility():
         test_output_dir.mkdir(parents=True, exist_ok=True)
 
         collector = BinancePublicDataCollector(
+            market_type=MarketType.SPOT,
             symbol="BTCUSDT",
             start_date="2024-01-01",
             end_date="2024-01-01",

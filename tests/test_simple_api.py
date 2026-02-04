@@ -10,6 +10,7 @@ import pandas as pd
 import pytest
 
 import gapless_crypto_data as gcd
+from gapless_crypto_data.market_types import MarketType
 
 
 class TestSimpleAPI:
@@ -30,19 +31,13 @@ class TestSimpleAPI:
         assert hasattr(gcd, "UniversalGapFiller")
 
     def test_get_supported_symbols(self):
-        """Test getting supported trading symbols"""
-        symbols = gcd.get_supported_symbols()
+        """Test getting supported trading symbols (deprecated)"""
+        # Function is deprecated and returns empty list
+        with pytest.warns(DeprecationWarning, match="get_supported_symbols.*deprecated"):
+            symbols = gcd.get_supported_symbols()
 
         assert isinstance(symbols, list)
-        assert len(symbols) > 0
-        assert "BTCUSDT" in symbols
-        assert "ETHUSDT" in symbols
-        assert "SOLUSDT" in symbols
-
-        # All symbols should be strings and end with USDT
-        for symbol in symbols:
-            assert isinstance(symbol, str)
-            assert symbol.endswith("USDT")
+        assert len(symbols) == 0  # Deprecated - returns empty list
 
     def test_get_supported_timeframes(self):
         """Test getting supported timeframe intervals"""
@@ -87,7 +82,7 @@ class TestSimpleAPI:
         """Test fetch_data function parameter handling"""
         # Test with minimal parameters (should not raise)
         try:
-            df = gcd.fetch_data("BTCUSDT", "1h", limit=1)
+            df = gcd.fetch_data("BTCUSDT", "spot", timeframe="1h", limit=1)
             # Should return DataFrame even if empty
             assert isinstance(df, pd.DataFrame)
             # With default datetime index, should have DatetimeIndex (if data available)
@@ -101,20 +96,24 @@ class TestSimpleAPI:
         """Test fetch_data function with different index_type parameters"""
         try:
             # Test datetime index (default)
-            df_datetime = gcd.fetch_data("BTCUSDT", "1h", limit=1, index_type="datetime")
+            df_datetime = gcd.fetch_data(
+                "BTCUSDT", "spot", timeframe="1h", limit=1, index_type="datetime"
+            )
             assert isinstance(df_datetime, pd.DataFrame)
             if not df_datetime.empty:
                 assert isinstance(df_datetime.index, pd.DatetimeIndex)
 
             # Test range index (legacy)
-            df_range = gcd.fetch_data("BTCUSDT", "1h", limit=1, index_type="range")
+            df_range = gcd.fetch_data(
+                "BTCUSDT", "spot", timeframe="1h", limit=1, index_type="range"
+            )
             assert isinstance(df_range, pd.DataFrame)
             if not df_range.empty:
                 assert isinstance(df_range.index, pd.RangeIndex)
                 assert "date" in df_range.columns
 
             # Test auto index (same as datetime)
-            df_auto = gcd.fetch_data("BTCUSDT", "1h", limit=1, index_type="auto")
+            df_auto = gcd.fetch_data("BTCUSDT", "spot", timeframe="1h", limit=1, index_type="auto")
             assert isinstance(df_auto, pd.DataFrame)
             if not df_auto.empty:
                 assert isinstance(df_auto.index, pd.DatetimeIndex)
@@ -126,13 +125,13 @@ class TestSimpleAPI:
     def test_fetch_data_invalid_index_type(self):
         """Test fetch_data function with invalid index_type parameter"""
         with pytest.raises(ValueError, match="Invalid index_type"):
-            gcd.fetch_data("BTCUSDT", "1h", limit=1, index_type="invalid")
+            gcd.fetch_data("BTCUSDT", "spot", timeframe="1h", limit=1, index_type="invalid")
 
     def test_fetch_data_default_behavior(self):
         """Test that fetch_data defaults to datetime index for better UX"""
         try:
             # Default behavior should be datetime index
-            df = gcd.fetch_data("BTCUSDT", "1h", start="2024-01-01", end="2024-01-02")
+            df = gcd.fetch_data("BTCUSDT", "spot", timeframe="1h", start="2024-01-01", end="2024-01-02")
             assert isinstance(df, pd.DataFrame)
             if not df.empty:
                 assert isinstance(df.index, pd.DatetimeIndex)
@@ -152,7 +151,7 @@ class TestSimpleAPI:
         try:
             # Explicit range index should work like before
             df = gcd.fetch_data(
-                "BTCUSDT", "1h", start="2024-01-01", end="2024-01-02", index_type="range"
+                "BTCUSDT", "spot", timeframe="1h", start="2024-01-01", end="2024-01-02", index_type="range"
             )
             assert isinstance(df, pd.DataFrame)
             if not df.empty:
@@ -170,8 +169,8 @@ class TestSimpleAPI:
         """Test that download is an alias for fetch_data"""
         # Should not raise errors for basic parameter validation
         try:
-            df1 = gcd.fetch_data("BTCUSDT", "1h", start="2024-01-01", end="2024-01-02")
-            df2 = gcd.download("BTCUSDT", "1h", start="2024-01-01", end="2024-01-02")
+            df1 = gcd.fetch_data("BTCUSDT", "spot", timeframe="1h", start="2024-01-01", end="2024-01-02")
+            df2 = gcd.download("BTCUSDT", "spot", timeframe="1h", start="2024-01-01", end="2024-01-02")
 
             # Both should return DataFrames with same structure
             assert isinstance(df1, pd.DataFrame)
@@ -187,7 +186,7 @@ class TestSimpleAPI:
         try:
             # Test datetime index (default)
             df_datetime = gcd.download(
-                "BTCUSDT", "1h", start="2024-01-01", end="2024-01-02", index_type="datetime"
+                "BTCUSDT", "spot", timeframe="1h", start="2024-01-01", end="2024-01-02", index_type="datetime"
             )
             assert isinstance(df_datetime, pd.DataFrame)
             if not df_datetime.empty:
@@ -195,7 +194,7 @@ class TestSimpleAPI:
 
             # Test range index
             df_range = gcd.download(
-                "BTCUSDT", "1h", start="2024-01-01", end="2024-01-02", index_type="range"
+                "BTCUSDT", "spot", timeframe="1h", start="2024-01-01", end="2024-01-02", index_type="range"
             )
             assert isinstance(df_range, pd.DataFrame)
             if not df_range.empty:
@@ -209,7 +208,7 @@ class TestSimpleAPI:
         """Test that returned DataFrames have expected microstructure columns"""
         try:
             # Test with datetime index (default) - 'date' column still present
-            df_datetime = gcd.fetch_data("BTCUSDT", "1d", start="2024-01-01", end="2024-01-02")
+            df_datetime = gcd.fetch_data("BTCUSDT", "spot", timeframe="1d", start="2024-01-01", end="2024-01-02")
 
             if not df_datetime.empty:
                 # Expected columns when using datetime index (includes 'date' column for compatibility)
@@ -238,7 +237,7 @@ class TestSimpleAPI:
 
             # Test with range index (legacy) - same columns but RangeIndex
             df_range = gcd.fetch_data(
-                "BTCUSDT", "1d", start="2024-01-01", end="2024-01-02", index_type="range"
+                "BTCUSDT", "spot", timeframe="1d", start="2024-01-01", end="2024-01-02", index_type="range"
             )
 
             if not df_range.empty:
@@ -285,7 +284,7 @@ class TestSimpleAPI:
     def test_backward_compatibility(self):
         """Test that class-based API still works (backward compatibility)"""
         # Should be able to import and instantiate classes
-        collector = gcd.BinancePublicDataCollector()
+        collector = gcd.BinancePublicDataCollector(market_type=MarketType.SPOT)
         gap_filler = gcd.UniversalGapFiller()
 
         assert collector is not None
@@ -306,12 +305,12 @@ class TestSimpleAPI:
         try:
             # Function-based API with range index for consistency comparison
             df_function = gcd.fetch_data(
-                symbol, timeframe, start=start, end=end, index_type="range"
+                symbol, "spot", timeframe=timeframe, start=start, end=end, index_type="range"
             )
 
             # Class-based API
             collector = gcd.BinancePublicDataCollector(
-                symbol=symbol, start_date=start, end_date=end
+                market_type=MarketType.SPOT, symbol=symbol, start_date=start, end_date=end
             )
             result_class = collector.collect_timeframe_data(timeframe)
 
@@ -324,7 +323,7 @@ class TestSimpleAPI:
                 assert list(df_function.columns) == list(df_class.columns)
 
                 # Test that new default datetime index also works
-                df_function_datetime = gcd.fetch_data(symbol, timeframe, start=start, end=end)
+                df_function_datetime = gcd.fetch_data(symbol, "spot", timeframe=timeframe, start=start, end=end)
                 assert isinstance(df_function_datetime, pd.DataFrame)
                 if not df_function_datetime.empty:
                     assert isinstance(df_function_datetime.index, pd.DatetimeIndex)
@@ -343,7 +342,7 @@ class TestAPIUsagePatterns:
         """Test intuitive download usage pattern"""
         try:
             # Common download pattern with date range
-            df = gcd.download("BTCUSDT", "1d", start="2024-01-01", end="2024-01-02")
+            df = gcd.download("BTCUSDT", "spot", timeframe="1d", start="2024-01-01", end="2024-01-02")
             assert isinstance(df, pd.DataFrame)
 
         except Exception as e:
@@ -351,19 +350,17 @@ class TestAPIUsagePatterns:
 
     def test_symbol_discovery_pattern(self):
         """Test symbol and timeframe discovery pattern"""
-        # Pattern for discovering available options
-        symbols = gcd.get_supported_symbols()
+        # get_supported_symbols() is deprecated - use any valid Binance symbol
         timeframes = gcd.get_supported_timeframes()
 
-        assert len(symbols) > 0
         assert len(timeframes) > 0
 
-        # Should be able to use discovered values
-        symbol = symbols[0]  # First available symbol
-        timeframe = timeframes[0] if "1d" not in timeframes else "1d"
+        # Use known valid symbol and discovered timeframe
+        symbol = "BTCUSDT"  # Use known valid symbol
+        timeframe = "1d" if "1d" in timeframes else timeframes[0]
 
         try:
-            df = gcd.fetch_data(symbol, timeframe, limit=1)
+            df = gcd.fetch_data(symbol, "spot", timeframe=timeframe, limit=1)
             assert isinstance(df, pd.DataFrame)
 
         except Exception as e:
@@ -375,6 +372,7 @@ class TestAPIUsagePatterns:
             # Test with default datetime index
             df = gcd.fetch_data(
                 symbol="ETHUSDT",
+                market_type="spot",
                 timeframe="1h",
                 start="2024-01-01",
                 end="2024-01-01",  # Single day
@@ -390,6 +388,7 @@ class TestAPIUsagePatterns:
             # Test with legacy range index
             df_range = gcd.fetch_data(
                 symbol="ETHUSDT",
+                market_type="spot",
                 timeframe="1h",
                 start="2024-01-01",
                 end="2024-01-01",
@@ -409,7 +408,7 @@ class TestAPIUsagePatterns:
         try:
             # download() should have auto_fill_gaps=True by default
             df = gcd.download(
-                "BTCUSDT", "5m", start="2023-03-23", end="2023-03-25", auto_fill_gaps=True
+                "BTCUSDT", "spot", timeframe="5m", start="2023-03-23", end="2023-03-25", auto_fill_gaps=True
             )
 
             assert isinstance(df, pd.DataFrame)
@@ -422,7 +421,7 @@ class TestAPIUsagePatterns:
         try:
             # Should accept auto_fill_gaps=False to get raw Vision data
             df = gcd.download(
-                "BTCUSDT", "1h", start="2024-01-01", end="2024-01-02", auto_fill_gaps=False
+                "BTCUSDT", "spot", timeframe="1h", start="2024-01-01", end="2024-01-02", auto_fill_gaps=False
             )
 
             assert isinstance(df, pd.DataFrame)
@@ -434,9 +433,9 @@ class TestAPIUsagePatterns:
         """Test that fetch_data also supports auto_fill_gaps parameter"""
         try:
             # fetch_data() should also have auto_fill_gaps parameter
-            df_with_fill = gcd.fetch_data("ETHUSDT", "1h", limit=48, auto_fill_gaps=True)
+            df_with_fill = gcd.fetch_data("ETHUSDT", "spot", timeframe="1h", limit=48, auto_fill_gaps=True)
 
-            df_without_fill = gcd.fetch_data("ETHUSDT", "1h", limit=48, auto_fill_gaps=False)
+            df_without_fill = gcd.fetch_data("ETHUSDT", "spot", timeframe="1h", limit=48, auto_fill_gaps=False)
 
             assert isinstance(df_with_fill, pd.DataFrame)
             assert isinstance(df_without_fill, pd.DataFrame)
@@ -450,6 +449,7 @@ class TestAPIUsagePatterns:
             # Use period with known Binance Vision gap (March 24, 2023)
             df = gcd.download(
                 "BTCUSDT",
+                "spot",
                 timeframe="5m",
                 start="2023-03-23",
                 end="2023-03-25",

@@ -11,6 +11,8 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from gapless_crypto_data.market_types import MarketType
+
 
 @pytest.fixture
 def test_data_dir():
@@ -61,6 +63,7 @@ def real_btcusdt_1h_sample(tmp_path_factory):
     try:
         # Download real Binance data once
         collector = BinancePublicDataCollector(
+            market_type=MarketType.SPOT,
             symbol="BTCUSDT",
             start_date="2024-01-01",
             end_date="2024-01-02",

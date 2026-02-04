@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pytest
 
+from gapless_crypto_data.market_types import MarketType
+
 
 def test_package_import():
     """Test that the main package can be imported."""
@@ -127,7 +129,10 @@ def test_all_imports_valid():
 
         # Test instantiation with safe defaults
         collector = BinancePublicDataCollector(
-            symbol="BTCUSDT", start_date="2022-01-01", end_date="2022-01-02"
+            market_type=MarketType.SPOT,
+            symbol="BTCUSDT",
+            start_date="2022-01-01",
+            end_date="2022-01-02",
         )
         gap_filler = UniversalGapFiller()
 

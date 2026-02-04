@@ -84,11 +84,12 @@ def get_supported_timeframes() -> List[str]:
         >>> timeframes = get_supported_timeframes()
         >>> print(f"Available timeframes: {timeframes}")
         >>> print(f"1-hour supported: {'1h' in timeframes}")
-        Available timeframes: ['1s', '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1mo']
+        Available timeframes: ['1s', '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d']
         1-hour supported: True
     """
-    collector = BinancePublicDataCollector()
-    return collector.available_timeframes
+    from .utils.timeframe_constants import TIMEFRAME_TO_MINUTES
+
+    return list(TIMEFRAME_TO_MINUTES.keys())
 
 
 # Type aliases for better discoverability and coding agent support
