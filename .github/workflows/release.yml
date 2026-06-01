@@ -112,7 +112,9 @@ jobs:
       - name: Send Pushover notification
         env:
           PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
-          PUSHOVER_APP_TOKEN: ${{ secrets.PUSHOVER_APP_TOKEN }}
+          # Dedicated app "📡 gapless-cryp" (separation of concerns) — NOT the shared
+          # claude_code channel. Token: Doppler/GH secret PUSHOVER_APP_TOKEN_GAPLESS_CRYPTO.
+          PUSHOVER_APP_TOKEN: ${{ secrets.PUSHOVER_APP_TOKEN_GAPLESS_CRYPTO }}
         run: |
           if [ -n "$PUSHOVER_USER_KEY" ] && [ -n "$PUSHOVER_APP_TOKEN" ]; then
             curl -s \
