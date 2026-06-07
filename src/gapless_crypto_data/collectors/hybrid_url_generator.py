@@ -15,6 +15,8 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import List, NamedTuple, Optional, Tuple
 
+from gapless_crypto_data.market_types import MarketType
+
 
 class DataSource(Enum):
     """Data source types for Binance public data."""
@@ -50,9 +52,10 @@ class HybridUrlGenerator:
         - Intelligent overlap handling between monthly and daily sources
 
     Examples:
-        Basic hybrid URL generation:
+        Basic hybrid URL generation for spot market:
 
-        >>> generator = HybridUrlGenerator()
+        >>> from gapless_crypto_data.market_types import MarketType
+        >>> generator = HybridUrlGenerator(market_type=MarketType.SPOT)
         >>> tasks = generator.generate_download_tasks(
         ...     symbol="BTCUSDT",
         ...     timeframe="1h",
@@ -62,11 +65,11 @@ class HybridUrlGenerator:
         >>> print(f"Generated {len(tasks)} download tasks")
         Generated 15 download tasks
 
-        Custom configuration:
+        Futures market with custom configuration:
 
         >>> generator = HybridUrlGenerator(
+        ...     market_type=MarketType.FUTURES,
         ...     daily_lookback_days=45,  # Use daily files for last 45 days
-        ...     base_url="https://data.binance.vision/data/spot"
         ... )
         >>> monthly_tasks, daily_tasks = generator.separate_tasks_by_source(tasks)
         >>> print(f"Monthly: {len(monthly_tasks)}, Daily: {len(daily_tasks)}")
@@ -83,20 +86,21 @@ class HybridUrlGenerator:
 
     def __init__(
         self,
+        market_type: MarketType,
         daily_lookback_days: int = 30,
-        base_url: str = "https://data.binance.vision/data/spot",
         max_concurrent_per_batch: int = 13,
     ):
         """
         Initialize hybrid URL generator with configuration.
 
         Args:
+            market_type: Market type (SPOT or FUTURES) - determines base URL
             daily_lookback_days: Number of days to use daily files for recent data
-            base_url: Base URL for Binance data repository
             max_concurrent_per_batch: Maximum concurrent downloads per batch (13 for ZIP files)
         """
+        self.market_type = market_type
         self.daily_lookback_days = daily_lookback_days
-        self.base_url = base_url.rstrip("/")
+        self.base_url = f"https://data.binance.vision/data/{market_type.base_path}"
         self.max_concurrent_per_batch = max_concurrent_per_batch
 
         # Calculate cutoff date for monthly vs daily strategy

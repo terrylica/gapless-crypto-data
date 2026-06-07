@@ -29,6 +29,7 @@ import pandas as pd
 
 from .collectors.binance_public_data_collector import BinancePublicDataCollector
 from .gap_filling.universal_gap_filler import UniversalGapFiller
+from .market_types import MarketType
 
 # Timestamp columns requiring datetime64 conversion
 TIMESTAMP_COLUMNS = ("date", "close_time")
@@ -53,20 +54,24 @@ def _ensure_datetime_types(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_supported_symbols() -> List[str]:
-    """Get list of supported USDT spot trading pairs.
+    """Get list of supported trading pairs.
+
+    .. deprecated::
+        This function is deprecated and will be removed in v7.0.0.
+        Symbol validation is no longer performed. Use any valid Binance symbol.
 
     Returns:
-        List of supported symbol strings (e.g., ["BTCUSDT", "ETHUSDT", ...])
-
-    Examples:
-        >>> symbols = get_supported_symbols()
-        >>> print(f"Found {len(symbols)} supported symbols")
-        >>> print(f"Bitcoin: {'BTCUSDT' in symbols}")
-        Found 6 supported symbols
-        Bitcoin: True
+        Empty list (function deprecated)
     """
-    collector = BinancePublicDataCollector()
-    return list(collector.known_symbols.keys())
+    import warnings
+
+    warnings.warn(
+        "get_supported_symbols() is deprecated and will be removed in v7.0.0. "
+        "Symbol validation is no longer performed. Use any valid Binance symbol.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return []
 
 
 def get_supported_timeframes() -> List[str]:
@@ -74,16 +79,8 @@ def get_supported_timeframes() -> List[str]:
 
     Returns:
         List of timeframe strings (e.g., ["1m", "5m", "1h", "4h", ...])
-
-    Examples:
-        >>> timeframes = get_supported_timeframes()
-        >>> print(f"Available timeframes: {timeframes}")
-        >>> print(f"1-hour supported: {'1h' in timeframes}")
-        Available timeframes: ['1s', '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1mo']
-        1-hour supported: True
     """
-    collector = BinancePublicDataCollector()
-    return collector.available_timeframes
+    return ["1s", "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1mo"]
 
 
 # Type aliases for better discoverability and coding agent support
@@ -356,6 +353,7 @@ def _create_empty_dataframe() -> pd.DataFrame:
 
 def fetch_data(
     symbol: Union[str, SupportedSymbol],
+    market_type: str,
     timeframe: Optional[Union[str, SupportedTimeframe]] = None,
     limit: Optional[int] = None,
     start: Optional[str] = None,
@@ -376,6 +374,8 @@ def fetch_data(
 
     Args:
         symbol: Trading pair symbol (e.g., "BTCUSDT", "ETHUSDT")
+        market_type: Market type - 'spot' for spot market, 'futures' for USDT-M futures.
+            Required parameter with no default.
         timeframe: Timeframe interval (e.g., "1m", "5m", "1h", "4h", "1d")
         limit: Maximum number of recent bars to return (optional)
         start: Start date in YYYY-MM-DD format (optional)
@@ -396,9 +396,16 @@ def fetch_data(
         - taker_buy_base_asset_volume: Taker buy base volume
         - taker_buy_quote_asset_volume: Taker buy quote volume
 
+    Raises:
+        TypeError: If market_type is not provided.
+        ValueError: If market_type is not 'spot' or 'futures'.
+
     Examples:
-        # Simple data fetching
-        df = fetch_data("BTCUSDT", "1h", limit=1000)
+        # Simple data fetching (spot market)
+        df = fetch_data("BTCUSDT", "spot", "1h", limit=1000)
+
+        # Futures market data
+        df = fetch_data("BTCUSDT", "futures", "1h", limit=1000)
 
         # Standard pandas operations for analysis
         returns = df['close'].pct_change()                    # Returns calculation
@@ -409,14 +416,21 @@ def fetch_data(
         })  # OHLCV resampling
 
         # Fetch specific date range
-        df = fetch_data("ETHUSDT", "4h", start="2024-01-01", end="2024-06-30")
+        df = fetch_data("ETHUSDT", "spot", "4h", start="2024-01-01", end="2024-06-30")
 
         # Save to custom directory
-        df = fetch_data("SOLUSDT", "1h", limit=500, output_dir="./crypto_data")
+        df = fetch_data("SOLUSDT", "spot", "1h", limit=500, output_dir="./crypto_data")
 
         # Legacy interval parameter (deprecated)
-        df = fetch_data("BTCUSDT", interval="1h", limit=1000)
+        df = fetch_data("BTCUSDT", "spot", interval="1h", limit=1000)
     """
+    # Validate market_type (required parameter)
+    if market_type is None:
+        raise TypeError("market_type is required. Use 'spot' or 'futures'.")
+
+    # Convert string to enum (raises ValueError if invalid)
+    market_type_enum = MarketType(market_type)
+
     # Validate and resolve timeframe parameters
     period = _validate_timeframe_parameters(timeframe, interval)
 
@@ -431,7 +445,11 @@ def fetch_data(
 
     # Initialize collector and collect data
     collector = BinancePublicDataCollector(
-        symbol=symbol, start_date=start, end_date=end, output_dir=output_dir
+        market_type=market_type_enum,
+        symbol=symbol,
+        start_date=start,
+        end_date=end,
+        output_dir=output_dir,
     )
     result = collector.collect_timeframe_data(period)
 
@@ -451,6 +469,7 @@ def fetch_data(
 
 def download(
     symbol: Union[str, SupportedSymbol],
+    market_type: str,
     timeframe: Optional[Union[str, SupportedTimeframe]] = None,
     start: Optional[str] = None,
     end: Optional[str] = None,
@@ -468,6 +487,8 @@ def download(
 
     Args:
         symbol: Trading pair symbol (e.g., "BTCUSDT")
+        market_type: Market type - 'spot' for spot market, 'futures' for USDT-M futures.
+            Required parameter with no default.
         timeframe: Timeframe interval (default: "1h" if neither specified)
         start: Start date in YYYY-MM-DD format
         end: End date in YYYY-MM-DD format
@@ -479,22 +500,34 @@ def download(
     Returns:
         pd.DataFrame with complete OHLCV and microstructure data (gapless by default)
 
+    Raises:
+        TypeError: If market_type is not provided.
+        ValueError: If market_type is not 'spot' or 'futures'.
+
     Examples:
         # Simple data download (automatically fills gaps)
-        df = download("BTCUSDT", "1h", start="2024-01-01", end="2024-06-30")
+        df = download("BTCUSDT", "spot", "1h", start="2024-01-01", end="2024-06-30")
+
+        # Futures market data
+        df = download("BTCUSDT", "futures", "1h", start="2024-01-01", end="2024-06-30")
 
         # Disable auto-fill if you want raw Vision archive data
-        df = download("ETHUSDT", "4h", auto_fill_gaps=False)
+        df = download("ETHUSDT", "spot", "4h", auto_fill_gaps=False)
 
         # Legacy interval parameter
-        df = download("BTCUSDT", interval="1h")
+        df = download("BTCUSDT", "spot", interval="1h")
     """
+    # Validate market_type (required parameter)
+    if market_type is None:
+        raise TypeError("market_type is required. Use 'spot' or 'futures'.")
+
     # Apply default if neither parameter specified
     if timeframe is None and interval is None:
         timeframe = "1h"
 
     return fetch_data(
         symbol=symbol,
+        market_type=market_type,
         timeframe=timeframe,
         start=start,
         end=end,

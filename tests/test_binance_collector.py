@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 
 from gapless_crypto_data.collectors.binance_public_data_collector import BinancePublicDataCollector
+from gapless_crypto_data.market_types import MarketType
 from gapless_crypto_data.utils.timestamp_format_analyzer import TimestampFormatAnalyzer
 from gapless_crypto_data.validation import CSVValidator
 
@@ -16,14 +17,17 @@ class TestBinancePublicDataCollector:
 
     def test_init(self):
         """Test collector initialization."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
         assert collector is not None
         assert hasattr(collector, "collect_timeframe_data")
 
     def test_init_with_custom_params(self):
         """Test collector initialization with custom parameters."""
         collector = BinancePublicDataCollector(
-            symbol="BTCUSDT", start_date="2023-01-01", end_date="2023-12-31"
+            market_type=MarketType.SPOT,
+            symbol="BTCUSDT",
+            start_date="2023-01-01",
+            end_date="2023-12-31",
         )
         assert collector.symbol == "BTCUSDT"
 
@@ -69,7 +73,10 @@ class TestBinancePublicDataCollector:
     def test_collect_small_dataset(self):
         """Integration test for collecting a small dataset."""
         collector = BinancePublicDataCollector(
-            symbol="BTCUSDT", start_date="2024-01-01", end_date="2024-01-02"
+            market_type=MarketType.SPOT,
+            symbol="BTCUSDT",
+            start_date="2024-01-01",
+            end_date="2024-01-02",
         )
 
         # Test with a very small date range to minimize download time
@@ -180,7 +187,7 @@ class TestBinancePublicDataCollector:
 
     def test_analyze_timestamp_format_invalid(self):
         """Test timestamp format analysis with invalid timestamps."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         # Test invalid timestamp formats
         invalid_timestamps = [
@@ -621,7 +628,10 @@ class TestInputValidationSecurity:
         for malicious_symbol in path_traversal_attempts:
             with pytest.raises(ValueError, match="invalid characters"):
                 BinancePublicDataCollector(
-                    symbol=malicious_symbol, start_date="2024-01-01", end_date="2024-01-31"
+                    market_type=MarketType.SPOT,
+                    symbol=malicious_symbol,
+                    start_date="2024-01-01",
+                    end_date="2024-01-31",
                 )
 
     def test_sec01_dot_characters_rejected(self):
@@ -631,7 +641,10 @@ class TestInputValidationSecurity:
         for symbol in dot_symbols:
             with pytest.raises(ValueError, match="invalid characters"):
                 BinancePublicDataCollector(
-                    symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+                    market_type=MarketType.SPOT,
+                    symbol=symbol,
+                    start_date="2024-01-01",
+                    end_date="2024-01-31",
                 )
 
     def test_sec01_slash_characters_rejected(self):
@@ -647,7 +660,10 @@ class TestInputValidationSecurity:
         for symbol in slash_symbols:
             with pytest.raises(ValueError, match="invalid characters"):
                 BinancePublicDataCollector(
-                    symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+                    market_type=MarketType.SPOT,
+                    symbol=symbol,
+                    start_date="2024-01-01",
+                    end_date="2024-01-31",
                 )
 
     def test_sec02_empty_symbol_rejected(self):
@@ -657,26 +673,40 @@ class TestInputValidationSecurity:
         for symbol in empty_symbols:
             with pytest.raises(ValueError, match="cannot be empty"):
                 BinancePublicDataCollector(
-                    symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+                    market_type=MarketType.SPOT,
+                    symbol=symbol,
+                    start_date="2024-01-01",
+                    end_date="2024-01-31",
                 )
 
     def test_sec03_none_symbol_rejected(self):
         """SEC-03: Test that None symbol is rejected."""
         with pytest.raises(ValueError, match="cannot be None"):
-            BinancePublicDataCollector(symbol=None, start_date="2024-01-01", end_date="2024-01-31")
+            BinancePublicDataCollector(
+                market_type=MarketType.SPOT,
+                symbol=None,
+                start_date="2024-01-01",
+                end_date="2024-01-31",
+            )
 
     def test_sec04_invalid_date_range_rejected(self):
         """SEC-04: Test that invalid date ranges (end before start) are rejected."""
         with pytest.raises(ValueError, match="before start_date"):
             BinancePublicDataCollector(
-                symbol="BTCUSDT", start_date="2024-12-31", end_date="2024-01-01"
+                market_type=MarketType.SPOT,
+                symbol="BTCUSDT",
+                start_date="2024-12-31",
+                end_date="2024-01-01",
             )
 
     def test_sec04_same_date_range_accepted(self):
         """SEC-04: Test that same start and end dates are accepted."""
         # Same date should be valid (single day)
         collector = BinancePublicDataCollector(
-            symbol="BTCUSDT", start_date="2024-01-01", end_date="2024-01-01"
+            market_type=MarketType.SPOT,
+            symbol="BTCUSDT",
+            start_date="2024-01-01",
+            end_date="2024-01-01",
         )
         assert collector.symbol == "BTCUSDT"
 
@@ -686,7 +716,10 @@ class TestInputValidationSecurity:
 
         for symbol in valid_symbols:
             collector = BinancePublicDataCollector(
-                symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+                market_type=MarketType.SPOT,
+                symbol=symbol,
+                start_date="2024-01-01",
+                end_date="2024-01-31",
             )
             # Should normalize to uppercase
             assert collector.symbol == symbol.upper()
@@ -702,7 +735,10 @@ class TestInputValidationSecurity:
 
         for input_symbol, expected_symbol in test_cases:
             collector = BinancePublicDataCollector(
-                symbol=input_symbol, start_date="2024-01-01", end_date="2024-01-31"
+                market_type=MarketType.SPOT,
+                symbol=input_symbol,
+                start_date="2024-01-01",
+                end_date="2024-01-31",
             )
             assert collector.symbol == expected_symbol
 
@@ -728,7 +764,10 @@ class TestInputValidationSecurity:
         for symbol in special_chars:
             with pytest.raises(ValueError, match="alphanumeric"):
                 BinancePublicDataCollector(
-                    symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+                    market_type=MarketType.SPOT,
+                    symbol=symbol,
+                    start_date="2024-01-01",
+                    end_date="2024-01-31",
                 )
 
     def test_unicode_characters_rejected(self):
@@ -745,7 +784,10 @@ class TestInputValidationSecurity:
         for symbol in unicode_symbols:
             with pytest.raises(ValueError, match="alphanumeric"):
                 BinancePublicDataCollector(
-                    symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+                    market_type=MarketType.SPOT,
+                    symbol=symbol,
+                    start_date="2024-01-01",
+                    end_date="2024-01-31",
                 )
 
     def test_sql_injection_rejected(self):
@@ -759,7 +801,10 @@ class TestInputValidationSecurity:
         for symbol in sql_injections:
             with pytest.raises(ValueError):
                 BinancePublicDataCollector(
-                    symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+                    market_type=MarketType.SPOT,
+                    symbol=symbol,
+                    start_date="2024-01-01",
+                    end_date="2024-01-31",
                 )
 
     def test_command_injection_rejected(self):
@@ -774,7 +819,10 @@ class TestInputValidationSecurity:
         for symbol in command_injections:
             with pytest.raises(ValueError):
                 BinancePublicDataCollector(
-                    symbol=symbol, start_date="2024-01-01", end_date="2024-01-31"
+                    market_type=MarketType.SPOT,
+                    symbol=symbol,
+                    start_date="2024-01-01",
+                    end_date="2024-01-31",
                 )
 
     def test_invalid_date_format_rejected(self):
@@ -789,7 +837,10 @@ class TestInputValidationSecurity:
         for start_date, end_date in invalid_dates:
             with pytest.raises(ValueError):
                 BinancePublicDataCollector(
-                    symbol="BTCUSDT", start_date=start_date, end_date=end_date
+                    market_type=MarketType.SPOT,
+                    symbol="BTCUSDT",
+                    start_date=start_date,
+                    end_date=end_date,
                 )
 
     def test_extremely_long_symbol_rejected(self):
@@ -800,7 +851,10 @@ class TestInputValidationSecurity:
         # Should still be rejected even though alphanumeric
         # In practice, no valid symbol is this long
         collector = BinancePublicDataCollector(
-            symbol=long_symbol, start_date="2024-01-01", end_date="2024-01-31"
+            market_type=MarketType.SPOT,
+            symbol=long_symbol,
+            start_date="2024-01-01",
+            end_date="2024-01-31",
         )
         # Should be normalized to uppercase
         assert collector.symbol == long_symbol.upper()
@@ -815,7 +869,10 @@ class TestInputValidationSecurity:
 
         for start_date, end_date in valid_ranges:
             collector = BinancePublicDataCollector(
-                symbol="BTCUSDT", start_date=start_date, end_date=end_date
+                market_type=MarketType.SPOT,
+                symbol="BTCUSDT",
+                start_date=start_date,
+                end_date=end_date,
             )
             assert (
                 collector.start_date < collector.end_date
@@ -824,7 +881,7 @@ class TestInputValidationSecurity:
 
     def test_validate_symbol_method_directly(self):
         """Test _validate_symbol method directly."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         # Valid symbols
         assert collector._validate_symbol("BTCUSDT") == "BTCUSDT"

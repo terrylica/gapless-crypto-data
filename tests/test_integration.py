@@ -9,6 +9,7 @@ import pytest
 
 from gapless_crypto_data.collectors.binance_public_data_collector import BinancePublicDataCollector
 from gapless_crypto_data.gap_filling.universal_gap_filler import UniversalGapFiller
+from gapless_crypto_data.market_types import MarketType
 from gapless_crypto_data.validation import CSVValidator
 
 
@@ -28,7 +29,11 @@ class TestEndToEndIntegration:
             end_date = "2024-01-02"  # Just 2 days for testing
 
             collector = BinancePublicDataCollector(
-                symbol="BTCUSDT", start_date=start_date, end_date=end_date, output_dir=output_dir
+                market_type=MarketType.SPOT,
+                symbol="BTCUSDT",
+                start_date=start_date,
+                end_date=end_date,
+                output_dir=output_dir,
             )
 
             try:
@@ -138,6 +143,7 @@ class TestEndToEndIntegration:
 
             # Test 1: Invalid symbol handling
             collector = BinancePublicDataCollector(
+                market_type=MarketType.SPOT,
                 symbol="INVALIDSYMBOL",
                 start_date="2024-01-01",
                 end_date="2024-01-02",
@@ -156,6 +162,7 @@ class TestEndToEndIntegration:
 
             # Test 2: Invalid timeframe handling
             collector = BinancePublicDataCollector(
+                market_type=MarketType.SPOT,
                 symbol="BTCUSDT",
                 start_date="2024-01-01",
                 end_date="2024-01-02",

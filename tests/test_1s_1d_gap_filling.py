@@ -522,9 +522,10 @@ class TestConcurrentDownloadWith1sAnd1d:
         """Test that concurrent collection architecture supports 1s and 1d."""
         # Import concurrent components
         from gapless_crypto_data.collectors.hybrid_url_generator import HybridUrlGenerator
+        from gapless_crypto_data.market_types import MarketType
 
         # Test URL generation for 1s
-        url_generator = HybridUrlGenerator()
+        url_generator = HybridUrlGenerator(market_type=MarketType.SPOT)
 
         # Test with very short date range for 1s (to avoid massive datasets)
         start_date = datetime(2025, 9, 18, 12, 0, 0)

@@ -12,6 +12,7 @@ from unittest.mock import patch
 import pytest
 
 from gapless_crypto_data.collectors.binance_public_data_collector import BinancePublicDataCollector
+from gapless_crypto_data.market_types import MarketType
 
 
 class TestMonthlyToDailyFallback:
@@ -19,7 +20,7 @@ class TestMonthlyToDailyFallback:
 
     def test_fallback_url_generation(self):
         """Test generation of daily URLs for fallback."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         # Test generating daily URLs for September 2025 (30 days)
         daily_urls = collector._generate_daily_urls_for_month("BTCUSDT", "1d", "2025", "09")
@@ -41,7 +42,7 @@ class TestMonthlyToDailyFallback:
 
     def test_fallback_filename_parsing(self):
         """Test parsing of failed monthly filename."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         # Test with mock fallback method to avoid actual downloads
         with (
@@ -65,6 +66,7 @@ class TestMonthlyToDailyFallback:
         # Use a temporary output directory
         with tempfile.TemporaryDirectory() as temp_dir:
             collector = BinancePublicDataCollector(
+                market_type=MarketType.SPOT,
                 symbol="BTCUSDT",
                 start_date="2025-09-01",
                 end_date="2025-09-02",  # Just test a few days
@@ -88,7 +90,7 @@ class TestMonthlyToDailyFallback:
 
     def test_fallback_logging_and_output(self, capfd):
         """Test that fallback mechanism provides proper logging."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         # Mock the daily URL generation and downloads
         with (
@@ -124,7 +126,7 @@ class TestMonthlyToDailyFallback:
 
     def test_invalid_filename_handling(self):
         """Test handling of invalid monthly filename formats."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         # Test with invalid filename
         result = collector._fallback_to_daily_files("invalid-filename.zip")
@@ -134,7 +136,7 @@ class TestMonthlyToDailyFallback:
 
     def test_february_leap_year_handling(self):
         """Test daily URL generation for February in leap year."""
-        collector = BinancePublicDataCollector()
+        collector = BinancePublicDataCollector(market_type=MarketType.SPOT)
 
         # Test February 2024 (leap year - 29 days)
         daily_urls_leap = collector._generate_daily_urls_for_month("BTCUSDT", "1h", "2024", "02")
@@ -157,6 +159,7 @@ class TestMonthlyToDailyFallback:
         with tempfile.TemporaryDirectory() as temp_dir:
             # Test a range that includes recent months (likely to trigger fallback)
             collector = BinancePublicDataCollector(
+                market_type=MarketType.SPOT,
                 symbol="BTCUSDT",
                 start_date="2025-08-25",  # End of August
                 end_date="2025-09-05",  # Beginning of September (should trigger fallback)

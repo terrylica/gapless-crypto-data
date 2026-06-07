@@ -32,6 +32,7 @@ from gapless_crypto_data.collectors.hybrid_url_generator import (
     DownloadTask,
     HybridUrlGenerator,
 )
+from gapless_crypto_data.market_types import MarketType
 
 
 class TestHybridUrlGenerator:
@@ -40,13 +41,14 @@ class TestHybridUrlGenerator:
     def setup_method(self):
         """Setup test fixtures."""
         self.generator = HybridUrlGenerator(
+            market_type=MarketType.SPOT,
             daily_lookback_days=30,
             max_concurrent_per_batch=13,
         )
 
     def test_init_defaults(self):
         """Test initialization with default parameters."""
-        generator = HybridUrlGenerator()
+        generator = HybridUrlGenerator(market_type=MarketType.SPOT)
 
         assert generator.daily_lookback_days == 30
         assert generator.max_concurrent_per_batch == 13
@@ -606,7 +608,9 @@ class TestConcurrentDownloadIntegration:
     async def test_end_to_end_workflow(self):
         """Test end-to-end workflow: URL generation -> Download -> Processing."""
         # Generate URLs for small date range
-        generator = HybridUrlGenerator(daily_lookback_days=365)  # Force monthly
+        generator = HybridUrlGenerator(
+            market_type=MarketType.SPOT, daily_lookback_days=365
+        )  # Force monthly
 
         tasks = generator.generate_download_tasks(
             symbol="BTCUSDT",

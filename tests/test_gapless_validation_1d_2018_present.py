@@ -20,6 +20,7 @@ import pytest
 
 from gapless_crypto_data.collectors.binance_public_data_collector import BinancePublicDataCollector
 from gapless_crypto_data.gap_filling.universal_gap_filler import UniversalGapFiller
+from gapless_crypto_data.market_types import MarketType
 
 
 class TestGaplessValidation1d2018Present:
@@ -57,7 +58,11 @@ class TestGaplessValidation1d2018Present:
 
         # Initialize collector
         collector = BinancePublicDataCollector(
-            symbol="BTCUSDT", start_date=start_date, end_date=end_date, output_dir=temp_output_dir
+            market_type=MarketType.SPOT,
+            symbol="BTCUSDT",
+            start_date=start_date,
+            end_date=end_date,
+            output_dir=temp_output_dir,
         )
 
         # Collect 1d data
@@ -97,7 +102,11 @@ class TestGaplessValidation1d2018Present:
 
         # First collect the data
         collector = BinancePublicDataCollector(
-            symbol="BTCUSDT", start_date=start_date, end_date=end_date, output_dir=temp_output_dir
+            market_type=MarketType.SPOT,
+            symbol="BTCUSDT",
+            start_date=start_date,
+            end_date=end_date,
+            output_dir=temp_output_dir,
         )
 
         result = collector.collect_timeframe_data("1d")
@@ -140,7 +149,11 @@ class TestGaplessValidation1d2018Present:
 
         # Collect data
         collector = BinancePublicDataCollector(
-            symbol="BTCUSDT", start_date=start_date, end_date=end_date, output_dir=temp_output_dir
+            market_type=MarketType.SPOT,
+            symbol="BTCUSDT",
+            start_date=start_date,
+            end_date=end_date,
+            output_dir=temp_output_dir,
         )
 
         result = collector.collect_timeframe_data("1d")
@@ -225,7 +238,11 @@ class TestGaplessValidation1d2018Present:
 
         # Collect data
         collector = BinancePublicDataCollector(
-            symbol="BTCUSDT", start_date=start_date, end_date=end_date, output_dir=temp_output_dir
+            market_type=MarketType.SPOT,
+            symbol="BTCUSDT",
+            start_date=start_date,
+            end_date=end_date,
+            output_dir=temp_output_dir,
         )
 
         result = collector.collect_timeframe_data("1d")
@@ -262,7 +279,11 @@ class TestGaplessValidation1d2018Present:
 
         # Collect data
         collector = BinancePublicDataCollector(
-            symbol="BTCUSDT", start_date=start_date, end_date=end_date, output_dir=temp_output_dir
+            market_type=MarketType.SPOT,
+            symbol="BTCUSDT",
+            start_date=start_date,
+            end_date=end_date,
+            output_dir=temp_output_dir,
         )
 
         result = collector.collect_timeframe_data("1d")
