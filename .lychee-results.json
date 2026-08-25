@@ -1,15 +1,11 @@
-[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/architecture/CORE_COMPONENTS.md | Cannot find file: File not found. Check if file exists and path is correct
-[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/guides/GAP_FILLING.md | Cannot find file: File not found. Check if file exists and path is correct
-[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/architecture/network.md | Cannot find file: File not found. Check if file exists and path is correct
-[ERROR] file:///Users/terryli/eon/gapless-crypto-data/docs/guides/GAP_FILLING.md | Cannot find file: File not found. Check if file exists and path is correct
 {
-  "total": 227,
-  "successful": 136,
+  "total": 185,
+  "successful": 108,
   "unknown": 0,
   "unsupported": 0,
   "timeouts": 0,
   "redirects": 0,
-  "excludes": 87,
+  "excludes": 73,
   "errors": 4,
   "cached": 0,
   "success_map": {},
@@ -25,7 +21,7 @@
     ],
     "/Users/terryli/eon/gapless-crypto-data/docs/architecture/OVERVIEW.md": [
       {
-        "url": "file:///Users/terryli/eon/gapless-crypto-data/docs/architecture/network.md",
+        "url": "file:///Users/terryli/eon/gapless-crypto-data/docs/architecture/CORE_COMPONENTS.md",
         "status": {
           "text": "Cannot find file",
           "details": "File not found. Check if file exists and path is correct"
@@ -39,7 +35,7 @@
         }
       },
       {
-        "url": "file:///Users/terryli/eon/gapless-crypto-data/docs/architecture/CORE_COMPONENTS.md",
+        "url": "file:///Users/terryli/eon/gapless-crypto-data/docs/architecture/network.md",
         "status": {
           "text": "Cannot find file",
           "details": "File not found. Check if file exists and path is correct"

@@ -529,9 +529,7 @@ def main() -> int:
     print("\n" + "=" * 70, file=sys.stderr)
     print("❌  CLI REMOVED", file=sys.stderr)
     print("=" * 70, file=sys.stderr)
-    print(
-        "The gapless-crypto-data CLI was removed in v4.0.0.", file=sys.stderr
-    )
+    print("The gapless-crypto-data CLI was removed in v4.0.0.", file=sys.stderr)
     print("", file=sys.stderr)
     print("Please use the Python API instead:", file=sys.stderr)
     print("", file=sys.stderr)
@@ -540,7 +538,10 @@ def main() -> int:
     print("  df = gcd.fetch_data('BTCUSDT', timeframe='1h', limit=1000)", file=sys.stderr)
     print("", file=sys.stderr)
     print("  # Or download with date range:", file=sys.stderr)
-    print("  df = gcd.download('BTCUSDT', timeframe='1h', start='2024-01-01', end='2024-06-30')", file=sys.stderr)
+    print(
+        "  df = gcd.download('BTCUSDT', timeframe='1h', start='2024-01-01', end='2024-06-30')",
+        file=sys.stderr,
+    )
     print("", file=sys.stderr)
     print(
         "Migration guide: docs/development/CLI_MIGRATION_GUIDE.md",
