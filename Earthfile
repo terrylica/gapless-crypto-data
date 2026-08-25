@@ -127,4 +127,3 @@ check:
     FROM earthly/earthly:v0.8.15
     COPY Earthfile .
     RUN earthly doc
-
