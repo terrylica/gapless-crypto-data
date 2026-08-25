@@ -34,7 +34,7 @@ Usage:
     result = collector.collect_timeframe_data("1h")
 """
 
-__version__ = "5.0.0"
+__version__ = "5.0.1"
 __author__ = "Eon Labs"
 __email__ = "terry@eonlabs.com"
 

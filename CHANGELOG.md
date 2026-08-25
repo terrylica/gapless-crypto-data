@@ -2,6 +2,13 @@
 
 All notable changes to gapless-crypto-data will be documented in this file.
 
+## [5.0.1](https://github.com/terrylica/gapless-crypto-data/compare/v5.0.0...v5.0.1) (2026-08-25)
+
+### Bug Fixes
+
+* **notify:** route Pushover to dedicated "gapless-cryp" app ([fbd39d5](https://github.com/terrylica/gapless-crypto-data/commit/fbd39d5f900466be98643037086360844df234ca))
+* **version:** sync __init__.py to 5.0.0 ([de35e8b](https://github.com/terrylica/gapless-crypto-data/commit/de35e8b551b7ac78be6744349215719e75072e8d))
+
 ## [5.0.0](https://github.com/terrylica/gapless-crypto-data/compare/v4.0.1...v5.0.0) (2026-01-02)
 
 ### ⚠ BREAKING CHANGES
