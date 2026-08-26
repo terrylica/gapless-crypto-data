@@ -4,9 +4,9 @@
   "private": true,
   "description": "Release automation for gapless-crypto-data (Python package)",
   "scripts": {
-    "release": "semantic-release",
-    "release:dry": "semantic-release --dry-run",
-    "release:no-ci": "semantic-release --no-ci"
+    "release": "npm ci --no-audit --no-fund && semantic-release --no-ci",
+    "release:dry": "npm ci --no-audit --no-fund && semantic-release --dry-run --no-ci",
+    "release:no-ci": "npm run release"
   },
   "devDependencies": {
     "semantic-release": "^24.2.0",
