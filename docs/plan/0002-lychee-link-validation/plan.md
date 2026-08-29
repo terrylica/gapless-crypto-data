@@ -79,7 +79,7 @@ completed: "2025-01-23"
    - Pattern: v2.{major}.{1,2} files missing (v2.2.1, v2.4.1, v2.4.2, etc.)
 
 3. **Absolute path usage**: User-specific paths embedded in documentation
-   - Pattern: `/Users/terryli/eon/gapless-crypto-data/...`
+   - Pattern: `~/eon/gapless-crypto-data/...`
    - Impact: Breaks for other developers, GitHub web UI, PyPI docs
 
 ### Technical Constraints
@@ -176,7 +176,7 @@ completed: "2025-01-23"
 ### Phase 2: Path Standardization (56 conversions) - AUTOMATED ✅ COMPLETED
 
 - [x] **CLAUDE.md** (12 paths):
-  - [x] Convert all `/Users/terryli/eon/gapless-crypto-data/` → `./` (project root context)
+  - [x] Convert all `~/eon/gapless-crypto-data/` → `./` (project root context)
 
 - [x] **docs/architecture/OVERVIEW.md** (11 paths)
 - [x] **docs/guides/python-api.md** (6 paths)
@@ -326,8 +326,8 @@ def convert_absolute_to_relative(file_path, base_path):
     """Convert absolute file paths to relative paths"""
     content = Path(file_path).read_text()
 
-    # Pattern: /Users/terryli/eon/gapless-crypto-data/docs/...
-    pattern = r'/Users/terryli/eon/gapless-crypto-data/'
+    # Pattern: ~/eon/gapless-crypto-data/docs/...
+    pattern = r'~/eon/gapless-crypto-data/'
 
     # Calculate relative path from file location
     file_dir = Path(file_path).parent
@@ -343,7 +343,7 @@ def convert_absolute_to_relative(file_path, base_path):
     Path(file_path).write_text(content)
 
 # Process all affected files
-base = Path('/Users/terryli/eon/gapless-crypto-data')
+base = Path('~/eon/gapless-crypto-data')
 for file in [
     'CLAUDE.md',
     'docs/architecture/OVERVIEW.md',

@@ -18,7 +18,7 @@ Comprehensive guide to programmatic usage of gapless-crypto-data via Python API 
 1. **Function-Based API**: Simple, intuitive functions for common tasks (`gcd.fetch_data()`, `gcd.download()`, `gcd.fill_gaps()`)
 2. **Class-Based API**: Advanced workflows with fine-grained control (`BinancePublicDataCollector`, `UniversalGapFiller`, `CSVValidator`)
 
-**Examples**: Complete working examples in `/Users/terryli/eon/gapless-crypto-data/examples/`
+**Examples**: Complete working examples in `~/eon/gapless-crypto-data/examples/`
 
 ## Function-Based API (Simple)
 
@@ -406,7 +406,7 @@ if failed:
 
 ## Complete Examples
 
-**Location**: `/Users/terryli/eon/gapless-crypto-data/examples/`
+**Location**: `~/eon/gapless-crypto-data/examples/`
 
 ### Simple API Examples
 

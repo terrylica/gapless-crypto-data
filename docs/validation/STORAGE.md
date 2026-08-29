@@ -11,7 +11,7 @@ supersedes: []
 
 DuckDB-based persistent storage for CSV validation reports with SQL query interface for AI coding agents.
 
-**Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/validation/storage.py`
+**Location**: `~/eon/gapless-crypto-data/src/gapless_crypto_data/validation/storage.py`
 
 ## Database Schema
 
@@ -338,5 +338,5 @@ with duckdb.connect(str(db_path)) as conn:
 
 - **Validation Overview**: [OVERVIEW.md](../../docs/validation/OVERVIEW.md)
 - **Query Patterns**: [QUERY_PATTERNS.md](../../docs/validation/QUERY_PATTERNS.md)
-- **ValidationReport Model**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/validation/models.py`
-- **Test Suite**: `/Users/terryli/eon/gapless-crypto-data/tests/test_validation_storage.py`
+- **ValidationReport Model**: `~/eon/gapless-crypto-data/src/gapless_crypto_data/validation/models.py`
+- **Test Suite**: `~/eon/gapless-crypto-data/tests/test_validation_storage.py`

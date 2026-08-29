@@ -199,7 +199,7 @@ Main project configuration:
 - Build system configuration (Hatchling)
 - Tool configurations (ruff, mypy, pytest)
 
-**Location**: `/Users/terryli/eon/gapless-crypto-data/pyproject.toml`
+**Location**: `~/eon/gapless-crypto-data/pyproject.toml`
 
 ### `.python-version`
 
@@ -233,7 +233,7 @@ Dependency lock file (auto-generated):
 
 ### Sample Data
 
-**Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/sample_data/`
+**Location**: `~/eon/gapless-crypto-data/src/gapless_crypto_data/sample_data/`
 
 **Purpose**: Real data files for end-to-end tests
 

@@ -315,7 +315,7 @@ print(f"Gaps: {report['datetime_validation']['gaps_found']}")
 
 - **Configuration**: Flexible via constructor parameters
 - **Output formats**: CSV (default), Parquet (optional)
-- **Test coverage**: Collection tests in `/Users/terryli/eon/gapless-crypto-data/tests/test_binance_collector.py`
+- **Test coverage**: Collection tests in `~/eon/gapless-crypto-data/tests/test_binance_collector.py`
 
 ## Troubleshooting
 

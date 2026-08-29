@@ -28,7 +28,7 @@ The system consists of six primary components:
 - **Performance**: 22x faster than API calls (CloudFront CDN vs REST API)
 - **Operations**: Monthly/daily ZIP download, extraction, processing
 - **Output**: 11-column microstructure format CSV files
-- **Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/collectors/binance_public_data_collector.py`
+- **Location**: `~/eon/gapless-crypto-data/src/gapless_crypto_data/collectors/binance_public_data_collector.py`
 
 ### UniversalGapFiller
 
@@ -36,14 +36,14 @@ The system consists of six primary components:
 - **Algorithm**: Timestamp sequence analysis with timeframe-aware gap detection
 - **Data source**: Binance REST API (authenticated or public endpoints)
 - **Guarantee**: Only authentic market data, never synthetic interpolation
-- **Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/gap_filling/universal_gap_filler.py`
+- **Location**: `~/eon/gapless-crypto-data/src/gapless_crypto_data/gap_filling/universal_gap_filler.py`
 
 ### CSVValidator
 
 - **Purpose**: 5-layer validation engine for data quality assurance
 - **Persistence**: DuckDB-based storage for validation reports
 - **AI Integration**: SQL query interface for AI coding agents
-- **Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/validation/csv_validator.py`
+- **Location**: `~/eon/gapless-crypto-data/src/gapless_crypto_data/validation/csv_validator.py`
 - **Details**: See [Validation Overview](../../docs/validation/OVERVIEW.md)
 
 ### ValidationStorage
@@ -51,7 +51,7 @@ The system consists of six primary components:
 - **Purpose**: DuckDB persistent storage for validation reports
 - **Schema**: 30+ columns with flattened metrics for SQL queries
 - **Storage**: `~/.cache/gapless-crypto-data/validation.duckdb` (XDG-compliant)
-- **Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/validation/storage.py`
+- **Location**: `~/eon/gapless-crypto-data/src/gapless_crypto_data/validation/storage.py`
 - **Details**: See [Validation Storage Specification](../../docs/validation/STORAGE.md)
 
 ### AtomicCSVOperations
@@ -59,14 +59,14 @@ The system consists of six primary components:
 - **Purpose**: Corruption-proof file operations with atomic guarantees
 - **Mechanism**: Temp file + validation + atomic rename
 - **Guarantee**: All-or-nothing writes (no partial file corruption)
-- **Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/gap_filling/safe_file_operations.py`
+- **Location**: `~/eon/gapless-crypto-data/src/gapless_crypto_data/gap_filling/safe_file_operations.py`
 
 ### SafeCSVMerger
 
 - **Purpose**: Safe merging of multiple CSV files with validation
 - **Operations**: Gap data integration, duplicate removal, chronological sorting
 - **Validation**: Automatic data integrity checks
-- **Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/gap_filling/safe_file_operations.py`
+- **Location**: `~/eon/gapless-crypto-data/src/gapless_crypto_data/gap_filling/safe_file_operations.py`
 
 ## Data Flow Architecture
 

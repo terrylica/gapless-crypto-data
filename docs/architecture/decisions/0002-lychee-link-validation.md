@@ -15,7 +15,7 @@ Link rot in documentation creates poor user experience and maintenance burden:
    - 10 links to missing historical milestone files (v2.2.1, v2.4.x, v2.5.x, etc.)
 
 2. **56 absolute file paths** in documentation
-   - Pattern: `/Users/terryli/eon/gapless-crypto-data/docs/...`
+   - Pattern: `~/eon/gapless-crypto-data/docs/...`
    - Not portable across developers, GitHub web UI, or published PyPI documentation
    - Affects: CLAUDE.md (12), docs/architecture/ (19), docs/guides/ (13), docs/validation/ (12)
 

@@ -17,7 +17,7 @@ supersedes: []
 
 ### CSVValidator
 
-**Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/validation/csv_validator.py`
+**Location**: `~/eon/gapless-crypto-data/src/gapless_crypto_data/validation/csv_validator.py`
 
 **Purpose**: Multi-layer validation of OHLCV CSV files
 
@@ -51,7 +51,7 @@ supersedes: []
 
 ### ValidationReport (Pydantic Model)
 
-**Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/validation/models.py`
+**Location**: `~/eon/gapless-crypto-data/src/gapless_crypto_data/validation/models.py`
 
 **Purpose**: Type-safe validation report with OpenAPI 3.1.1 schema
 
@@ -68,7 +68,7 @@ supersedes: []
 
 ### ValidationStorage
 
-**Location**: `/Users/terryli/eon/gapless-crypto-data/src/gapless_crypto_data/validation/storage.py`
+**Location**: `~/eon/gapless-crypto-data/src/gapless_crypto_data/validation/storage.py`
 
 **Purpose**: DuckDB persistent storage for validation reports
 
@@ -222,7 +222,7 @@ report = validator.validate_csv_file("data.csv", store_report=True)  # Persists 
 
 - **Single source of truth**: CSVValidator is canonical validator
 - **Type safety**: Pydantic models prevent data corruption
-- **Test coverage**: Validation tests in `/Users/terryli/eon/gapless-crypto-data/tests/test_validation_storage.py`
+- **Test coverage**: Validation tests in `~/eon/gapless-crypto-data/tests/test_validation_storage.py`
 
 ## Helper Functions
 
