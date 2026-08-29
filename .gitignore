@@ -34,9 +34,15 @@ htmlcov/
 
 # Lychee link checker output
 .lycheecache
+.lychee-results.*
+# Legacy explicit names, kept so old checkouts stay covered
 .lychee-results.txt
 .lychee-results.json
 .lychee-results.md
+
+# Scratch/report output directory. lychee.toml writes its report here.
+tmp/*
+!tmp/.gitkeep
 
 # Node.js (semantic-release)
 node_modules/

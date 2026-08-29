@@ -15,3 +15,7 @@ exclude_path = ["tmp/", "src/gapless_crypto_data/sample_data/"]
 
 # File extensions to check
 include_verbatim = true
+
+# Write the report into tmp/ (gitignored), never the repo root. Report files
+# embed absolute filesystem paths, so they must never become tracked artifacts.
+output = "tmp/lychee-report.md"
