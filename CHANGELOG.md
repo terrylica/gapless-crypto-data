@@ -2,6 +2,13 @@
 
 All notable changes to gapless-crypto-data will be documented in this file.
 
+## [5.0.2](https://github.com/terrylica/gapless-crypto-data/compare/v5.0.1...v5.0.2) (2026-08-31)
+
+### Bug Fixes
+
+* **release:** keep uv.lock in step with the released version ([affb4a3](https://github.com/terrylica/gapless-crypto-data/commit/affb4a3e7946041f8a722f545215ad37f404e383))
+* **release:** make the lockfile govern and stop the silent dry-run ([7c1de01](https://github.com/terrylica/gapless-crypto-data/commit/7c1de0145fb8b9f98ac9ec9c0f282ece3d56fb7a))
+
 ## [5.0.1](https://github.com/terrylica/gapless-crypto-data/compare/v5.0.0...v5.0.1) (2026-08-25)
 
 ### Bug Fixes
