@@ -2,6 +2,12 @@
 
 All notable changes to gapless-crypto-data will be documented in this file.
 
+## [5.0.3](https://github.com/terrylica/gapless-crypto-data/compare/v5.0.2...v5.0.3) (2026-10-16)
+
+### Bug Fixes
+
+* **notify:** pass the Pushover token and user key to curl on stdin, not argv ([12b462f](https://github.com/terrylica/gapless-crypto-data/commit/12b462f7dcadb73beaf333bcaa3058111e6b4d57))
+
 ## [5.0.2](https://github.com/terrylica/gapless-crypto-data/compare/v5.0.1...v5.0.2) (2026-08-31)
 
 ### Bug Fixes
