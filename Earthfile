@@ -76,11 +76,13 @@ pushover-notify:
     FROM alpine:3.19
     RUN apk add --no-cache curl
 
-    # Send Pushover notification
+    # Send Pushover notification. The token and user key reach curl as a config on stdin (-K -),
+    # never as arguments (argv is readable by `ps`). Pushover keys are alphanumeric; anything else
+    # is refused so it cannot break the config syntax.
     RUN --no-cache --secret PUSHOVER_USER_KEY --secret PUSHOVER_APP_TOKEN \
-        curl -s \
-        --form-string "token=$PUSHOVER_APP_TOKEN" \
-        --form-string "user=$PUSHOVER_USER_KEY" \
+        case "$PUSHOVER_APP_TOKEN$PUSHOVER_USER_KEY" in *[!A-Za-z0-9]*) echo "Pushover key is not alphanumeric" >&2; exit 1 ;; esac && \
+        printf 'form-string = "token=%s"\nform-string = "user=%s"\n' "$PUSHOVER_APP_TOKEN" "$PUSHOVER_USER_KEY" \
+        | curl -s -K - \
         --form-string "title=$TITLE" \
         --form-string "message=Version $VERSION released successfully" \
         --form-string "url=$RELEASE_URL" \

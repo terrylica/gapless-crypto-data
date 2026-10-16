@@ -39,10 +39,12 @@ PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_APP_TOKEN --project notificati
     exit 1
 }
 
-# Send test notification
-RESPONSE=$(curl -s \
-    --form-string "token=$PUSHOVER_APP_TOKEN" \
-    --form-string "user=$PUSHOVER_USER_KEY" \
+# Send test notification. The token and user key reach curl as a config on stdin (-K -), never
+# as arguments (argv is readable by every user's `ps`); escaped for curl's config syntax.
+PO_TOK=${PUSHOVER_APP_TOKEN//\\/\\\\}; PO_TOK=${PO_TOK//\"/\\\"}
+PO_USR=${PUSHOVER_USER_KEY//\\/\\\\}; PO_USR=${PO_USR//\"/\\\"}
+RESPONSE=$(printf 'form-string = "token=%s"\nform-string = "user=%s"\n' "$PO_TOK" "$PO_USR" \
+    | curl -s -K - \
     --form-string "title=gapless-crypto-data Test" \
     --form-string "message=Test notification for version $VERSION" \
     --form-string "url=$RELEASE_URL" \
